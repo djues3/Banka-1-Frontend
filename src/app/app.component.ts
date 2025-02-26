@@ -15,11 +15,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  // Briše localStorage pri zatvaranju prozora
-  @HostListener('window:beforeunload', ['$event'])
-  clearLocalStorageOnClose(event: Event): void {
-    localStorage.clear();
-  }
+  // // Briše localStorage pri zatvaranju prozora
+  // @HostListener('window:beforeunload', ['$event'])
+  // clearLocalStorageOnClose(event: Event): void {
+  //   localStorage.clear();
+  // }
 
 
   ngOnInit(): void {
@@ -35,14 +35,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
   onLogout(): void {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.isLoggedIn = false;
-        localStorage.clear();
-        this.router.navigate(['/login']);
-      },
-      error: (error) => console.error('Greška prilikom odjave:', error)
-    });
+
   }
 
   ngOnDestroy(): void {
