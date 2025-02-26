@@ -36,7 +36,6 @@ export class UserService {
     return this.http.post(`${this.aiUrl}/customers`, customerData, { headers });
   }
 
-}
 
 //   constructor(private http: HttpClient) {}
 

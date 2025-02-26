@@ -55,17 +55,6 @@ export class AppComponent implements OnInit, OnDestroy {
   hasCreateEmployeePermission: boolean = true;  // treba da se promeni na false kada se doda auth
   hasCreateCustomerPermission: boolean = true; // treba da se promeni na false kada se doda auth
 
-  constructor(
-    //private authService: AuthService
-  ) {}
-
-  ngOnInit(): void {
-    // Proveravamo permisije korisnika prilikom inicijalizacije komponente
-   // const permissions = this.authService.getUserPermissions();
-   // this.hasCreateEmployeePermission = permissions.includes('user.employee.create');
-    // this.hasCreateCustomerPermission = permissions.includes('user.customer.create');
-  }
-
   isCustomerModalOpen: boolean = false;
   isEmployeeModalOpen: boolean = false;
 

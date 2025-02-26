@@ -5,6 +5,7 @@
   border-radius: 0 !important; /* Podesite po želji */
   box-shadow: none !important; /* Uklanja senke */
   overflow: hidden;
+}
 
 *{
   margin: 0;
