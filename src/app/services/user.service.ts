@@ -1,12 +1,15 @@
-import { HttpClient } from '@angular/common/http';
+
 import { Injectable } from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { HttpHeaders } from '@angular/common/http';
+import {environment} from "../environments/environment";
+//import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
+  private aiUrl = `${environment.api}/users`;
 
   constructor(
     private http: HttpClient,
@@ -20,7 +23,7 @@ export class UserService {
       'Content-Type': 'application/json'
     });
 
-    return this.http.post(`http://localhost:8080/api/users/employees`, employeeData, { headers });
+    return this.http.post(`${this.aiUrl}/employees`, employeeData, { headers });
   }
 
   createCustomer(customerData: any): Observable<any> {
@@ -30,11 +33,8 @@ export class UserService {
       'Content-Type': 'application/json'
     });
 
-    return this.http.post(`http://localhost:8080/api/users/customers`, customerData, { headers });
+    return this.http.post(`${this.aiUrl}/customers`, customerData, { headers });
   }
-
-
-//   constructor(private http: HttpClient) {}
 
   fetchData(activeCategory: string, currentPage: number, itemsPerPage: number, totalItems: number, totalPages: number, displayedData: (Employee | Customer)[]) {
     const apiUrl = activeCategory === 'employees'
