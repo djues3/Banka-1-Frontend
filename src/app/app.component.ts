@@ -1,4 +1,3 @@
-
 import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from './services/auth.service';
 import { Router } from '@angular/router';
@@ -9,7 +8,6 @@ import { Subscription } from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
 export class AppComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   isAppInitialized = false;
@@ -50,7 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.loginStatusSub?.unsubscribe();
   }
-  
+
   title = 'banka1Front';
   hasCreateEmployeePermission: boolean = true;  // treba da se promeni na false kada se doda auth
   hasCreateCustomerPermission: boolean = true; // treba da se promeni na false kada se doda auth
