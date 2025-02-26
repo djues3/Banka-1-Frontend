@@ -1,10 +1,16 @@
-body {
-  background: #121623;
-  margin: 0; /* Remove default margins */
-  height: 100vh;
-  width: 100vw;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+
+{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-* {
+
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: #121623;
   font-family: 'Montserrat', sans-serif !important;
 }
