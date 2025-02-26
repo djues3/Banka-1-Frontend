@@ -8,13 +8,11 @@ import { UserPortalComponent } from './user-portal/user-portal.component';
 import { SetPasswordComponent } from './set-password/set-password.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'desk', pathMatch: 'full' },
+  { path: '', component: DeskComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'desk', component: DeskComponent},
-  { path: 'reset-password', component: ResetPasswordComponent },
-  { path: 'set-password', component: SetPasswordComponent },
-  { path: 'user-portal', component: UserPortalComponent },
-  { path: '**', redirectTo: 'desk' }
+  { path: 'reset-password', component: ResetPasswordComponent, canActivate: [AuthGuard] },
+  { path: 'set-password', component: SetPasswordComponent, canActivate: [AuthGuard] },
+  { path: 'user-portal', component: UserPortalComponent, canActivate: [AuthGuard] },
 ];
 
 @NgModule({

@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpHeaders } from '@angular/common/http';
-import {AuthService} from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -42,14 +41,7 @@ export class UserService {
       ? 'http://localhost:8080/api/users/employees'
       : 'http://localhost:8080/api/users/customers';
 
-    const token = this.authservice.getToken(); //cekam auth
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-
-    console.log(token);
-    this.http.get<any>(`${apiUrl}?page=${currentPage}&limit=${itemsPerPage}`, { headers }).subscribe({
+    this.http.get<any>(`${apiUrl}?page=${currentPage}&limit=${itemsPerPage}`).subscribe({
       next: (data) => {
         totalItems = data.totalItems;
         totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -62,13 +54,7 @@ export class UserService {
   }
 
   fetchEmployees(employees: Employee[], activeCategory: string, displayedData: (Employee | Customer)[]) {
-    const token = this.authservice.getToken(); //cekam auth
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-
-    this.http.get<Employee[]>('http://localhost:8080/api/users/search/employees', {headers}).subscribe({
+    this.http.get<Employee[]>('http://localhost:8080/api/users/employees').subscribe({
       next: (data) => {
         employees = data;
         if (activeCategory === 'employees') {
@@ -82,12 +68,7 @@ export class UserService {
   }
 
   fetchCustomers(customers: Customer[], activeCategory: string, displayedData: (Employee | Customer)[]) {
-    const token = this.authservice.getToken(); //cekam auth
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-    this.http.get<Customer[]>('http://localhost:8080/api/users/search/customers',{headers}).subscribe({
+    this.http.get<Customer[]>('http://localhost:8080/api/users/customers').subscribe({
       next: (data) => {
         customers = data;
         if (activeCategory === 'customers') {
