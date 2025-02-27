@@ -11,6 +11,8 @@ import { LoginComponent } from './login/login.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { DeskComponent } from './desk/desk.component';
 import { UserPortalComponent } from './user-portal/user-portal.component';
+import {EditEmployeeComponent} from "./components/edit-employee/edit-employee.component";
+import {EditCustomerComponent} from "./components/edit-customer/edit-customer.component";
 import { TableEmployesComponent } from './components/table-employes/table-employes.component';
 import {CreateEmployeeComponent} from "./components/create-employee/create-employee.component";
 import {CreateCustomerComponent} from "./components/create-customer/create-customer.component";
@@ -22,6 +24,9 @@ import {CreateCustomerComponent} from "./components/create-customer/create-custo
     ResetPasswordComponent,
     SetPasswordComponent,
     DeskComponent,
+    EditEmployeeComponent,
+    EditCustomerComponent,
+    UserPortalComponent,
     UserPortalComponent,
     TableEmployesComponent,
     CreateEmployeeComponent,
