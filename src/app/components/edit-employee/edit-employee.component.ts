@@ -12,7 +12,7 @@ export class EditEmployeeComponent{
   isOpen = false;
   employee: Employee | null = null;
   selectedPermissions: string[] = [];
-  availablePermissions: string[] = ['employee.create', 'customer.create', 'employee.edit', 'customer.edit', 'employee.delete', 'customer.delete','employee.list', 'customer.list', 'employee.set_permissions', 'customer.set_permissions', 'employee.view', 'customer.view'];
+  availablePermissions: string[] = ['user.employee.create', 'user.customer.create', 'user.employee.edit', 'user.customer.edit', 'user.employee.delete', 'user.ustomer.delete','user.employee.list', 'user.customer.list', 'user.employee.set_permissions', 'user.customer.set_permissions', 'user.employee.view', 'user.customer.view'];
   newPermission: string = '';
   originalPermissions:string[] = [];
   updatedEmployee: any = {};
@@ -74,7 +74,7 @@ export class EditEmployeeComponent{
       this.closeModal()
     }
 
-    permissions = this.selectedPermissions.map(permission => 'user.' + permission);
+    permissions = this.selectedPermissions;
 
     if(this.employee == null) return;
 
