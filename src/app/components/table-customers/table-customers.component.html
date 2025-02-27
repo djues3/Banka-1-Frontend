@@ -27,9 +27,9 @@
       </thead>
       <tbody>
       <tr *ngFor="let customer of displayedData" (click)="editPerson(customer)" style="cursor: pointer;">
-        <td>{{ customer.ime }} {{ customer.prezime }}</td>
+        <td>{{ customer.firstName }} {{ customer.lastName }}</td>
         <td>{{ customer.email }}</td>
-        <td>{{ customer.brojTelefona }}</td>
+        <td>{{ customer.phoneNumber }}</td>
         <td>
           <img src="/assets/bin.jpg.png" class="delete-icon" (click)="deletePerson(customer); $event.stopPropagation()">
         </td>

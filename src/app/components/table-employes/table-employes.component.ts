@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Customer, Employee, UserService} from "../../services/user.service";
 import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
@@ -8,7 +8,7 @@ import {Router} from "@angular/router";
   templateUrl: './table-employes.component.html',
   styleUrls: ['./table-employes.component.css']
 })
-export class TableEmployesComponent {
+export class TableEmployesComponent implements OnInit{
 
   hasCreateEmployeePermission: boolean = true;  // treba da se promeni na false kada se doda auth
 
@@ -29,7 +29,20 @@ export class TableEmployesComponent {
   }
 
   ngOnInit() {
-    // this.userService.fetchEmployees();
+     this.loadEmployees()
+  }
+  loadEmployees() {
+    this.userService.fetchEmployees().subscribe({
+      next: (data) => {
+        this.employees = data.employees;
+        this.totalItems = data.total;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+        this.displayedData = this.employees;
+      },
+      error: (error) => {
+        console.error('Error fetching employees:', error);
+      },
+    });
   }
 
   calculatePagination() {
@@ -48,9 +61,9 @@ export class TableEmployesComponent {
   filterData(event: Event) {
     const searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
     this.displayedData = this.employees.filter(employee =>
-    employee.ime.toLowerCase().includes(searchTerm) ||
-    employee.prezime.toLowerCase().includes(searchTerm) ||
-    employee.pozicija.toLowerCase().includes(searchTerm) ||
+    employee.firstName.toLowerCase().includes(searchTerm) ||
+    employee.lastName.toLowerCase().includes(searchTerm) ||
+    employee.position.toLowerCase().includes(searchTerm) ||
     employee.email.toLowerCase().includes(searchTerm)
   );
 
@@ -96,7 +109,7 @@ export class TableEmployesComponent {
   private isEmployee(person: Employee | Customer): person is Employee {
       return (person as Employee).username !== undefined;
     }
-  
+
     private isCustomer(person: Employee | Customer): person is Customer {
       return (person as Customer).povezaniRacuni !== undefined;
     }

@@ -19,6 +19,6 @@ html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  background: #121623;
+  background: #121623 !important;
   font-family: 'Montserrat', sans-serif !important;
 }

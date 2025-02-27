@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
+import {Router} from "@angular/router";
 
 interface DecodedToken {
   id: number;
@@ -19,7 +20,7 @@ export class AuthService {
   private loginStatus = new BehaviorSubject<boolean>(this.isLoggedIn());
   loginStatusChanged = this.loginStatus.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router : Router) {}
 
 
   isLoggedIn(): boolean {
@@ -52,16 +53,14 @@ export class AuthService {
 
 
   logout(): Observable<any> {
-
-    const token = this.getToken(); //cekam auth
+    const token = this.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
     return this.http.post(`${this.apiUrl}/logout`, {}, { headers }).pipe(
         tap(() => {
-          console.log("Aa")
-          localStorage.removeItem('token');
+         this.router.navigate(['/']).then(r => localStorage.removeItem('token'));
           this.loginStatus.next(false);
         }),
         catchError((error) => {

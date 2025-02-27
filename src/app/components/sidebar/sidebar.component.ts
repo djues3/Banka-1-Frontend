@@ -20,6 +20,7 @@ export class SidebarComponent {
 
   }
   userLogout(){
-    this.authService.logout();
+    console.log("Aaa")
+    this.authService.logout().subscribe();
   }
 }

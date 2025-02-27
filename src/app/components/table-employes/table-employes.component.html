@@ -1,4 +1,4 @@
-<<div class="modal-overlay" *ngIf="isEmployeeModalOpen" (click)="closeEmployeeModal()"></div>
+<div class="modal-overlay" *ngIf="isEmployeeModalOpen" (click)="closeEmployeeModal()"></div>
 <div class="modal employee-modal" #employeeModal *ngIf="isEmployeeModalOpen">
   <div class="modal-body">
     <app-create-employee
@@ -34,11 +34,11 @@
         </thead>
         <tbody>
         <tr *ngFor="let employee of displayedData" (click)="editPerson(employee)" style="cursor: pointer;">
-          <td>{{ employee.ime }} {{ employee.prezime }}</td>
+          <td>{{ employee.firstName }} {{ employee.lastName }}</td>
           <td>{{ employee.email }}</td>
-          <td>{{ employee.pozicija }}</td>
-          <td>{{ employee.brojTelefona }}</td>
-          <td>{{ employee.aktivan ? 'Da' : 'Ne' }}</td>
+          <td>{{ employee.position }}</td>
+          <td>{{ employee.phoneNumber }}</td>
+          <td>{{ employee.active ? 'Da' : 'Ne' }}</td>
           <td>
             <img src="/assets/bin.jpg.png" class="delete-icon" (click)="deletePerson(employee); $event.stopPropagation()">
           </td>

@@ -1,19 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {map, Observable} from 'rxjs';
+import {map, Observable, throwError} from 'rxjs';
 import {environment} from "../environments/environment";
 //import { AuthService } from './auth.service';
 import { HttpHeaders } from '@angular/common/http';
+import {AuthService} from "./auth.service";
+import {catchError} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private aiUrl = `${environment.api}/users`;
+  private aiUrl = `${environment.api}/api/users`;
 
   constructor(
     private http: HttpClient,
-   // private authservice: AuthService
+    private authService: AuthService
   ) {}
 
   createEmployee(employeeData: any): Observable<any> {
@@ -38,7 +40,7 @@ export class UserService {
 
 
   fetchEmployees(): Observable<{ employees: Employee[]; total: number }> {
-    const token = ''; //this.authService.getToken(); //cekam auth
+    const token = this.authService.getToken()
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -50,12 +52,16 @@ export class UserService {
       map(response => ({
         employees: response.data.rows,
         total: response.data.total
-      }))
+      })),
+      catchError((error) => {
+        console.error('Greška prilikom prikazivanja:', error);
+        return throwError(() => new Error('Neuspešno.'));
+      })
     );
   }
 
   fetchCustomers(): Observable<{ customers: Customer[]; total: number }> {
-    const token = ''; //this.authService.getToken(); //cekam auth
+    const token = this.authService.getToken()
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -67,7 +73,11 @@ export class UserService {
       map(response => ({
         customers: response.data.rows,
         total: response.data.total
-      }))
+      })),
+      catchError((error) => {
+        console.error('Greška prilikom prikazivanja:', error);
+        return throwError(() => new Error('Neuspešno.'));
+      })
     );
   }
 
@@ -144,15 +154,13 @@ export class UserService {
 
 export interface Customer {
   id: number;
-  ime: string;
-  prezime: string;
-  datumRodjenja: number;
-  pol: string;
+  firstName: string;
+  lastName: string;
+  birthDate: number;
+  gender: string;
   email: string;
-  brojTelefona: string;
-  adresa: string;
-  password: string;
-  saltPassword: string;
+  phoneNumber: string;
+  address: string;
   povezaniRacuni: string[];
   pozicija: null;
   aktivan: null;
@@ -162,19 +170,18 @@ export interface Customer {
 
 export interface Employee {
   id: number;
-  ime: string;
-  prezime: string;
-  datumRodjenja: number;
-  pol: string;
+  firstName: string;
+  lastName: string;
+  birthDate: number;
+  gender: string;
   email: string;
-  brojTelefona: string;
-  adresa: string;
+  phoneNumber: string;
+  address: string;
   username: string;
-  password: string;
-  saltPassword: string;
-  pozicija: string;
-  departman: string;
-  aktivan: boolean;
+  position: string;
+  department: string;
+  isAdmin:boolean;
+  active: boolean;
   permissions: string[];
 }
 
