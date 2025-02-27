@@ -9,8 +9,8 @@
     <app-sidebar (categoryChanged)="setActiveCategory($event)"></app-sidebar>
 
     <!-- Prikaz odgovarajuće komponente u zavisnosti od activeCategory -->
-    <app-employees *ngIf="activeCategory === 'employees'"></app-employees>
-    <app-customers *ngIf="activeCategory === 'customers'"></app-customers>
+    <app-table-employes *ngIf="activeCategory === 'employees'"></app-table-employes>
+    <app-table-customers *ngIf="activeCategory === 'customers'"></app-table-customers>
 
 
     <!-- Stari main-content zakomentarisan.-->
