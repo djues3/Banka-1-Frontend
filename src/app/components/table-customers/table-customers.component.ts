@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { Customer, UserService } from "../../services/user.service";
 import { ModalService } from "../../services/modal.service";
 
@@ -7,7 +7,7 @@ import { ModalService } from "../../services/modal.service";
   templateUrl: './table-customers.component.html',
   styleUrls: ['./table-customers.component.css']
 })
-export class TableCustomersComponent {
+export class TableCustomersComponent implements OnInit {
 
   hasCreateCustomerPermission: boolean = true; // Postaviti na false kada se doda autentifikacija
   isCustomerModalOpen: boolean = false;
@@ -31,11 +31,15 @@ export class TableCustomersComponent {
   // Fetchuje mušterije sa servera
   loadCustomers() {
     this.userService.fetchCustomers().subscribe({
-      next: (response) => {
-        this.customers = response.customers;
-        this.calculatePagination();
+      next: (data) => {
+        this.customers = data.customers;
+        this.totalItems = data.total;
+        this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+        this.displayedData = this.customers;
       },
-      error: (error) => console.error('Greška pri učitavanju mušterija:', error),
+      error: (error) => {
+        console.error('Error fetching customers:', error);
+      },
     });
   }
 
@@ -56,10 +60,10 @@ export class TableCustomersComponent {
   filterData(event: Event) {
     const searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
     this.displayedData = this.customers.filter(customer =>
-      customer.ime.toLowerCase().includes(searchTerm) ||
-      customer.prezime.toLowerCase().includes(searchTerm) ||
+      customer.firstName.toLowerCase().includes(searchTerm) ||
+      customer.lastName.toLowerCase().includes(searchTerm) ||
       customer.email.toLowerCase().includes(searchTerm) ||
-      customer.brojTelefona.toLowerCase().includes(searchTerm)
+      customer.phoneNumber.toLowerCase().includes(searchTerm)
     );
   }
 
@@ -70,7 +74,7 @@ export class TableCustomersComponent {
 
   // Briše mušteriju
   deletePerson(customer: Customer) {
-    if (confirm(`Da li ste sigurni da želite da obrišete mušteriju ${customer.ime} ${customer.prezime}?`)) {
+    if (confirm(`Da li ste sigurni da želite da obrišete mušteriju ${customer.firstName} ${customer.lastName}?`)) {
       this.userService.deleteCustumer(customer.id).subscribe({
         next: () => {
           this.customers = this.customers.filter(c => c.id !== customer.id);
