@@ -7,6 +7,7 @@ import {DeskComponent} from "./desk/desk.component";
 import { UserPortalComponent } from './user-portal/user-portal.component';
 import { SetPasswordComponent } from './set-password/set-password.component';
 
+
 const routes: Routes = [
   { path: '', component: DeskComponent },
   { path: 'login', component: LoginComponent },

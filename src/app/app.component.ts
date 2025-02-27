@@ -35,7 +35,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
 
   onLogout(): void {
-
+    this.authService.logout().subscribe({
+      next: () => {
+        this.isLoggedIn = false;
+        localStorage.clear();
+        this.router.navigate(['/login']);
+      },
+      error: (error) => console.error('Greška prilikom odjave:', error)
+    });
   }
 
   ngOnDestroy(): void {
