@@ -25,7 +25,9 @@ export class UserService {
       'Content-Type': 'application/json'
     });
 
+
     return this.http.post(`http://localhost:8080/api/users/employees/`, employeeData, { headers });
+
   }
 
   createCustomer(customerData: any): Observable<any> {
@@ -35,7 +37,9 @@ export class UserService {
       'Content-Type': 'application/json'
     });
 
+
     return this.http.post(`http://localhost:8080/api/customer`, customerData, { headers });
+
   }
 
 

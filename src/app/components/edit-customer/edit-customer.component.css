@@ -63,7 +63,12 @@ body {
   background-color: #3B4754;
   outline: none;
   box-sizing: content-box !important;
+}
 
+.edit-checkbox{
+  width: 20px;
+  height: 15px;
+  margin-top: 15px;
 }
 
 .edit-account-textbox{
@@ -74,13 +79,13 @@ body {
   margin-top: 35px;
   position: absolute;
   left: 30%;
-
   transform: translateX(-50%);
   color: #FFFF;
   border: 1px solid transparent !important;
   border-radius: 12px;
   background-color: #3B4754;
   outline: none;
+  box-sizing: content-box !important;
 }
 
 .edit-account-label{
@@ -114,6 +119,8 @@ body {
 }
 
 .modal {
+  display: flex !important;
+  flex-direction: column;
   transform: scale(0.9) translate(-50%, -50%);
   position: fixed;
   top: 45%;
@@ -195,6 +202,7 @@ body {
   border: none;
   cursor: pointer;
 }
+
 .account-remove-button {
   height: 47px;
   width: 10%;

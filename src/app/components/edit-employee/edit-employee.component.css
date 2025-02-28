@@ -88,23 +88,34 @@ body {
 
 .edit-account-label{
   position: absolute;
-  left: 18%;
+  /*left: 18%;*/
   margin-top: 28px;
   transform: translateX(-50%);
 }
 
-.edit-checkbox{
-  width: 20px;
-  height: 15px;
-  margin-top: 15px;
+.checkbox-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px; /* Reduce spacing */
+  align-items: flex-start; /* Align everything to the left */
 }
 
+.checkbox-group {
+  display: flex;
+  gap: -10px; /* Control spacing between label and checkbox */
+  align-items: center; /* Keep items vertically centered */
+}
 
+.checkbox-group {
+  display: flex;
+  justify-content: space-between; /* Ensures labels and checkboxes align properly */
+  width: 50%;
+}
 
 .edit-submit-button {
 
   position: absolute;
-  bottom: 30px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   margin: 20px auto 0;
@@ -124,6 +135,8 @@ body {
 }
 
 .modal {
+  display: flex !important;
+  flex-direction: column;
   transform: scale(0.9) translate(-50%, -50%);
   position: fixed;
   top: 45%;
@@ -136,17 +149,28 @@ body {
   z-index: 1000;
 }
 
+/*.modal-header {*/
+/*  background: #1A1F36  ;*/
+/*  color: white;*/
+/*  padding: 10px;*/
+/*  display: flex;*/
+/*  border-top-right-radius: 16px;*/
+/*  border-top-left-radius: 16px;*/
+/*  justify-content: space-between;*/
+/*  align-items: center;*/
+/*}*/
 .modal-header {
-  background: #1A1F36  ;
-  color: white;
-  padding: 10px;
   display: flex;
-  border-top-right-radius: 16px;
-  border-top-left-radius: 16px;
+  flex-direction: row; /* Ensures title and close button stay in a row */
   justify-content: space-between;
   align-items: center;
+  background: #1A1F36;
+  color: white;
+  padding: 10px;
+  border-top-right-radius: 16px;
+  border-top-left-radius: 16px;
+  width: 100%; /* Ensures it spans the modal */
 }
-
 
 .close {
   cursor: pointer;
@@ -280,13 +304,14 @@ body {
 
 .permission-list {
   margin-top: 10px;
+  width: 100%;
 }
 
 .permission-badge {
   display: inline-block;
   background-color: #3B5445;
   color: white;
-  padding: 5px 10px;
+  padding: 3px 10px;
   margin: 5px;
   border-radius: 16px;
   font-size: 14px;

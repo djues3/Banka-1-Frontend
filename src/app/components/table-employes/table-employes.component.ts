@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Customer, Employee, UserService} from "../../services/user.service";
 import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
+import {ModalService} from "../../services/modal.service";
 
 @Component({
   selector: 'app-table-employes',
@@ -22,12 +23,13 @@ export class TableEmployesComponent implements OnInit{
 
   constructor(private userService: UserService ) {
 
-
   }
 
   ngOnInit() {
      this.loadEmployees()
   }
+
+
   loadEmployees() {
     this.userService.fetchEmployees().subscribe({
       next: (data) => {
@@ -68,8 +70,18 @@ export class TableEmployesComponent implements OnInit{
   }
 
   editPerson(person: Employee | Customer) {
-    console.log('Editing employee:', person);
+    this.modalService.openModal('employee', person);
   }
+
+  // openModal(person: Employee | Customer) {
+  //   if (this.isEmployee(person)) {
+  //     this.modalService.openModal('employee', person);
+  //   } else if (this.isCustomer(person)) {
+  //     this.modalService.openModal('customer', person);
+  //   } else {
+  //     console.error('Unknown type:', person);
+  //   }
+  // }
 
 
   // deletePerson(person: Employee | Customer) {

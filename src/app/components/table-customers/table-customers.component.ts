@@ -28,7 +28,7 @@ export class TableCustomersComponent implements OnInit {
 
   }
 
-  // Fetchuje mušterije sa servera
+
   loadCustomers() {
     this.userService.fetchCustomers().subscribe({
       next: (data) => {
