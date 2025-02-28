@@ -72,6 +72,7 @@ export class TableCustomersComponent implements OnInit {
   // Otvara modal za uređivanje mušterije
   editPerson(customer: Customer) {
     this.modalService.openModal('customer', customer);
+
   }
 
   // Briše mušteriju

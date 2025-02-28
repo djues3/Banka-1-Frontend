@@ -109,24 +109,24 @@ export class UserService {
   }
 
   updateEmployee(id: number, employeeData: Partial<Employee>): Observable<void> {
-    const token = ''; //this.authService.getToken(); //cekam auth
+    const token = this.authService.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
 
 
-    return this.http.put<void>(`${this.aiUrl}/search/employee/${id}`, employeeData, { headers });
+    return this.http.put<void>(`${this.aiUrl}/employees/${id}`, employeeData, { headers });
   }
 
   updateCustomer(id: number, customerData: Partial<Customer>): Observable<void> {
-    const token = ''; //this.authService.getToken(); //cekam auth
+    const token = this.authService.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
 
-    return this.http.put<void>(`${this.aiUrl}/search/customer/${id}`, customerData, { headers });
+    return this.http.put<void>(`http://localhost:8080/api/customer/${id}`, customerData, { headers });
   }
 
   updateEmployeePermissions(id: number, permissions: string[]): Observable<void> {
@@ -161,7 +161,7 @@ export interface Customer {
   id: number;
   firstName: string;
   lastName: string;
-  birthDate: number;
+  birthDate: string;
   gender: string;
   email: string;
   phoneNumber: string;

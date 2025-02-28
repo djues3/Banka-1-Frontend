@@ -21,7 +21,7 @@ export class TableEmployesComponent implements OnInit{
   totalItems: number = 0;
   totalPages: number = 0;
 
-  constructor(private userService: UserService, private modalService: ModalService) {
+  constructor(private userService: UserService, private modalService: ModalService ) {
 
   }
 
@@ -71,6 +71,7 @@ export class TableEmployesComponent implements OnInit{
 
   editPerson(person: Employee | Customer) {
     this.modalService.openModal('employee', person);
+
   }
 
   // openModal(person: Employee | Customer) {

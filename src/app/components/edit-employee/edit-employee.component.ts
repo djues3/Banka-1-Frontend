@@ -15,8 +15,14 @@ export class EditEmployeeComponent{
   availablePermissions: string[] = ['user.employee.create', 'user.customer.create', 'user.employee.edit', 'user.customer.edit', 'user.employee.delete', 'user.ustomer.delete','user.employee.list', 'user.customer.list', 'user.employee.set_permissions', 'user.customer.set_permissions', 'user.employee.view', 'user.customer.view'];
   newPermission: string = '';
   originalPermissions:string[] = [];
-  updatedEmployee: any = {};
+  updatedEmployee: Employee | null = null;
   updatedEmployeeFields: Partial<typeof this.employee> = {};
+
+  positionOptions: string[] = ['Nijedna', 'Direktor', 'Radnik', 'HR', 'Menadžer'];
+  departmentOptions: string[] = ['Računovodstvo', 'Finansije', 'Kredit', 'Pravo', 'IT', 'HR'];
+  chosenPosition: string = ""
+  chosenDepartment: string = ""
+
 
   constructor(private userService: UserService,private modalService: ModalService) {
 
@@ -28,15 +34,43 @@ export class EditEmployeeComponent{
         this.selectedPermissions = structuredClone(this.employee.permissions ?? []); // Use optional chaining and default empty array
         this.updatedEmployeeFields = {};
         this.originalPermissions = structuredClone(this.selectedPermissions);
+        this.updatedEmployee!.position = this.mapPosition(this.updatedEmployee!.position)
+        this.updatedEmployee!.department = this.mapDepartment(this.updatedEmployee!.department)
       } else {
         this.selectedPermissions = []; // Ensure it's initialized to prevent errors
         this.originalPermissions = [];
       }
+
+      console.log(this.chosenPosition)
     });
 
   }
 
+  mapPosition(role: string): string{
 
+    const roleMapper: Record<string, string> = {
+      "NONE": "Nijedna",
+      "DIRECTOR": "Direktor",
+      "MANAGER": "Menadžer",
+      "WORKER": "Radnik",
+      "HR": "HR"
+    };
+
+    return roleMapper[role] || role;
+  }
+  mapDepartment(role: string): string{
+
+    const roleMapper: Record<string, string> = {
+      "ACCOUNTING": "Računovodstvo",
+      "FINANCIAL": "Finansije",
+      "CREDIT": "Kredit",
+      "LEGAL": "Pravo",
+      "HR": "HR",
+      "IT": "IT"
+    };
+
+    return roleMapper[role] || role;
+  }
 
   trackEmployeeChanges() {
     this.updatedEmployeeFields = {};
@@ -45,6 +79,7 @@ export class EditEmployeeComponent{
       console.warn('Customer or updatedClient is null'); // Debugging
       return; // Stop execution if either is null
     }
+
 
     Object.keys(this.employee).forEach((key) => {
       const originalValue = (this.employee as Record<string, any>)[key];
@@ -77,10 +112,11 @@ export class EditEmployeeComponent{
     permissions = this.selectedPermissions;
 
     if(this.employee == null) return;
-
+    console.log(this.updatedEmployeeFields)
     this.userService.updateEmployee(this.employee.id, this.updatedEmployeeFields).subscribe({
       next: () => {
         alert('Employee updated sucessfully');
+        this.closeModal()
       },
       error: (error) => {
         console.error('Error updating employee', error);
@@ -115,5 +151,6 @@ export class EditEmployeeComponent{
 
   closeModal() {
     this.modalService.closeModal();
+    window.location.reload()
   }
 }

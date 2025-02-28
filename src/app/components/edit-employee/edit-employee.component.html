@@ -13,18 +13,16 @@
 
 
         <form>
-          <label>Id</label>
-          <input type="text" class="edit-textbox" readonly [(ngModel)]="updatedEmployee.id"  name="id"/>
           <label>Ime</label>
-          <input type="text" class="edit-textbox" readonly [(ngModel)]="updatedEmployee.firstName" name="ime"/>
+          <input type="text" class="edit-textbox"  [(ngModel)]="updatedEmployee!.firstName" (ngModelChange)="trackEmployeeChanges()" name="ime"/>
           <label>Prezime</label>
-          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee.lastName" (ngModelChange)="trackEmployeeChanges()" name="Prezime"/>
+          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee!.lastName" (ngModelChange)="trackEmployeeChanges()" name="Prezime"/>
           <label>Datum rodjenja</label>
-          <input type="text" class="edit-textbox" readonly [(ngModel)]="updatedEmployee.birthDate" name="Datum_rodjenja"/>
+          <input type="date" class="edit-textbox"  [(ngModel)]="updatedEmployee!.birthDate" (ngModelChange)="trackEmployeeChanges()" name="Datum_rodjenja"/>
           <label>Pol</label>
-          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee.gender" (ngModelChange)="trackEmployeeChanges()" name="Pol"/>
+          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee!.gender" (ngModelChange)="trackEmployeeChanges()" name="Pol"/>
           <label>Email adresa</label>
-          <input type="text" class="edit-textbox" readonly [(ngModel)]="updatedEmployee.email" name="Email_adresa"/>
+          <input type="text" class="edit-textbox"  [(ngModel)]="updatedEmployee!.email" (ngModelChange)="trackEmployeeChanges()" name="Email_adresa"/>
           <div class="checkbox-container">
             <div class="checkbox-group" style="gap: 55px">
               <label for="active" >Aktivan</label>
@@ -32,8 +30,8 @@
 
             </div>
             <div class="checkbox-group">
-              <input type="checkbox" id="active" class="edit-checkbox" [(ngModel)]="updatedEmployee.active" (ngModelChange)="trackEmployeeChanges()" name="Aktivan">
-              <input type="checkbox" id="admin" class="edit-checkbox" [(ngModel)]="updatedEmployee.isAdmin" (ngModelChange)="trackEmployeeChanges()" name="Admin">
+              <input type="checkbox" id="active" class="edit-checkbox" [(ngModel)]="updatedEmployee!.active" (ngModelChange)="trackEmployeeChanges()" name="Aktivan">
+              <input type="checkbox" id="admin" class="edit-checkbox" [(ngModel)]="updatedEmployee!.isAdmin" (ngModelChange)="trackEmployeeChanges()" name="Admin">
             </div>
           </div>
 
@@ -42,40 +40,53 @@
 
         <form>
           <label>Broj telefona</label>
-          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee.phoneNumber" (ngModelChange)="trackEmployeeChanges()" name="Broj_telefona"/>
+          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee!.phoneNumber" (ngModelChange)="trackEmployeeChanges()" name="Broj_telefona"/>
           <label>Adresa</label>
-          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee.address" (ngModelChange)="trackEmployeeChanges()" name="Adresa"/>
+          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee!.address" (ngModelChange)="trackEmployeeChanges()" name="Adresa"/>
           <label>Username</label>
-          <input type="text" class="edit-textbox" readonly [(ngModel)]="updatedEmployee.username" name="Username"/>
+          <input type="text" class="edit-textbox"  [(ngModel)]="updatedEmployee!.username" (ngModelChange)="trackEmployeeChanges()" name="Username"/>
 <!--          <label>Password</label>-->
 <!--          <input type="password" class="edit-textbox" [(ngModel)]="updatedEmployee.password" (ngModelChange)="trackEmployeeChanges()" name="Password"/>-->
-          <label>Pozicija</label>
-          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee.position" (ngModelChange)="trackEmployeeChanges()" name="Pozicija"/>
-          <label>Departman</label>
-          <input type="text" class="edit-textbox" [(ngModel)]="updatedEmployee.department" (ngModelChange)="trackEmployeeChanges()" name="Departman"/>
-
-          <label>Permissions</label>
-
-          <div class="permission-selector">
-            <select class="select-permission" [(ngModel)]="newPermission" name="permissionSelect">
-              <option value="" disabled selected>Izaberite permisiju</option>
-              <option *ngFor="let permission of availablePermissions" [value]="permission">
-                {{ permission }}
+          <div class="mb-3">
+            <label for="positionDropdown" class="form-label">Pozicija</label>
+            <select id="positionDropdown" name="positionDropdown" [(ngModel)]="updatedEmployee!.position" (ngModelChange)="trackEmployeeChanges()" required class="edit-textbox">
+              <option *ngFor="let option of this.positionOptions" [value]="option">
+                {{ option }}
               </option>
             </select>
-            <button class="add-button" (click)="addPermission()">Add</button>
           </div>
+
+          <div class="mb-3">
+            <label for="departmentDropdown" class="form-label">Odeljak</label>
+            <select id="departmentDropdown" name="departmentDropdown" [(ngModel)]="updatedEmployee!.department" (ngModelChange)="trackEmployeeChanges()" required class="edit-textbox">
+              <option *ngFor="let option of this.departmentOptions" [value]="option">
+                {{ option }}
+              </option>
+            </select>
+          </div>
+
+<!--          <label>Permissions</label>-->
+
+<!--          <div class="permission-selector">-->
+<!--            <select class="select-permission" [(ngModel)]="newPermission" name="permissionSelect">-->
+<!--              <option value="" disabled selected>Izaberite permisiju</option>-->
+<!--              <option *ngFor="let permission of availablePermissions" [value]="permission">-->
+<!--                {{ permission }}-->
+<!--              </option>-->
+<!--            </select>-->
+<!--            <button class="add-button" (click)="addPermission()">Add</button>-->
+<!--          </div>-->
         </form>
 
 
       </div>
 
-      <div class="permission-list">
-            <span *ngFor="let permission of selectedPermissions" class="permission-badge">
-              {{ permission }}
-              <span class="remove-btn" (click)="removePermission(permission)">✖</span>
-            </span>
-      </div>
+<!--      <div class="permission-list">-->
+<!--            <span *ngFor="let permission of selectedPermissions" class="permission-badge">-->
+<!--              {{ permission }}-->
+<!--              <span class="remove-btn" (click)="removePermission(permission)">✖</span>-->
+<!--            </span>-->
+<!--      </div>-->
 
 
     </div>
