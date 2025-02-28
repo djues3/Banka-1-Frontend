@@ -5,9 +5,11 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
+// This component is a password field that toggles the visibility of the password
 const PasswordField = ({ value, onChange, label = "Password", ...props }) => {
   const [showPassword, setShowPassword] = useState(false);
 
+  // This function toggles the visibility of the password
   const handleTogglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
