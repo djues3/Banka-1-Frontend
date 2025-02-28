@@ -53,9 +53,44 @@ src
 ├── App.js              <- Main app component with routing setup
 └── index.js            <- ReactDOM render entry point
 ```
+# Naming Conventions
 
+### Directory and File names:
+- **Directory names** should use ```camelCase``` for all directory names. (First letter lower and every new word letter upper case **without spaces**)
+    - Examples: ```components, hooks, applicationUtils```
+- **File names** should use ```PascalCase```. (Similar to camelCase but the first letter is also upper case).
+    - Examples: ```NavBar.jsx, UserProfile.jsx```
+- **Test Files** should be followed with ```.test.js``` suffix
+- **Hook files** should start with ```use``` and use ```camelCase```.
+    - Examples: ```useAuth.js, useFetch.js```
+- **Stylesheets** should match the component name in the first section and be followed by ```.module.css```
+    - Examples: ```Button.module.css, NavBar.module.css```
+### Components 
+- **Components** should also use ```PascalCase```, the same as the component file names are.
+    - Examples: ```<UserProfile />, <NavBar />```
+### Variables, Constants, Functions and Events
+- **All of the variables** should use ```camelCase```.
+    - Examples: ```userData, isLoading, handleClick```
+- **Constants** should use ```UPPER_SNAKE_CASE``` (All letters uppercase wit _ inbetween the words instead of spaces).
+    - Examples: ```API_URL, MAX_RETRIES```
+- **Functions** should use ```camelCase``` (ofc followed by ```()```)
+- **Events** should use ```handle``` keyword followed by the name in ```PascalCase```
+    - Examples: ```handleClick(), handleSubmit(), handleChange()```
+### CSS Names
+- **CSS Modules** should use ```PascalCase``` for the main container and ```camelCase``` for internals.
+    - Examples: 
+        ```<css>
+        /* Button.module.css */
+        .Button {
+        /* Main component container */
+        }
+        .primary {
+        /* Variant Class */
+        }
+        ```
+- **Global Styles** should use ```kebab-case``` (for globally defined classes use all lower case letters with ```-``` isntead of spaces).
 
-## React info: Getting Started with Create React App
+# React info: Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
