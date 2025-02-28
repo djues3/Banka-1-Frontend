@@ -4,6 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Login from './pages/Login';
 import { ThemeProvider } from './context/ThemeContext';
 import ThemeToggle from './components/common/ThemeToggle';
+import UserPortal from './pages/UserPortal';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/user-portal" element={<UserPortal />} />
           {/* Add more routes as needed */}
         </Routes>
         <ThemeToggle />
