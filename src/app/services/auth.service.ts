@@ -16,7 +16,7 @@ interface DecodedToken {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://accepted-viper-vigorously.ngrok-free.app/api/auth';
+  private apiUrl = 'http://localhost:8080/api';
   private loginStatus = new BehaviorSubject<boolean>(this.isLoggedIn());
   loginStatusChanged = this.loginStatus.asObservable();
 
@@ -36,7 +36,7 @@ export class AuthService {
   login(credentials: { email: string; password: string }): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    return this.http.post(`${this.apiUrl}/login`, credentials, { headers }).pipe(
+    return this.http.post(`${this.apiUrl}/auth/login`, credentials, { headers }).pipe(
         tap((response: any) => {
           const token = response?.data?.token;
           if (response.success && token) {
@@ -58,7 +58,7 @@ export class AuthService {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
-    return this.http.post(`${this.apiUrl}/logout`, {}, { headers }).pipe(
+    return this.http.post(`${this.apiUrl}/auth/logout`, {}, { headers }).pipe(
         tap(() => {
          this.router.navigate(['/']).then(r => localStorage.removeItem('token'));
           this.loginStatus.next(false);
@@ -73,7 +73,7 @@ export class AuthService {
 
   resetPassword(email: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    return this.http.post(`${this.apiUrl}/reset-password`, { email }, { headers }).pipe(
+    return this.http.put(`${this.apiUrl}/users/reset-password/`, { email }, { headers }).pipe(
         tap(() => console.log('Email za reset lozinke poslat.')),
         catchError((error) => {
           console.error('Greška prilikom resetovanja lozinke:', error);
@@ -124,25 +124,10 @@ export class AuthService {
   }
 
 
-  refreshToken(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/refresh-token`).pipe(
-        tap((response: any) => {
-          const newToken = response?.data?.token;
-          if (response.success && newToken) {
-            localStorage.setItem('token', newToken);
-          }
-        }),
-        catchError((error) => {
-          console.error('Greška prilikom osvežavanja tokena:', error);
-          return throwError(() => new Error('Neuspešno osvežavanje tokena.'));
-        })
-    );
-  }
-
-  changePassword(data: { token: string, newPassword: string }): Observable<any> {
+  changePassword(data: { password: any; token: string }): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    return this.http.post(`${this.apiUrl}/change-password`, data, { headers }).pipe(
+    return this.http.post(`${this.apiUrl}/users/reset-password/`, data, { headers }).pipe(
         tap(() => console.log('Zahtev za promenu lozinke uspešno poslat.')),
         catchError((error) => {
           console.error('Greška prilikom slanja zahteva za promenu lozinke:', error);

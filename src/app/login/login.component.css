@@ -43,9 +43,9 @@ body, html {
 
 .input-group {
   margin-bottom: 20px;
-  width: 100%;
   text-align: left;
-  padding-left: 40px;
+
+
 }
 
 .input-group label {
@@ -54,6 +54,10 @@ body, html {
   color: #F2E7C6;
   font-family: 'Montserrat', sans-serif;
   font-style: italic;
+}
+
+.email{
+  padding-left:12%;
 }
 
 .input-group input {
@@ -65,11 +69,17 @@ body, html {
   color: white;
   font-size: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
 }
 
+.input-group{
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+}
 .reset-password {
   text-align: left;
-  padding-left: 40px;
+  padding-left: 50px;
   margin-top: 10px;
   font-size: 14px;
   color: white;
@@ -80,7 +90,7 @@ body, html {
 .reset {
   color: white;
   text-align: left;
-  padding-left: 40px;
+  padding-left: 50px;
   font-size: 14px;
   text-decoration: underline;
   cursor: pointer;
