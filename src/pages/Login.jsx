@@ -15,6 +15,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import axios from 'axios';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -22,14 +23,23 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
+    const requestBody = {
+        "email": email,
+        "password": password
+    }
+
+    //Login 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Temporary login logic, replace with API call later
-        if (email === 'admin@example.com' && password === 'password') {
-            navigate('/dashboard');
-        } else {
+        axios.post("http://localhost:8080/api/auth/login", requestBody)
+        .then(response =>{
+            console.log(response);
+            navigate('');
+        })
+        .catch(error=>{
+            console.log(error);
             alert('Invalid email or password');
-        }
+        })
     };
 
     const handleTogglePasswordVisibility = () => {
