@@ -124,25 +124,10 @@ export class AuthService {
   }
 
 
-  refreshToken(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/refresh-token`).pipe(
-        tap((response: any) => {
-          const newToken = response?.data?.token;
-          if (response.success && newToken) {
-            localStorage.setItem('token', newToken);
-          }
-        }),
-        catchError((error) => {
-          console.error('Greška prilikom osvežavanja tokena:', error);
-          return throwError(() => new Error('Neuspešno osvežavanje tokena.'));
-        })
-    );
-  }
-
-  changePassword(data: { token: string, newPassword: string }): Observable<any> {
+  changePassword(data: { password: any; token: string }): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    return this.http.post(`${this.apiUrl}/change-password`, data, { headers }).pipe(
+    return this.http.post(`${this.apiUrl}/users/reset-password/`, data, { headers }).pipe(
         tap(() => console.log('Zahtev za promenu lozinke uspešno poslat.')),
         catchError((error) => {
           console.error('Greška prilikom slanja zahteva za promenu lozinke:', error);
