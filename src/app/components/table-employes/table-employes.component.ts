@@ -12,19 +12,16 @@ import {ModalService} from "../../services/modal.service";
 export class TableEmployesComponent implements OnInit{
 
   hasCreateEmployeePermission: boolean = true;  // treba da se promeni na false kada se doda auth
-
   isEmployeeModalOpen: boolean = false;
   employees: Employee[] = [];
   searchQuery: string = '';
   displayedData: Employee[] = [];
   currentPage: number = 1;
-  itemsPerPage: number = 8;
+  itemsPerPage: number = 2;
   totalItems: number = 0;
   totalPages: number = 0;
 
-  constructor(private userService: UserService, private modalService: ModalService) {
-    this.displayedData = this.employees;
-    this.calculatePagination();
+  constructor(private userService: UserService ) {
 
   }
 
@@ -33,23 +30,20 @@ export class TableEmployesComponent implements OnInit{
   }
 
 
-
-
-
-
   loadEmployees() {
     this.userService.fetchEmployees().subscribe({
       next: (data) => {
         this.employees = data.employees;
         this.totalItems = data.total;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-        this.displayedData = this.employees;
+        this.calculatePagination();
       },
       error: (error) => {
         console.error('Error fetching employees:', error);
       },
     });
   }
+
 
   calculatePagination() {
     const data = this.employees
@@ -149,7 +143,7 @@ export class TableEmployesComponent implements OnInit{
     this.isEmployeeModalOpen = true;
   }
   closeEmployeeModal(): void {
-    console.log("BBBB")
+    this.loadEmployees()
     this.isEmployeeModalOpen = false;
   }
 

@@ -11,12 +11,12 @@ export class CreateEmployeeComponent {
   employee = {
     firstName: '',
     lastName: '',
-    birthDate: null as Date | string | null,
+    birthDate: '',
+    username: '',
     gender: '',
     email: '',
     phone: '',
     address: '',
-    username: '',
     position: '',
     department: '',
     active: true
@@ -24,6 +24,11 @@ export class CreateEmployeeComponent {
   @Output() employeeCreated: EventEmitter<void> = new EventEmitter<void>();
   @Input() isModalOpen: boolean = false;
   @Output() modalClosed: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+  positionOptions: string[] = ['Nijedna', 'Direktor', 'Radnik', 'HR', 'Menadžer'];
+  departmentOptions: string[] = ['Računovodstvo', 'Finansije', 'Kredit', 'Pravo', 'IT', 'HR'];
+  chosenPosition: string = ""
+  chosenDepartment: string = ""
   constructor(private userService: UserService) {
 
   }
@@ -36,18 +41,18 @@ export class CreateEmployeeComponent {
         : null;
 
       const requestBody = {
-        ime: this.employee.firstName,
-        prezime: this.employee.lastName,
-        datum_rodjenja: formattedBirthDate,
-        pol: this.employee.gender === 'F' ? 'Ž' : 'M',
+        firstName: this.employee.firstName,
+        lastName: this.employee.lastName,
+        birthDate: this.convertToLong(this.employee.birthDate),
+        gender: this.employee.gender === 'F' ? 'FEMALE' : 'MALE',
         email: this.employee.email,
-        broj_telefona: this.employee.phone,
-        adresa: this.employee.address,
+        phoneNumber: this.employee.phone,
+        address: this.employee.address,
         username: this.employee.username,
         password: null,
-        pozicija: this.employee.position,
-        departman: this.employee.department,
-        aktivan: this.employee.active
+        position: this.chosenPosition,
+        department: this.chosenDepartment,
+        active: this.employee.active
       };
 
       this.userService.createEmployee(requestBody).subscribe({
@@ -55,6 +60,8 @@ export class CreateEmployeeComponent {
           console.log('Zaposleni uspešno kreiran:', response);
           alert('Zaposleni uspešno kreiran!');
           this.employeeCreated.emit();
+
+          this.onCancel();
 
         },
         error: (error) => {
@@ -67,6 +74,10 @@ export class CreateEmployeeComponent {
     }
   }
 
+  //kovertuje string datum u long
+  convertToLong(dateString: string): number {
+    return parseInt(dateString.replace(/-/g, ""), 10);
+  }
   onCancel(): void {
     this.modalClosed.emit(false);
   }

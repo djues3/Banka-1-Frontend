@@ -37,6 +37,11 @@
         </div>
 
         <div class="mb-3">
+          <label for="username" class="form-label">Korisnicko ime</label>
+          <input type="text" id="username" name="lastName" [(ngModel)]="customer.username" required class="form-control" />
+        </div>
+
+        <div class="mb-3">
           <label for="phone" class="form-label">Broj telefona</label>
           <input type="text" id="phone" name="phone" [(ngModel)]="customer.phone" required class="form-control" pattern="^\+381\s?[0-9\s]{8,11}$" placeholder="+381 XX XXXXXXX"/>
         </div>
@@ -50,6 +55,7 @@
 
     <div class="form-buttons">
       <button type="submit" class="btn btn-primary" [disabled]="!customerForm.valid">Nastavi</button>
+      <button type="button" class="btn btn-danger" (click)="onCancel()">Otkaži</button>
     </div>
   </form>
 </div>
