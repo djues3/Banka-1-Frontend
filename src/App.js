@@ -6,10 +6,8 @@ import Landing from './pages/Landing';
 import { ThemeProvider } from './context/ThemeContext';
 import ThemeToggle from './components/common/ThemeToggle';
 import UserPortal from './pages/UserPortal';
+import PasswordReset from './pages/PasswordReset'; // Import the new component
 
-// App component
-// add routes for the landing page and login page
-// wrap the app in the ThemeProvider and add the ThemeToggle component
 function App() {
   return (
     <ThemeProvider>
@@ -19,6 +17,7 @@ function App() {
           <Route path="/" element={<Landing />} /> 
           <Route path="/login" element={<Login />} />
           <Route path="/user-portal" element={<UserPortal />} />
+          <Route path="/reset-password" element={<PasswordReset />} /> 
           {/* Add more routes as needed */}
         </Routes>
         <ThemeToggle />

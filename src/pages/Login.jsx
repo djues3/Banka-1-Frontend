@@ -5,14 +5,13 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import { useNavigate } from 'react-router-dom';
+import { Link as MuiLink } from '@mui/material'; // Renamed to avoid conflict
+import { useNavigate, Link as RouterLink } from 'react-router-dom'; // Added RouterLink
 
 // Import our custom components
-// axios for making requests
 import AuthCard from '../components/common/AuthCard';
 import PasswordField from '../components/common/Password';
-import axios from 'axios'
+import axios from 'axios';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -22,7 +21,7 @@ const Login = () => {
     const requestBody = {
         "email": email,
         "password": password
-    }
+    };
 
     //Login 
     const handleSubmit = (event) => {
@@ -33,10 +32,10 @@ const Login = () => {
             localStorage.setItem("token", token)
             navigate('/user-portal');
         })
-        .catch(error=>{
+        .catch(error => {
             console.log(error);
             alert('Invalid email or password');
-        })
+        });
     };
 
     return (
@@ -80,9 +79,14 @@ const Login = () => {
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
-                                <Link href="#" variant="body2">
+                                <MuiLink 
+                                    component={RouterLink} 
+                                    to="/reset-password" 
+                                    variant="body2"
+                                    sx={{ cursor: 'pointer' }}
+                                >
                                     Forgot password?
-                                </Link>
+                                </MuiLink>
                             </Grid>
                         </Grid>
                     </Box>
