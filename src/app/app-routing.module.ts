@@ -16,8 +16,8 @@ import {TableEmployesComponent} from "./components/table-employes/table-employes
 const routes: Routes = [
   { path: '', component: DeskComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'reset-password', component: ResetPasswordComponent, canActivate: [AuthGuard] },
-  { path: 'set-password', component: SetPasswordComponent, canActivate: [AuthGuard] },
+  { path: 'reset-password', component: ResetPasswordComponent},
+  { path: 'set-password', component: SetPasswordComponent},
   { path: 'user-portal', component: UserPortalComponent, canActivate: [AuthGuard] },
   { path: 'user-portal',component:EditCustomerComponent, canActivate: [AuthGuard]},
   { path: 'user-portal',component:EditEmployeeComponent, canActivate: [AuthGuard]},

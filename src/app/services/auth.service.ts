@@ -17,7 +17,7 @@ interface DecodedToken {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = `${environment.api}/api/auth`;
+  private apiUrl = `${environment.api}/api`;
   private loginStatus = new BehaviorSubject<boolean>(this.isLoggedIn());
   loginStatusChanged = this.loginStatus.asObservable();
 
