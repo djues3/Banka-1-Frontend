@@ -11,7 +11,7 @@ import {catchError} from "rxjs/operators";
   providedIn: 'root'
 })
 export class UserService {
-  private aiUrl = `${environment.api}/api/users`;
+  private aiUrl = `${environment.api}/api`;
 
   constructor(
     private http: HttpClient,
@@ -51,7 +51,7 @@ export class UserService {
     });
 
 
-    return this.http.get<{ success: boolean; data: { rows: Employee[]; total: number } }>(`${this.aiUrl}/search/employees`, { headers }
+    return this.http.get<{ success: boolean; data: { rows: Employee[]; total: number } }>(`${this.aiUrl}/users/search/employees`, { headers }
     ).pipe(
       map(response => ({
         employees: response.data.rows,
@@ -73,7 +73,7 @@ export class UserService {
     });
 
 
-    return this.http.get<{ success: boolean; data: { rows: Customer[]; total: number } }>(`${this.aiUrl}/search/customers`, { headers }
+    return this.http.get<{ success: boolean; data: { rows: Customer[]; total: number } }>(`${this.aiUrl}/users/search/customers`, { headers }
     ).pipe(
       map(response => ({
         customers: response.data.rows,
@@ -87,25 +87,25 @@ export class UserService {
   }
 
   deleteEmployee(id: number): Observable<void> {
-    const token = ''; //this.authService.getToken(); //cekam auth
+    const token = this.authService.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
 
 
-    return this.http.delete<void>(`${this.aiUrl}/search/employee${id}`, { headers });
+    return this.http.delete<void>(`${this.aiUrl}/users/employees/${id}`, { headers });
   }
 
-  deleteCustumer(id: number): Observable<void> {
-    const token = ''; //this.authService.getToken(); //cekam auth
+  deleteCustomer(id: number): Observable<void> {
+    const token = this.authService.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
 
 
-    return this.http.delete<void>(`${this.aiUrl}/search/customer${id}`, { headers });
+    return this.http.delete<void>(`${this.aiUrl}/customer/${id}`, { headers });
   }
 
   updateEmployee(id: number, employeeData: Partial<Employee>): Observable<void> {

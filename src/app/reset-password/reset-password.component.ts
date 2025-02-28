@@ -60,7 +60,7 @@ export class ResetPasswordComponent implements OnInit {
     const newPassword = this.passwordForm.get('password')?.value;
     const payload = {
       token: this.resetToken,
-      newPassword: newPassword
+      password: newPassword
     };
 
     console.log('Slanje JSON objekta backendu:', payload);

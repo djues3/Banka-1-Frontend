@@ -78,7 +78,7 @@ export class TableCustomersComponent implements OnInit {
   // Briše mušteriju
   deletePerson(customer: Customer) {
     if (confirm(`Da li ste sigurni da želite da obrišete mušteriju ${customer.firstName} ${customer.lastName}?`)) {
-      this.userService.deleteCustumer(customer.id).subscribe({
+      this.userService.deleteCustomer(customer.id).subscribe({
         next: () => {
           this.customers = this.customers.filter(c => c.id !== customer.id);
           this.updateDisplayedData();
