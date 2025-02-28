@@ -56,13 +56,21 @@
         </div>
 
         <div class="mb-3">
-          <label for="position" class="form-label">Pozicija</label>
-          <input type="text" id="position" name="position" [(ngModel)]="employee.position" required class="form-control" />
+          <label for="positionDropdown" class="form-label">Pozicija</label>
+          <select id="positionDropdown" name="positionDropdown" [(ngModel)]="chosenPosition" required class="form-control">
+            <option *ngFor="let option of this.positionOptions" [value]="option">
+              {{ option }}
+            </option>
+          </select>
         </div>
 
         <div class="mb-3">
-          <label for="department" class="form-label">Departman</label>
-          <input type="text" id="department" name="department" [(ngModel)]="employee.department" required class="form-control" />
+          <label for="departmentDropdown" class="form-label">Odeljak</label>
+          <select id="departmentDropdown" name="departmentDropdown" [(ngModel)]="chosenDepartment" required class="form-control">
+            <option *ngFor="let option of this.departmentOptions" [value]="option">
+              {{ option }}
+            </option>
+          </select>
         </div>
 
         <div class="mb-3">
@@ -71,6 +79,7 @@
         </div>
       </div>
     </div>
+
 
     <div class="form-buttons">
       <button type="submit" class="btn btn-primary" [disabled]="!employeeForm.valid">Nastavi</button>

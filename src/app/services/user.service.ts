@@ -19,23 +19,27 @@ export class UserService {
   ) {}
 
   createEmployee(employeeData: any): Observable<any> {
-    const token = ''; //this.authService.getToken(); //cekam auth
+    const token = this.authService.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
 
-    return this.http.post(`http://localhost:8080/api/users/employees`, employeeData, { headers });
+
+    return this.http.post(`http://localhost:8080/api/users/employees/`, employeeData, { headers });
+
   }
 
   createCustomer(customerData: any): Observable<any> {
-    const token = ''; //this.authService.getToken(); //cekam auth
+    const token= this.authService.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
 
-    return this.http.post(`http://localhost:8080/api/users/customers`, customerData, { headers });
+
+    return this.http.post(`http://localhost:8080/api/customer`, customerData, { headers });
+
   }
 
 
@@ -59,6 +63,7 @@ export class UserService {
       })
     );
   }
+
 
   fetchCustomers(): Observable<{ customers: Customer[]; total: number }> {
     const token = this.authService.getToken()

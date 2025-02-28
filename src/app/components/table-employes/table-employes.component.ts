@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Customer, Employee, UserService} from "../../services/user.service";
 import {AuthService} from "../../services/auth.service";
 import {Router} from "@angular/router";
+import {ModalService} from "../../services/modal.service";
 
 @Component({
   selector: 'app-table-employes',
@@ -11,39 +12,38 @@ import {Router} from "@angular/router";
 export class TableEmployesComponent implements OnInit{
 
   hasCreateEmployeePermission: boolean = true;  // treba da se promeni na false kada se doda auth
-
   isEmployeeModalOpen: boolean = false;
   employees: Employee[] = [];
   searchQuery: string = '';
   displayedData: Employee[] = [];
   currentPage: number = 1;
-  itemsPerPage: number = 8;
+  itemsPerPage: number = 2;
   totalItems: number = 0;
   totalPages: number = 0;
 
   constructor(private userService: UserService ) {
-
-    this.displayedData = this.employees;
-    this.calculatePagination();
 
   }
 
   ngOnInit() {
      this.loadEmployees()
   }
+
+
   loadEmployees() {
     this.userService.fetchEmployees().subscribe({
       next: (data) => {
         this.employees = data.employees;
         this.totalItems = data.total;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-        this.displayedData = this.employees;
+        this.calculatePagination();
       },
       error: (error) => {
         console.error('Error fetching employees:', error);
       },
     });
   }
+
 
   calculatePagination() {
     const data = this.employees
@@ -70,8 +70,18 @@ export class TableEmployesComponent implements OnInit{
   }
 
   editPerson(person: Employee | Customer) {
-    console.log('Editing employee:', person);
+    this.modalService.openModal('employee', person);
   }
+
+  // openModal(person: Employee | Customer) {
+  //   if (this.isEmployee(person)) {
+  //     this.modalService.openModal('employee', person);
+  //   } else if (this.isCustomer(person)) {
+  //     this.modalService.openModal('customer', person);
+  //   } else {
+  //     console.error('Unknown type:', person);
+  //   }
+  // }
 
 
   // deletePerson(person: Employee | Customer) {
@@ -133,7 +143,7 @@ export class TableEmployesComponent implements OnInit{
     this.isEmployeeModalOpen = true;
   }
   closeEmployeeModal(): void {
-    console.log("BBBB")
+    this.loadEmployees()
     this.isEmployeeModalOpen = false;
   }
 

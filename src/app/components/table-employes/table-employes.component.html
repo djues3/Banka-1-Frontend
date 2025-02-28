@@ -1,12 +1,12 @@
 <div class="modal-overlay" *ngIf="isEmployeeModalOpen" (click)="closeEmployeeModal()"></div>
-<div class="modal employee-modal" #employeeModal *ngIf="isEmployeeModalOpen">
-  <div class="modal-body">
+
+  <div class="modal-body" *ngIf="isEmployeeModalOpen">
     <app-create-employee
       [isModalOpen]="isEmployeeModalOpen"
       (modalClosed)="closeEmployeeModal()"
     ></app-create-employee>
   </div>
-</div>
+
 
 <div *ngIf="!isEmployeeModalOpen" class="main-content">
   <div class="filter-add-container">
@@ -19,7 +19,7 @@
 
   </div>
 
-  <div   class="table-container">
+  <div  class="table-container">
     <div class="table-overlay">
       <table>
         <thead>
@@ -54,3 +54,5 @@
   </div>
 
 </div>
+
+<app-edit-employee></app-edit-employee>
