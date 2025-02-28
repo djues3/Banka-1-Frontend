@@ -27,8 +27,9 @@ const Login = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         axios.post("http://localhost:8080/api/auth/login", requestBody)
-        .then(response => {
-            console.log(response);
+        .then(response =>{
+            const token = response.data.data.token;
+            localStorage.setItem("token", token)
             navigate('/user-portal');
         })
         .catch(error => {
