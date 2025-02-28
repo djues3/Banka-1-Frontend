@@ -15,7 +15,7 @@ export class TableCustomersComponent implements OnInit {
   searchQuery: string = '';
   displayedData: Customer[] = [];
   currentPage: number = 1;
-  itemsPerPage: number = 1;
+  itemsPerPage: number = 5;
   totalItems: number = 0;
   totalPages: number = 0;
 
@@ -72,6 +72,7 @@ export class TableCustomersComponent implements OnInit {
   // Otvara modal za uređivanje mušterije
   editPerson(customer: Customer) {
     this.modalService.openModal('customer', customer);
+
   }
 
   // Briše mušteriju

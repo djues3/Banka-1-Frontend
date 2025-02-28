@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { jwtDecode } from 'jwt-decode';
 import {Router} from "@angular/router";
+import {environment} from "../environments/environment";
 
 interface DecodedToken {
   id: number;
@@ -16,7 +17,7 @@ interface DecodedToken {
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://accepted-viper-vigorously.ngrok-free.app/api/auth';
+  private apiUrl = `${environment.api}/api/auth`;
   private loginStatus = new BehaviorSubject<boolean>(this.isLoggedIn());
   loginStatusChanged = this.loginStatus.asObservable();
 
