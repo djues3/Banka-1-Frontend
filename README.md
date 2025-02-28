@@ -19,6 +19,10 @@ npm install -g react-router-dom axios @mui/material @emotion/react @emotion/styl
 
 # Project organization:
 ```
+public                <- Static files served directly
+│   ├── favicon.ico   <- Browser tab icon
+│   ├── index.html    <- Main HTML file for React app
+│   └── manifest.json <- PWA settings and metadata
 src
 ├── assets              <- Static assets (images, fonts, icons)
 │   ├── images
@@ -54,6 +58,8 @@ src
 └── index.js            <- ReactDOM render entry point
 ```
 # Naming Conventions
+
+## DO NOT USE ANY LANGUAGE THAT IS NOT ENGLISH
 
 ### Directory and File names:
 - **Directory names** should use ```camelCase``` for all directory names. (First letter lower and every new word letter upper case **without spaces**)
