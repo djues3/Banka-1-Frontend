@@ -30,7 +30,7 @@ const Login = () => {
         axios.post("http://localhost:8080/api/auth/login", requestBody)
         .then(response =>{
             console.log(response);
-            navigate('');
+            navigate('/user-portal');
         })
         .catch(error=>{
             console.log(error);
