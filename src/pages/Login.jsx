@@ -11,20 +11,30 @@ import { useNavigate } from 'react-router-dom';
 // Import our custom components
 import AuthCard from '../components/common/AuthCard';
 import PasswordField from '../components/common/Password';
+import axios from 'axios'
 
 const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    const requestBody = {
+        "email": email,
+        "password": password
+    }
+
+    //Login 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Temporary login logic, replace with API call later
-        if (email === 'admin@example.com' && password === 'password') {
-            navigate('/dashboard');
-        } else {
+        axios.post("http://localhost:8080/api/auth/login", requestBody)
+        .then(response =>{
+            console.log(response);
+            navigate('');
+        })
+        .catch(error=>{
+            console.log(error);
             alert('Invalid email or password');
-        }
+        })
     };
 
     return (
