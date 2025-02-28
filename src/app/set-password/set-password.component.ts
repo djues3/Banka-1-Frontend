@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import {environment} from "../environments/environment";
 
 @Component({
   selector: 'app-set-password',
@@ -9,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./set-password.component.css']
 })
 export class SetPasswordComponent implements OnInit {
+  private apiUrl = `${environment.api}`;
   passwordForm: FormGroup;
   submitted = false;
   token: string | null = null;
@@ -47,28 +49,25 @@ export class SetPasswordComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log("🟢 Funkcija onSubmit() je pokrenuta!");
 
     this.submitted = true;
     this.errorMessage = null;
 
     if (this.passwordForm.valid && this.token) {
-      console.log("🟢 Forma je validna, kreiram payload...");
 
       this.isLoading = true;
 
       const payload = {
-        token: this.token,
-        newPassword: this.passwordForm.value.password
+        code: this.token,
+        password: this.passwordForm.value.password
       };
 
-      console.log("📤 Šaljem payload na API:", payload);
 
-      this.http.put('/api/users/set-password', payload).subscribe({
+      this.http.post(`${this.apiUrl}/api/set-password`, payload).subscribe({
         next: () => {
           console.log("✅ API uspešno odgovorio!");
           alert('✔️ Lozinka uspešno postavljena!');
-          this.router.navigate(['/login']);
+          this.router.navigate(['/login']).then(r => {});
         },
         error: (error) => {
           console.error(" Greška sa API-ja:", error);
@@ -80,7 +79,6 @@ export class SetPasswordComponent implements OnInit {
         }
       });
     } else {
-      console.warn("⚠️ Forma NIJE validna ili token ne postoji!");
     }
   }
 }
