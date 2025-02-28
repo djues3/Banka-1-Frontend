@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Landing from './pages/Landing';  
 import { ThemeProvider } from './context/ThemeContext';
 import ThemeToggle from './components/common/ThemeToggle';
+import UserPortal from './pages/UserPortal';
 
 // App component
 // add routes for the landing page and login page
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} /> 
           <Route path="/login" element={<Login />} />
+          <Route path="/user-portal" element={<UserPortal />} />
           {/* Add more routes as needed */}
         </Routes>
         <ThemeToggle />
