@@ -59,7 +59,7 @@ src
 ```
 # Naming Conventions
 
-## DO NOT USE ANY LANGUAGE THAT IS NOT ENGLISH
+## ‼️ DO NOT USE ANY LANGUAGE THAT IS NOT ENGLISH ‼️
 
 ### Directory and File names:
 - **Directory names** should use ```camelCase``` for all directory names. (First letter lower and every new word letter upper case **without spaces**)
