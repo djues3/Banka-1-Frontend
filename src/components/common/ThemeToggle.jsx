@@ -5,6 +5,9 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { styled } from '@mui/material/styles';
 import { useTheme } from '../../context/ThemeContext';
 
+// This component is a floating button that toggles the theme
+// It displays a sun icon for light mode and a moon icon for dark mode
+// It is used to toggle the theme in the app
 const FloatingButton = styled(IconButton)(({ theme }) => ({
   position: 'fixed',
   bottom: 20,

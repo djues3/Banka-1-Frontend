@@ -1,13 +1,14 @@
 import React, { createContext, useState, useContext, useMemo } from 'react';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 
-// Create context
+// Create context for theme
+// This context will be used to provide the theme to all components in the app
+// It will also provide a function to toggle the theme
 export const ThemeContext = createContext();
 
 // Create hook for using the theme context
 export const useTheme = () => useContext(ThemeContext);
 
-// Theme provider component
 export const ThemeProvider = ({ children }) => {
   const [mode, setMode] = useState('light');
 
@@ -15,7 +16,8 @@ export const ThemeProvider = ({ children }) => {
     setMode(prevMode => prevMode === 'light' ? 'dark' : 'light');
   };
 
-  // Create theme based on current mode
+  // Create theme based on current mode from toggleTheme function
+  // The theme will have primary and secondary colors, background color, and typography settings
   const theme = useMemo(
     () => createTheme({
       palette: {

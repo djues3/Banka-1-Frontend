@@ -5,6 +5,8 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
+// This component is a card that displays a title, an icon, and children components
+// It is used to display the login and signup forms
 const AuthCard = ({ 
   title, 
   icon, 
