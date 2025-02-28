@@ -34,7 +34,8 @@ describe('CreateCustomerComponent', () => {
     component.customer = {
       firstName: 'Petra',
       lastName: 'Petrović',
-      birthDate: new Date('1990-05-15'),
+      username: 'Lebron',
+      birthDate: '1990-05-15',
       gender: 'F',
       email: 'petra@example.com',
       phone: '+381641234567',
@@ -53,6 +54,7 @@ describe('CreateCustomerComponent', () => {
     expect(userService.createCustomer).toHaveBeenCalledWith(jasmine.objectContaining({
       ime: 'Petra',
       prezime: 'Petrović',
+      username: 'Lebron',
       datum_rodjenja: '1990-05-15',
       pol: 'Ž', // Konverzija iz 'F' u 'Ž'
       email: 'petra@example.com',
@@ -66,7 +68,8 @@ describe('CreateCustomerComponent', () => {
     component.customer = {
       firstName: 'Petra',
       lastName: 'Petrović',
-      birthDate: new Date('1990-05-15'),
+      username: 'Lebron',
+      birthDate: '1990-05-15',
       gender: 'F',
       email: 'petra@example.com',
       phone: '+381641234567',

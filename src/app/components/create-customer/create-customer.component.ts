@@ -15,7 +15,8 @@ export class CreateCustomerComponent {
   customer = {
     firstName: '',
     lastName: '',
-    birthDate: null as Date | string | null,
+    username: '',
+    birthDate: '',
     gender: '',
     email: '',
     phone: '',
@@ -33,14 +34,17 @@ export class CreateCustomerComponent {
       const requestBody = {
         ime: this.customer.firstName,
         prezime: this.customer.lastName,
-        datum_rodjenja: formattedBirthDate,
-        pol: this.customer.gender === 'F' ? 'Ž' : 'M',
+        username: this.customer.username,
+        datum_rodjenja: this.convertToLong(this.customer.birthDate),
+        pol: this.customer.gender === 'F' ? 'F' : 'M',
         email: this.customer.email,
         broj_telefona: this.customer.phone,
         adresa: this.customer.address,
         password: null
       };
 
+
+      console.log(requestBody)
       this.userService.createCustomer(requestBody).subscribe({
         next: (response) => {
           console.log('Mušterija uspešno kreirana:', response);
@@ -58,6 +62,10 @@ export class CreateCustomerComponent {
     }
   }
 
+  //kovertuje string datum u long
+  convertToLong(dateString: string): number {
+    return parseInt(dateString.replace(/-/g, ""), 10);
+  }
   onCancel(): void {
     this.modalClosed.emit(false); // Emituje zatvaranje modala
   }

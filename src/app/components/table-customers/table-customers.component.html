@@ -1,12 +1,11 @@
 <div class="modal-overlay" *ngIf="isCustomerModalOpen" (click)="closeCustomerModal()"></div>
-<div class="modal customer-modal" *ngIf="isCustomerModalOpen">
-  <div class="modal-body">
+  <div class="modal-body" *ngIf="isCustomerModalOpen">
     <app-create-customer
       [isModalOpen]="isCustomerModalOpen"
       (modalClosed)="closeCustomerModal()"
     ></app-create-customer>
   </div>
-</div>
+
 
 <div *ngIf="!isCustomerModalOpen" class="main-content">
   <div class="filter-add-container">
