@@ -17,6 +17,42 @@ You can install them by running the command:
 npm install -g react-router-dom axios @mui/material @emotion/react @emotion/styled
 ```
 
+# Project organization:
+```
+src
+├── assets              <- Static assets (images, fonts, icons)
+│   ├── images
+│   └── fonts
+│
+├── components          <- Reusable UI components
+│   └── Common           <- Shared components used across multiple pages
+│
+├── layouts             <- Layout components for consistent page structure
+│   └── MainLayout.jsx
+│
+├── pages               <- Top-level views or screens for routing
+│   └── Home.jsx
+│   └── NotFound.jsx
+│
+├── hooks               <- Custom React hooks
+│   └── useFetch.js
+│
+├── services            <- API services and third-party integrations
+│   └── api.js
+│
+├── context             <- React Context API for global state management
+│   └── AuthContext.jsx
+│
+├── utils               <- Utility functions and helpers
+│   └── dateFormatter.js
+│
+├── styles              <- Global styles and variables
+│   ├── variables.css
+│   └── global.css
+│
+├── App.js              <- Main app component with routing setup
+└── index.js            <- ReactDOM render entry point
+```
 
 
 ## React info: Getting Started with Create React App
