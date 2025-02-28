@@ -15,17 +15,17 @@ export class TableCustomersComponent implements OnInit {
   searchQuery: string = '';
   displayedData: Customer[] = [];
   currentPage: number = 1;
-  itemsPerPage: number = 8;
+  itemsPerPage: number = 1;
   totalItems: number = 0;
   totalPages: number = 0;
 
   constructor(private userService: UserService, private modalService: ModalService) {
-    this.displayedData = this.customers;
     this.calculatePagination();
   }
 
   ngOnInit() {
     this.loadCustomers();
+
   }
 
   // Fetchuje mušterije sa servera
@@ -35,7 +35,8 @@ export class TableCustomersComponent implements OnInit {
         this.customers = data.customers;
         this.totalItems = data.total;
         this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
-        this.displayedData = this.customers;
+        this.currentPage = 1;
+        this.calculatePagination();
       },
       error: (error) => {
         console.error('Error fetching customers:', error);
@@ -53,7 +54,8 @@ export class TableCustomersComponent implements OnInit {
   // Refreshuje prikazane podatke na osnovu paginacije
   updateDisplayedData() {
     const start = (this.currentPage - 1) * this.itemsPerPage;
-    this.displayedData = this.customers.slice(start, start + this.itemsPerPage);
+    const end = start + this.itemsPerPage;
+    this.displayedData = this.customers.slice(start, end);
   }
 
   // Filtrira mušterije prema pretrazi
@@ -101,6 +103,11 @@ export class TableCustomersComponent implements OnInit {
   }
 
   // Otvaranje/Zatvaranje modala za kreiranje mušterije
-  openCustomerModal() { this.isCustomerModalOpen = true; }
-  closeCustomerModal() { this.isCustomerModalOpen = false; }
+  openCustomerModal() {
+    this.isCustomerModalOpen = true;
+  }
+  closeCustomerModal() {
+    this.loadCustomers();
+    this.isCustomerModalOpen = false;
+  }
 }
