@@ -17,11 +17,11 @@ export class TableEmployesComponent implements OnInit{
   searchQuery: string = '';
   displayedData: Employee[] = [];
   currentPage: number = 1;
-  itemsPerPage: number = 2;
+  itemsPerPage: number = 5;
   totalItems: number = 0;
   totalPages: number = 0;
 
-  constructor(private userService: UserService ) {
+  constructor(private userService: UserService, private modalService: ModalService) {
 
   }
 
@@ -89,31 +89,16 @@ export class TableEmployesComponent implements OnInit{
   // }
 
   deletePerson(person: Employee | Customer) {
-    if (this.isEmployee(person)) {
-
-      this.userService.deleteEmployee(person.id).subscribe({
-        next: (data) => {
-          this.displayedData = this.displayedData.filter(p => p.id !== person.id);
-        },
-        error: (error) => {
-          console.error('Error fetching employees:', error);
-        },
-      });
-
-    } else if (this.isCustomer(person)) {
-
-      this.userService.deleteCustumer(person.id).subscribe({
-        next: (data) => {
-          this.displayedData = this.displayedData.filter(p => p.id !== person.id);
-        },
-        error: (error) => {
-          console.error('Error fetching employees:', error);
-        },
-      });
-
-    } else {
-      console.error('Unknown type:', person);
-    }
+      if (confirm(`Da li ste sigurni da želite da obrišete zaposlenog ${person.firstName} ${person.lastName}?`)) {
+        this.userService.deleteEmployee(person.id).subscribe({
+          next: (data) => {
+            this.displayedData = this.displayedData.filter(p => p.id !== person.id);
+          },
+          error: (error) => {
+            console.error('Error fetching employees:', error);
+          },
+        });
+      }
   }
 
   private isEmployee(person: Employee | Customer): person is Employee {
