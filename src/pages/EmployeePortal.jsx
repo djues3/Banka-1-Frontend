@@ -107,7 +107,11 @@ const EmployeePortal = () => {
             active: !row.active // Toggle the current status
         };
         
-        await updateEmployeeStatus(row.id, employeeData);
+        const activeSwitch = {
+            "active": employeeData.active
+        }
+        
+        await updateEmployeeStatus(row.id, activeSwitch);
         
         // Update local state after successful API call
         setRows(prevRows =>
