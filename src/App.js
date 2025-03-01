@@ -10,6 +10,7 @@ import EmployeePortal from './pages/EmployeePortal';
 import PasswordReset from './pages/PasswordReset';
 import PasswordResetConfirmation from './pages/PasswordResetConfirmation';
 import HomePage from './pages/HomePage';
+import PasswordSetConfirmation from './pages/PasswordSetConfirmation';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/employee-portal" element={<EmployeePortal />} />
           <Route path="/reset-password-email" element={<PasswordReset />} />
           <Route path="/reset-password" element={<PasswordResetConfirmation />} />
+          <Route path="/set-password" element={<PasswordSetConfirmation />} />
         </Routes>
         <ThemeToggle />
       </BrowserRouter>
