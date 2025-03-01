@@ -12,7 +12,6 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom'; // Added Rou
 import AuthCard from '../components/common/AuthCard';
 import PasswordField from '../components/common/Password';
 import { loginUser } from '../Axios'; // Updated import
-import axios from 'axios';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -24,7 +23,6 @@ const Login = () => {
         "email": email,
         "password": password
     };
-
     //Login 
     const handleSubmit = async (event) => {
         event.preventDefault();
