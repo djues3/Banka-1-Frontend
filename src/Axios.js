@@ -120,14 +120,16 @@ export const updateEmployee = async (id, employeeData) => {
 };
 
 export const resetPassword = async (token, password) => {
-    try {
-        const response = await api.post('/api/users/reset-password/', { token, password });
-        return response.data;
-    } catch (error) {
-        console.error("Error resetting password:", error);
-        throw error;
-    }
+  try {
+    const response = await api.post("/api/users/reset-password/", {
+      token,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    throw error;
+  }
 };
-
 
 export default api;
