@@ -234,7 +234,7 @@ const EmployeePortal = () => {
     
     return (
         <div>
-            <Navbar/>
+
             <Sidebar/>
             <div style={{ padding: '20px', marginTop: '64px' }}>
                 <h2>Employee Management</h2>

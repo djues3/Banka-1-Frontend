@@ -19,6 +19,7 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import HomeIcon from '@mui/icons-material/Home'; // Added Home icon
 import { useNavigate } from 'react-router-dom';
+import LogoutButton from './LogoutButton';
 
 const drawerWidth = 240;
 
@@ -92,7 +93,7 @@ const handleNavigation = (text) => {
 };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex'}}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -110,6 +111,8 @@ const handleNavigation = (text) => {
           >
             <MenuIcon />
           </IconButton>
+          <Box sx={{ flexGrow: 1 }}></Box> 
+         <LogoutButton/>
         </Toolbar>
       </AppBar>
       <Drawer

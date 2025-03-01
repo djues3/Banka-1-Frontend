@@ -5,7 +5,7 @@ import Sidebar from "../components/common/Sidebar";
 const HomePage = () => {
     return (
         <div>
-            <Navbar />
+
             <Sidebar />
             <div style={{ padding: '20px', marginTop: '64px' }}>
                 <h1>Welcome to the Admin Dashboard</h1>
