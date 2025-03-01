@@ -11,6 +11,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom'; // Added Rou
 // Import our custom components
 import AuthCard from '../components/common/AuthCard';
 import PasswordField from '../components/common/Password';
+import { loginUser } from '../Axios'; // Updated import
 import axios from 'axios';
 
 const Login = () => {
@@ -18,24 +19,24 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+
     const requestBody = {
         "email": email,
         "password": password
     };
 
     //Login 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        axios.post("http://localhost:8080/api/auth/login", requestBody)
-        .then(response =>{
-            const token = response.data.data.token;
-            localStorage.setItem("token", token)
-            navigate('/user-portal');
-        })
-        .catch(error => {
+        try {
+            const response = await loginUser(email, password);
+            const token = response.data.token;
+            localStorage.setItem("token", token);
+            navigate('/home');
+        } catch (error) {
             console.log(error);
             alert('Invalid email or password');
-        });
+        }
     };
 
     return (
@@ -53,6 +54,7 @@ const Login = () => {
                     icon={<LockOutlinedIcon />}
                 >
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+                        {/* Rest of your form remains the same */}
                         <TextField
                             margin="normal"
                             required

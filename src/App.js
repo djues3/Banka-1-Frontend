@@ -5,7 +5,10 @@ import Login from './pages/Login';
 import Landing from './pages/Landing';  
 import { ThemeProvider } from './context/ThemeContext';
 import ThemeToggle from './components/common/ThemeToggle';
-import UserPortal from './pages/UserPortal';
+import CustomerPortal from './pages/CustomerPortal';
+import EmployeePortal from './pages/EmployeePortal';
+import PasswordReset from './pages/PasswordReset';
+import HomePage from './pages/HomePage';
 import PasswordReset from './pages/PasswordReset'; // Import the new component
 
 function App() {
@@ -16,7 +19,10 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} /> 
           <Route path="/login" element={<Login />} />
-          <Route path="/user-portal" element={<UserPortal />} />
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/customer-portal" element={<CustomerPortal />} />
+          <Route path="/employee-portal" element={<EmployeePortal />} />
+          <Route path="/reset-password" element={<PasswordReset />} /> 
           <Route path="/reset-password" element={<PasswordReset />} /> 
           {/* Add more routes as needed */}
         </Routes>
