@@ -9,9 +9,9 @@ import AuthCard from '../components/common/AuthCard';
 import PasswordField from '../components/common/Password';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
-import { resetPassword } from '../Axios'; 
+import { setPassword } from '../Axios'; 
 
-const PasswordResetConfirmation = () => {
+const PasswordSetConfirmation = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [password, setPassword] = useState('');
@@ -71,14 +71,14 @@ const PasswordResetConfirmation = () => {
         setIsSubmitting(true);
 
         try {
-            // Use the resetPassword function from Axios.js
-            await resetPassword(token, password);
+            // Use the setPassword function from Axios.js
+            await setPassword(token, password);
             setSuccess(true);
         } catch (err) {
-            console.error('Error resetting password:', err);
+            console.error('Error setting password:', err);
             setError(
                 err.response?.data?.message || 
-                'Failed to reset password. The link may have expired.'
+                'Failed to set password. The link may have expired.'
             );
         } finally {
             setIsSubmitting(false);
@@ -90,9 +90,9 @@ const PasswordResetConfirmation = () => {
         return (
             <Container component="main" maxWidth="xs">
                 <Box sx={{ mt: 8 }}>
-                    <AuthCard title="Invalid Reset Link" icon={<LockOutlinedIcon />}>
+                    <AuthCard title="Invalid Set Link" icon={<LockOutlinedIcon />}>
                         <Alert severity="error" sx={{ mb: 2, mt: 2 }}>
-                            The password reset link is invalid or expired.
+                            The password seset link is invalid or expired.
                         </Alert>
                         <Button 
                             fullWidth 
@@ -100,7 +100,7 @@ const PasswordResetConfirmation = () => {
                             onClick={() => navigate('/reset-password-email')}
                             sx={{ mt: 2 }}
                         >
-                            Request New Reset Link
+                            Request New Set Link
                         </Button>
                         <Button 
                             fullWidth 
@@ -120,13 +120,13 @@ const PasswordResetConfirmation = () => {
         <Container component="main" maxWidth="xs">
             <Box sx={{ mt: 8 }}>
                 <AuthCard 
-                    title="Reset Your Password" 
+                    title="Set Your Password" 
                     icon={<LockOutlinedIcon />}
                 >
                     {success ? (
                         <Box sx={{ mt: 2, width: '100%', textAlign: 'center' }}>
                             <Alert severity="success" sx={{ mb: 2 }}>
-                                Your password has been successfully reset!
+                                Your password has been successfully set!
                             </Alert>
                             <Button
                                 fullWidth
@@ -175,7 +175,7 @@ const PasswordResetConfirmation = () => {
                                 {isSubmitting ? (
                                     <>
                                         <CircularProgress size={24} sx={{ mr: 1 }} />
-                                        Resetting Password...
+                                        Setting Password...
                                     </>
                                 ) : (
                                     'Set New Password'
@@ -198,4 +198,4 @@ const PasswordResetConfirmation = () => {
     );
 };
 
-export default PasswordResetConfirmation;
+export default PasswordSetConfirmation;
