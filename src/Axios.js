@@ -11,8 +11,7 @@ const api = axios.create({
 api.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
     if (token) {
-        // Ensure proper token format
-        config.headers.Authorization = `Bearer ${token.trim()}`;
+        config.headers.Authorization = `Bearer ${token}`;
         
         // For debugging - remove in production
         console.log(`${config.method.toUpperCase()} ${config.url} - Token: ${token.substring(0, 20)}...`);
@@ -72,6 +71,5 @@ export const logoutUser = async () => {
         throw error;
     }
 };
-
 
 export default api;

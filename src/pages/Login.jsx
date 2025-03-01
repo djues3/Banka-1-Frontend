@@ -18,6 +18,11 @@ const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+
+    const requestBody = {
+        "email": email,
+        "password": password
+    };
     //Login 
     const handleSubmit = async (event) => {
         event.preventDefault();
