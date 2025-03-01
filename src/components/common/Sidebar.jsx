@@ -80,17 +80,16 @@ export default function Sidebar() {
     setOpen(false);
   };
 
-  const handleNavigation = (text) => {
-    if (text === 'Home') {
-      navigate('/home');
-    } else if (text === 'Customer') {
-      navigate('/user-portal');
-    } else if (text === 'Employees') {
-      // For future implementation
-      // navigate('/employees');
-    }
-    setOpen(false);
-  };
+const handleNavigation = (text) => {
+  if (text === 'Home') {
+    navigate('/home');
+  } else if (text === 'Customer') {
+    navigate('/customer-portal');
+  } else if (text === 'Employees') {
+    navigate('/employee-portal');
+  }
+  setOpen(false);
+};
 
   return (
     <Box sx={{ display: 'flex' }}>
