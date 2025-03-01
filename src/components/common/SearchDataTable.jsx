@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import DataTable from './DataTable';
 
-const SearchableDataTable = ({ columns, rows, checkboxSelection = false }) => {
+const SearchableDataTable = ({ columns, rows, checkboxSelection = false, onRowClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Filter rows based on search term across all fields
@@ -35,7 +35,12 @@ const SearchableDataTable = ({ columns, rows, checkboxSelection = false }) => {
           }}
         />
       </div>
-      <DataTable rows={filteredRows} columns={columns} checkboxSelection={checkboxSelection} />
+      <DataTable 
+        rows={filteredRows} 
+        columns={columns} 
+        checkboxSelection={checkboxSelection}
+        onRowClick={onRowClick}
+      />
     </div>
   );
 };
