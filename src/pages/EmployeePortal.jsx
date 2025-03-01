@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/common/Navbar";
 import Sidebar from "../components/common/Sidebar";
 import SearchDataTable from "../components/common/SearchDataTable";
-import { fetchEmployees, updateEmployeeStatus } from "../Axios";
+import EditModal from "../components/common/EditModal";
+import { 
+  fetchEmployees, 
+  updateEmployeeStatus, 
+  fetchEmployeeById, 
+  updateEmployee 
+} from "../Axios";
 import Switch from '@mui/material/Switch';
 import Checkbox from '@mui/material/Checkbox';
 import { styled } from '@mui/material/styles';
@@ -32,14 +38,16 @@ const EmployeePortal = () => {
     const [rows, setRows] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-    // Setup columns including status toggle
+    // Setup columns including status toggle - replaced position with email
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'firstName', headerName: 'First name', width: 130 },
         { field: 'lastName', headerName: 'Last name', width: 130 },
+        { field: 'email', headerName: 'Email', width: 200 },
         { field: 'phoneNumber', headerName: 'Phone', width: 150 },
-        { field: 'position', headerName: 'Position', width: 150 },
         { field: 'department', headerName: 'Department', width: 150 },
         { 
             field: 'isAdmin', 
@@ -77,8 +85,8 @@ const EmployeePortal = () => {
                 id: row.id,
                 firstName: row.firstName,
                 lastName: row.lastName,
+                email: row.email, // Include email in the rows
                 phoneNumber: row.phoneNumber,
-                position: row.position || 'N/A',
                 department: row.department || 'N/A',
                 isAdmin: row.isAdmin || false,
                 active: row.active || false,
@@ -97,37 +105,125 @@ const EmployeePortal = () => {
     
     // Handle toggle of active status
     const handleStatusToggle = async (row) => {
-    try {
-        // Ensure we have all the original data from the row
-        console.log("Original row data:", row);
-        
-        // Create a clean employee object with all required fields
-        const employeeData = {
-            ...row.originalData,
-            active: !row.active // Toggle the current status
-        };
-        
-        const activeSwitch = {
-            "active": employeeData.active
+        try {
+            // Ensure we have all the original data from the row
+            console.log("Original row data:", row);
+            
+            // Create a clean employee object with all required fields
+            const employeeData = {
+                ...row.originalData,
+                active: !row.active // Toggle the current status
+            };
+            const activeSwitch = {
+                "active": employeeData.active
+            }
+            
+            await updateEmployeeStatus(row.id, activeSwitch);
+            
+            // Update local state after successful API call
+            setRows(prevRows =>
+                prevRows.map(r =>
+                    r.id === row.id
+                        ? { ...r, active: !r.active }
+                        : r
+                )
+            );
+            
+            toast.success(`Employee ${row.firstName} ${row.lastName} status updated successfully`);
+        } catch (error) {
+            console.error("Error updating employee status:", error);
+            toast.error(`Failed to update employee status: ${error.message}`);
         }
-        
-        await updateEmployeeStatus(row.id, activeSwitch);
-        
-        // Update local state after successful API call
-        setRows(prevRows =>
-            prevRows.map(r =>
-                r.id === row.id
-                    ? { ...r, active: !r.active }
-                    : r
-            )
-        );
-        
-        toast.success(`Employee ${row.firstName} ${row.lastName} status updated successfully`);
-    } catch (error) {
-        console.error("Error updating employee status:", error);
-        toast.error(`Failed to update employee status: ${error.message}`);
-    }
-};
+    };
+    
+    const handleRowClick = async (row) => {
+        try {
+            const response = await fetchEmployeeById(row.id);
+            
+            // Extract the actual employee data, avoiding nested data structures
+            const employeeData = response.data || response;
+            
+            // Create a clean employee object
+            const cleanEmployeeData = {
+                id: row.id,
+                firstName: employeeData.firstName,
+                lastName: employeeData.lastName,
+                username: employeeData.username,
+                email: employeeData.email,
+                phoneNumber: employeeData.phoneNumber,
+                address: employeeData.address,
+                birthDate: employeeData.birthDate,
+                gender: employeeData.gender,
+                department: employeeData.department,
+                active: employeeData.active,
+                isAdmin: employeeData.isAdmin
+                // Removed position from here
+            };
+            
+            setSelectedEmployee(cleanEmployeeData);
+            setIsEditModalOpen(true);
+        } catch (error) {
+            toast.error(`Error fetching employee details: ${error.message}`);
+        }
+    };
+    
+    const handleSaveEmployee = async (updatedEmployeeData) => {
+        try {
+            // Make sure we have an ID before making the request
+            if (!updatedEmployeeData.id) {
+                toast.error('Employee ID is missing');
+                return;
+            }
+            
+            // Create a clean object to send to the API
+            const employeePayload = {
+                firstName: updatedEmployeeData.firstName,
+                lastName: updatedEmployeeData.lastName,
+                username: updatedEmployeeData.username,
+                email: updatedEmployeeData.email,
+                phoneNumber: updatedEmployeeData.phoneNumber,
+                address: updatedEmployeeData.address,
+                birthDate: updatedEmployeeData.birthDate,
+                gender: updatedEmployeeData.gender,
+                position: "Nijedna", // Hardcoded to "Nijedna" as requested
+                department: updatedEmployeeData.department,
+                active: updatedEmployeeData.active,
+                isAdmin: updatedEmployeeData.isAdmin
+            };
+            
+            await updateEmployee(updatedEmployeeData.id, employeePayload);
+            setIsEditModalOpen(false);
+            toast.success('Employee updated successfully');
+            loadEmployees();
+        } catch (error) {
+            toast.error(`Failed to update employee: ${error.message}`);
+        }
+    };
+
+    const employeeFormFields = [
+        { name: 'firstName', label: 'First Name', required: true },
+        { name: 'lastName', label: 'Last Name', required: true },
+        { name: 'username', label: 'Username', required: true },
+        { name: 'email', label: 'Email', required: true, type: 'email' },
+        { name: 'phoneNumber', label: 'Phone Number' },
+        { name: 'address', label: 'Address' },
+        { name: 'birthDate', label: 'Birth Date', type: 'date' },
+        { name: 'gender', label: 'Gender', type: 'select', options: [
+            { value: 'MALE', label: 'Male' },
+            { value: 'FEMALE', label: 'Female' },
+            { value: 'OTHER', label: 'Other' }
+        ] },
+        // Removed position field from here
+        { name: 'department', label: 'Department', type: 'select', options: [
+            { value: 'ACCOUNTING', label: 'Accounting' },
+            { value: 'MARKETING', label: 'Marketing' },
+            { value: 'HR', label: 'HR' },
+            { value: 'SALES', label: 'Sales' },
+            { value: 'IT', label: 'IT' }
+        ] },
+        { name: 'active', label: 'Active', type: 'switch' },
+        { name: 'isAdmin', label: 'Admin', type: 'switch' }
+    ];
     
     return (
         <div>
@@ -144,8 +240,21 @@ const EmployeePortal = () => {
                         rows={rows} 
                         columns={columns} 
                         checkboxSelection={false}
+                        onRowClick={handleRowClick}
                     />
                 )}
+                
+                {selectedEmployee && (
+                    <EditModal
+                        open={isEditModalOpen}
+                        onClose={() => setIsEditModalOpen(false)}
+                        data={selectedEmployee}
+                        formFields={employeeFormFields}
+                        onSave={handleSaveEmployee}
+                        title="Edit Employee"
+                    />
+                )}
+                
                 <ToastContainer position="bottom-right" />
             </div>
         </div>
