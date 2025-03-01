@@ -1,11 +1,13 @@
 import Navbar from "../components/common/Navbar";
 import Sidebar from "../components/common/Sidebar";
 import SearchDataTable from "../components/common/SearchDataTable";
-import axios from "axios";
-import { useState } from "react";
+import { fetchCustomers } from "../Axios";
+import { useState, useEffect } from "react";
 
 const UserPortal = () => {
     const [rows, setRows] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const columns = [
         { field: 'firstName', headerName: 'First name', width: 130 },
@@ -13,43 +15,49 @@ const UserPortal = () => {
         { field: 'email', headerName: 'Email', width: 130 },
         { field: 'phoneNumber', headerName: 'Phone', width: 130 },
     ];
-      
-    const handleFetch = (event) => {
-        event.preventDefault();
-        axios.get("http://localhost:8080/api/users/search/customers",{
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem("token")}`
+    
+    useEffect(() => {
+        const loadCustomers = async () => { 
+            try {
+                setLoading(true);
+                const data = await fetchCustomers();
+                const rowData = data.data.rows;
+                
+                const formattedRows = rowData.map((row) => ({
+                    id: row.id,
+                    firstName: row.firstName,
+                    lastName: row.lastName,
+                    email: row.email,
+                    phoneNumber: row.phoneNumber,
+                }));
+                
+                setRows(formattedRows);
+            } catch (err) {
+                console.error(err);
+                setError("Failed to load customers data");
+            } finally {
+                setLoading(false);
             }
-        })
-        .then(response =>{
-            const rowData = response.data.data.rows
-    
-            const formattedRows = rowData.map((row, index) => ({
-                id: row.id,
-                firstName: row.firstName,
-                lastName: row.lastName,
-                email: row.email,
-                phoneNumber: row.phoneNumber,
-            }));
-    
-            setRows(formattedRows);
-        })
-        .catch(error=>{
-            console.log(error);
-            alert('Invalid email or password');
-        })
-    };
+        };
+        
+        loadCustomers();
+    }, []);
     
     return (
         <div>
             <Navbar/>
             <Sidebar/>
             <div style={{ padding: '20px' }}>
-                <SearchDataTable rows={rows} columns={columns}/>
-                <button onClick={handleFetch}>Press</button>
+                {loading ? (
+                    <p>Loading customer data...</p>
+                ) : error ? (
+                    <p>Error: {error}</p>
+                ) : (
+                    <SearchDataTable rows={rows} columns={columns}/>
+                )}
             </div>
         </div>
-    )
+    );
 }
 
 export default UserPortal;
