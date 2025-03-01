@@ -19,10 +19,6 @@ const Login = () => {
     const [password, setPassword] = useState('');
 
 
-    const requestBody = {
-        "email": email,
-        "password": password
-    };
     //Login 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -81,7 +77,7 @@ const Login = () => {
                             <Grid item>
                                 <MuiLink 
                                     component={RouterLink} 
-                                    to="/reset-password" 
+                                    to="/reset-password-email" 
                                     variant="body2"
                                     sx={{ cursor: 'pointer' }}
                                 >
