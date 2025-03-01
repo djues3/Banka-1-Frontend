@@ -1,13 +1,10 @@
 import Navbar from "../components/common/Navbar";
 import Sidebar from "../components/common/Sidebar";
-import DataTable from "../components/common/DataTable";
+import SearchDataTable from "../components/common/SearchDataTable";
 import axios from "axios";
 import { useState } from "react";
 
-
 const UserPortal = () => {
-
-
     const [rows, setRows] = useState([]);
 
     const columns = [
@@ -15,9 +12,8 @@ const UserPortal = () => {
         { field: 'lastName', headerName: 'Last name', width: 130 },
         { field: 'email', headerName: 'Email', width: 130 },
         { field: 'phoneNumber', headerName: 'Phone', width: 130 },
-      ];
+    ];
       
-
     const handleFetch = (event) => {
         event.preventDefault();
         axios.get("http://localhost:8080/api/users/search/customers",{
@@ -26,7 +22,6 @@ const UserPortal = () => {
             }
         })
         .then(response =>{
-            
             const rowData = response.data.data.rows
     
             const formattedRows = rowData.map((row, index) => ({
@@ -49,11 +44,12 @@ const UserPortal = () => {
         <div>
             <Navbar/>
             <Sidebar/>
-            <DataTable rows={rows} columns={columns}/>
-            <button onClick={handleFetch}>Press</button>
+            <div style={{ padding: '20px' }}>
+                <SearchDataTable rows={rows} columns={columns}/>
+                <button onClick={handleFetch}>Press</button>
+            </div>
         </div>
     )
 }
-
 
 export default UserPortal;
