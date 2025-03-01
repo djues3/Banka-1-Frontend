@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import DataTable from './DataTable';
 
-const SearchableDataTable = ({ columns, rows, checkboxSelection = false, onRowClick }) => {
+const SearchableDataTable = ({ columns, rows, checkboxSelection = false, onRowClick, actionButton }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Filter rows based on search term across all fields
@@ -19,21 +19,29 @@ const SearchableDataTable = ({ columns, rows, checkboxSelection = false, onRowCl
 
   return (
     <div>
-      {/* Search Bar */}
-      <div style={{ marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{
-            width: '100%',
-            padding: '10px',
-            fontSize: '16px',
-            borderRadius: '5px',
-            border: '1px solid #ccc'
-          }}
-        />
+      {/* Search Bar and Action Button */}
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        marginBottom: '20px' 
+      }}>
+        <div style={{ flexGrow: 1, marginRight: '10px' }}>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '10px',
+              fontSize: '16px',
+              borderRadius: '5px',
+              border: '1px solid #ccc'
+            }}
+          />
+        </div>
+        {actionButton && actionButton}
       </div>
       <DataTable 
         rows={filteredRows} 

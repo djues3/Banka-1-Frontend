@@ -133,4 +133,12 @@ export const resetPassword = async (token, password) => {
   }
 };
 
+export const createEmployee = async (employeeData) => {
+    return await api.post('/api/users/employees/', employeeData);
+};
+  
+export const createCustomer = async (customerData) => {
+    return await api.post('/api/customer', customerData);
+};
+
 export default api;
