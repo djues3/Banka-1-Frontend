@@ -12,9 +12,9 @@ Once Node.js and npm are setup, you will need to install the following packages 
 - **Axios**
 - **Material-UI**
 
-You can install them by running the command:
+You can install all dependencies by running the command:
 ```<bash>
-npm install -g react-router-dom axios @mui/material @emotion/react @emotion/styled
+npm install
 ```
 
 # Project organization:
@@ -166,3 +166,19 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 #### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+```
+To properly run the app after you are done isntalling everything
+
+First run user-service on the back:
+cd user-service ./gradlew bootRun
+
+Second run message-broker-service
+cd message-broker-service ./gradlew bootRun
+
+Third run notification-service
+cd notification-service ./gradlew bootRun
+
+After on the front type npm start
+```
