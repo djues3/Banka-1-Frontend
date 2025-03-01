@@ -5,6 +5,7 @@ import EditModal from "../components/common/EditModal";
 import { fetchCustomers, fetchCustomerById, updateCustomer } from "../Axios";
 import { useState, useEffect } from "react";
 import { toast, ToastContainer } from 'react-toastify';
+import { Button } from "@mui/material";
 import 'react-toastify/dist/ReactToastify.css';
 
 const CustomerPortal = () => {
@@ -13,6 +14,7 @@ const CustomerPortal = () => {
     const [error, setError] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [isCreateModalOpen, setCreateModalOpen] = useState(false);
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
@@ -49,10 +51,43 @@ const CustomerPortal = () => {
         }
     };
 
+    const formatLogDate = (log) => {
+        if (typeof log !== "string" && typeof log !== "number") return String(log);
+      
+        const strLog = String(log);
+        
+        if (strLog.length === 8) {
+          // Extract year, month, and day
+          const year = strLog.slice(0, 4);
+          const month = strLog.slice(4, 6);
+          const day = strLog.slice(6, 8);
+          
+          return `${year}-${month}-${day}`; // Output format: YYYY-MM-DD
+        }
+      
+        return strLog; // Return as-is if not in expected format
+      };
+
     const handleRowClick = async (row) => {
         try {
-            const customerData = await fetchCustomerById(row.id);
-            setSelectedCustomer(customerData);
+            const response = await fetchCustomerById(row.id);
+            
+            const customerData = response.data || response;
+           
+            // Create a clean customer object
+            const cleanCustomerData = {
+                id: row.id,
+                firstName: customerData.firstName,
+                lastName: customerData.lastName,
+                username: customerData.username,
+                email: customerData.email,
+                phoneNumber: customerData.phoneNumber,
+                address: customerData.address,
+                birthDate: formatLogDate(customerData.birthDate),
+                gender: customerData.gender
+            };
+
+            setSelectedCustomer(cleanCustomerData);
             setIsEditModalOpen(true);
         } catch (error) {
             toast.error(`Error fetching customer details: ${error.message}`);
@@ -87,7 +122,7 @@ const CustomerPortal = () => {
     const customerFormFields = [
         { name: 'firstName', label: 'First Name', required: true },
         { name: 'lastName', label: 'Last Name', required: true },
-        { name: 'username', label: 'Username', required: true },
+        // { name: 'username', label: 'Username', required: true },
         { name: 'email', label: 'Email', required: true, type: 'email' },
         { name: 'phoneNumber', label: 'Phone Number' },
         { name: 'address', label: 'Address' },
@@ -97,7 +132,6 @@ const CustomerPortal = () => {
             { value: 'FEMALE', label: 'Female' },
             { value: 'OTHER', label: 'Other' }
         ] },
-        { name: 'password', label: 'New Password', type: 'password' }
     ];
     
     return (
@@ -117,6 +151,7 @@ const CustomerPortal = () => {
                         checkboxSelection={false}
                         onRowClick={handleRowClick}
                     />
+                        
                 )}
 
                 {selectedCustomer && (
