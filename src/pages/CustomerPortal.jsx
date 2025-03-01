@@ -3,9 +3,9 @@ import Navbar from "../components/common/Navbar";
 import Sidebar from "../components/common/Sidebar";
 import SearchDataTable from "../components/common/SearchDataTable";
 import EditModal from "../components/common/EditModal";
-import { 
-    fetchCustomers, 
-    fetchCustomerById, 
+import {
+    fetchCustomers,
+    fetchCustomerById,
     updateCustomer,
     createCustomer
 } from "../Axios";
@@ -40,11 +40,12 @@ const CustomerPortal = () => {
         { field: 'email', headerName: 'Email', width: 200 },
         { field: 'phoneNumber', headerName: 'Phone', width: 150 },
     ];
-    
+
+    // Load the customer data on component mount when the page loads
     useEffect(() => {
         loadCustomers();
     }, []);
-    
+    // Load the customer data from the API
     const loadCustomers = async () => { 
         try {
             setLoading(true);
@@ -69,7 +70,7 @@ const CustomerPortal = () => {
             setLoading(false);
         }
     };
-
+    // Format the date in the log to YYYY-MM-DD
     const formatLogDate = (log) => {
         if (typeof log !== "string" && typeof log !== "number") return String(log);
       
@@ -87,6 +88,7 @@ const CustomerPortal = () => {
         return strLog; // Return as-is if not in expected format
     };
 
+    // Handle the row click event to open the edit modal with the customer data pre-filled in the form fields
     const handleRowClick = async (row) => {
         try {
             const response = await fetchCustomerById(row.id);
@@ -105,7 +107,7 @@ const CustomerPortal = () => {
                 birthDate: formatLogDate(customerData.birthDate),
                 gender: customerData.gender
             };
-
+            // Set the selected customer data and open the edit modal with the data pre-filled in the form fields
             setSelectedCustomer(cleanCustomerData);
             setIsEditModalOpen(true);
         } catch (error) {
@@ -113,9 +115,10 @@ const CustomerPortal = () => {
         }
     };
 
+    // Handle the save event when the user clicks the save button in the edit modal formm
     const handleSaveCustomer = async (updatedCustomerData) => {
         try {
-            // Map to the expected API format
+            // Map to the expected API format and update the customer data
             const customerPayload = {
                 ime: updatedCustomerData.firstName,
                 prezime: updatedCustomerData.lastName,
@@ -128,11 +131,12 @@ const CustomerPortal = () => {
                 // Only include password if it's provided in the form
                 ...(updatedCustomerData.password && { password: updatedCustomerData.password })
             };
-            
+
+            // Update the customer data and show a success message
             await updateCustomer(updatedCustomerData.id, customerPayload);
             setIsEditModalOpen(false);
             toast.success('Customer updated successfully');
-            loadCustomers();
+            loadCustomers(); // Reload the data to reflect changes
         } catch (error) {
             toast.error(`Failed to update customer: ${error.message}`);
         }
@@ -141,20 +145,20 @@ const CustomerPortal = () => {
     const transformDateForApi = (dateString) => {
         // Skip if empty
         if (!dateString) return null;
-      
+
         try {
           // Expecting "DD-MM-YYYY" => split by '-'
           const [day, month, year] = dateString.split('-');
-          
+
           // Validate we got three parts
           if (!day || !month || !year) return null;
-          
+
           // Construct "YYYYMMDD" and parse it as a number
           const resultString = `${year}${month}${day}`; // "20020302"
-          
+
           // Optionally add further checks for valid day/month/year ranges
           return Number(resultString);
-          
+
         } catch (error) {
           console.error('Error converting date:', error);
           return null;
@@ -173,9 +177,9 @@ const CustomerPortal = () => {
                 email: customerData.email,
                 broj_telefona: customerData.phoneNumber,
                 adresa: customerData.address,
-                password: customerData.password || "defaultPassword123" 
+                password: customerData.password || "defaultPassword123"
             };
-    
+
             await createCustomer(customerPayload);
             setIsCreateModalOpen(false);
             toast.success('Customer created successfully');
@@ -184,8 +188,9 @@ const CustomerPortal = () => {
             toast.error(`Failed to create customer: ${error.message}`);
         }
     };
-    
 
+
+    // Define the form fields for the customer form in the edit modal
     const customerFormFields = [
         { name: 'firstName', label: 'First Name', required: true },
         { name: 'lastName', label: 'Last Name', required: true },
@@ -212,12 +217,14 @@ const CustomerPortal = () => {
             <Sidebar/>
             <div style={{ padding: '20px', marginTop: '64px' }}>
                 <h2>Customer Management</h2>
+                {/* Loading view while fetching data */}
                 {loading ? (
                     <p>Loading customer data...</p>
                 ) : error ? (
                     <p>Error: {error}</p>
                 ) : (
-                    <SearchDataTable 
+                    // Display the customer data in a table
+                    <SearchDataTable
                         rows={rows} 
                         columns={columns} 
                         checkboxSelection={false}

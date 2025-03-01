@@ -3,7 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 
 const paginationModel = { page: 0, pageSize: 5 };
-
+// This component displays a table with the given columns and rows data
 const DataTable = ({columns, rows, checkboxSelection = false, onRowClick}) => {
   return (
     <Paper sx={{ height: 400, width: '100%' }}>

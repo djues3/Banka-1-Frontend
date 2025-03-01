@@ -7,6 +7,7 @@ const Landing = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
+  //Animations for container
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -17,7 +18,7 @@ const Landing = () => {
       }
     }
   };
-
+  //Animations for individual elements
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
@@ -69,7 +70,7 @@ const Landing = () => {
           />
         </Box>
 
-        {/* Description text */}
+        {/* Welcome text inside a Paper container*/}
         <Paper 
           component={motion.div}
           variants={itemVariants}
@@ -98,7 +99,7 @@ const Landing = () => {
           variant="contained" 
           color="primary"
           size="large"
-          onClick={() => navigate('/login')}
+          onClick={() => navigate('/login')} //Navigate to login page
           sx={{
             py: 1.5,
             px: 4,

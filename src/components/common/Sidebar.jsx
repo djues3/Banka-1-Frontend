@@ -23,8 +23,8 @@ import LogoutButton from './LogoutButton';
 import { jwtDecode } from 'jwt-decode';
 import { useEffect } from 'react';
 
+// Styling for the sidebar components using Emotion CSS-in-JS library
 const drawerWidth = 240;
-
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     flexGrow: 1,
@@ -75,14 +75,15 @@ export default function Sidebar() {
   const [open, setOpen] = React.useState(false);
   const [canRead, setCanRead] = React.useState(true);
   const navigate = useNavigate();
-
+  // Functions to open the sidebar
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
+  // Function to close the sidebar
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
 
   const handleReadPermission = () =>{
     const token = localStorage.getItem("token");
@@ -99,8 +100,8 @@ export default function Sidebar() {
     } else {
       console.log("No token found");
     }
-  
-    
+
+
   }
   useEffect(() => {
     handleReadPermission()
@@ -108,6 +109,7 @@ export default function Sidebar() {
 
 
 
+// Function to navigate to the selected page
 const handleNavigation = (text) => {
   if (text === 'Home') {
     navigate('/home');
@@ -139,7 +141,7 @@ const handleNavigation = (text) => {
           >
             <MenuIcon />
           </IconButton>
-          <Box sx={{ flexGrow: 1 }}></Box> 
+          <Box sx={{ flexGrow: 1 }}></Box>
          <LogoutButton/>
         </Toolbar>
       </AppBar>
@@ -163,6 +165,7 @@ const handleNavigation = (text) => {
         </DrawerHeader>
         <Divider />
         <List>
+          {/* Home button */}
           <ListItem key="home" disablePadding>
             <ListItemButton onClick={() => handleNavigation('Home')}>
               <ListItemIcon>

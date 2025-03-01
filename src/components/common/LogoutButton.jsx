@@ -7,7 +7,7 @@ import { logoutUser } from '../../Axios';
 const LogoutButton = () => {
 
   const navigate = useNavigate();
-  //Logout user
+  //Logout user and remove token from local storage
   const handleLogout = async () => {
     try {
       await logoutUser();
