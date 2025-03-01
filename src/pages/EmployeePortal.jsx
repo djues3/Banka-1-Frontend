@@ -64,7 +64,11 @@ const EmployeePortal = () => {
             renderCell: (params) => (
                 <StatusSwitch
                     checked={params.value}
-                    onChange={() => handleStatusToggle(params.row)}
+                    onChange={(event) => {
+                        event.stopPropagation(); 
+                        handleStatusToggle(params.row);
+                    }}
+                    onClick={(event) => event.stopPropagation()} 
                 />
             ),
         },
