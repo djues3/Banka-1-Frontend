@@ -19,10 +19,12 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import HomeIcon from '@mui/icons-material/Home'; // Added Home icon
 import { useNavigate } from 'react-router-dom';
+import LogoutButton from './LogoutButton';
+import { jwtDecode } from 'jwt-decode';
+import { useEffect } from 'react';
 
-// Styling for the sidebar
-const drawerWidth = 240;
 // Styling for the sidebar components using Emotion CSS-in-JS library
+const drawerWidth = 240;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     flexGrow: 1,
@@ -71,6 +73,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 export default function Sidebar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [canRead, setCanRead] = React.useState(true);
   const navigate = useNavigate();
   // Functions to open the sidebar
   const handleDrawerOpen = () => {
@@ -80,6 +83,32 @@ export default function Sidebar() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+
+  const handleReadPermission = () =>{
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        const position = decodedToken.position;
+        if(position === "Nijedna"){
+          setCanRead(false);
+        }
+      } catch (error) {
+        console.error("Invalid token", error);
+      }
+    } else {
+      console.log("No token found");
+    }
+
+
+  }
+  useEffect(() => {
+    handleReadPermission()
+  }, []);
+
+
+
 // Function to navigate to the selected page
 const handleNavigation = (text) => {
   if (text === 'Home') {
@@ -92,8 +121,9 @@ const handleNavigation = (text) => {
   setOpen(false);
 };
 
+
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex'}}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -111,6 +141,8 @@ const handleNavigation = (text) => {
           >
             <MenuIcon />
           </IconButton>
+          <Box sx={{ flexGrow: 1 }}></Box>
+         <LogoutButton/>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -142,18 +174,21 @@ const handleNavigation = (text) => {
               <ListItemText primary="Home" />
             </ListItemButton>
           </ListItem>
-          
-          {/* Existing navigation items */}
-          {['Customer', 'Employees'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => handleNavigation(text)}>
-                <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+
+          {canRead && (
+            <>
+              {['Customer', 'Employees'].map((text, index) => (
+                <ListItem key={text} disablePadding>
+                  <ListItemButton onClick={() => handleNavigation(text)}>
+                    <ListItemIcon>
+                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    </ListItemIcon>
+                    <ListItemText primary={text} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </>
+          )}
         </List>
         <Divider />
       </Drawer>

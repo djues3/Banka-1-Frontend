@@ -7,13 +7,15 @@ import {
   fetchEmployees, 
   updateEmployeeStatus, 
   fetchEmployeeById, 
-  updateEmployee 
+  updateEmployee,
+  createEmployee
 } from "../Axios";
 import Switch from '@mui/material/Switch';
 import Checkbox from '@mui/material/Checkbox';
 import { styled } from '@mui/material/styles';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import AddButton from "../components/common/AddButton";
 
 // Custom styled switch for active/inactive status
 const StatusSwitch = styled(Switch)(({ theme }) => ({
@@ -40,6 +42,20 @@ const EmployeePortal = () => {
     const [error, setError] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newEmployee, setNewEmployee] = useState({
+        firstName: "",
+        lastName: "",
+        username: "",
+        email: "",
+        phoneNumber: "",
+        address: "",
+        birthDate: "",
+        gender: "MALE",
+        department: "ACCOUNTING",
+        active: true,
+        isAdmin: false
+    });
 
     // Setup columns including status toggle - replaced position with email
     const columns = [
@@ -141,6 +157,33 @@ const EmployeePortal = () => {
             toast.error(`Failed to update employee status: ${error.message}`);
         }
     };
+
+    const handleCreateEmployee = async (employeeData) => {
+        try {
+            const employeePayload = {
+                firstName: employeeData.firstName,
+                lastName: employeeData.lastName,
+                username: employeeData.username,
+                email: employeeData.email,
+                phoneNumber: employeeData.phoneNumber,
+                address: employeeData.address,
+                birthDate: employeeData.birthDate,
+                gender: employeeData.gender,
+                position: "Nijedna", // Hardcoded as requested
+                department: employeeData.department,
+                active: employeeData.active,
+                isAdmin: employeeData.isAdmin,
+                permissions: ["CREATE_CUSTOMER"] // Default permission
+            };
+            
+            await createEmployee(employeePayload);
+            setIsCreateModalOpen(false);
+            toast.success('Employee created successfully');
+            loadEmployees(); // Reload the data to reflect changes
+        } catch (error) {
+            toast.error(`Failed to create employee: ${error.message}`);
+        }
+    };
     
     const handleRowClick = async (row) => {
         try {
@@ -234,23 +277,24 @@ const EmployeePortal = () => {
     
     return (
         <div>
-            <Navbar/>
+
             <Sidebar/>
             <div style={{ padding: '20px', marginTop: '64px' }}>
                 <h2>Employee Management</h2>
-                {loading ? (
-                    <p>Loading employee data...</p>
-                ) : error ? (
-                    <p>Error: {error}</p>
-                ) : (
-                    <SearchDataTable 
-                        rows={rows} 
-                        columns={columns} 
-                        checkboxSelection={false}
-                        onRowClick={handleRowClick}
-                    />
-                )}
-                
+                    {loading ? (
+                        <p>Loading employee data...</p>
+                    ) : error ? (
+                        <p>Error: {error}</p>
+                    ) : (
+                        <SearchDataTable 
+                            rows={rows} 
+                            columns={columns} 
+                            checkboxSelection={false}
+                            onRowClick={handleRowClick}
+                            actionButton={<AddButton onClick={() => setIsCreateModalOpen(true)} label="Add Employee" />}
+                        />
+                    )}
+                {/* Edit Modal */}
                 {selectedEmployee && (
                     <EditModal
                         open={isEditModalOpen}
@@ -261,6 +305,16 @@ const EmployeePortal = () => {
                         title="Edit Employee"
                     />
                 )}
+                
+                {/* Create Modal */}
+                <EditModal
+                    open={isCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    data={newEmployee}
+                    formFields={employeeFormFields}
+                    onSave={handleCreateEmployee}
+                    title="Create New Employee"
+                />
                 
                 <ToastContainer position="bottom-right" />
             </div>

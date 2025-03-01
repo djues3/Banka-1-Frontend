@@ -132,4 +132,25 @@ export const resetPassword = async (token, password) => {
   }
 };
 
+export const setPassword = async (token, password) => {
+    try {
+      const response = await api.post("/api/users/set-password", {
+        token,
+        password,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error setting password:", error);
+      throw error;
+    }
+  };
+
+export const createEmployee = async (employeeData) => {
+    return await api.post('/api/users/employees/', employeeData);
+};
+  
+export const createCustomer = async (customerData) => {
+    return await api.post('/api/customer', customerData);
+};
+
 export default api;

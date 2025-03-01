@@ -22,6 +22,7 @@ const LogoutButton = () => {
 
 
   return (
+    <div className="logout-button">
     <AlertDialog.Root>
       <AlertDialog.Trigger data-color="red" className={styles.Button}>
         Logout
@@ -38,12 +39,13 @@ const LogoutButton = () => {
           <div className={styles.Actions}>
             <AlertDialog.Close className={styles.Button}>Cancel</AlertDialog.Close>
             <AlertDialog.Close data-color="red" className={styles.Button} onClick={handleLogout}>
-              Discard
+              Continue
             </AlertDialog.Close>
           </div>
         </AlertDialog.Popup>
       </AlertDialog.Portal>
     </AlertDialog.Root>
+    </div>
   );
 }
 

@@ -1,12 +1,17 @@
+import React, { useState, useEffect } from "react";
 import Navbar from "../components/common/Navbar";
 import Sidebar from "../components/common/Sidebar";
 import SearchDataTable from "../components/common/SearchDataTable";
 import EditModal from "../components/common/EditModal";
-import { fetchCustomers, fetchCustomerById, updateCustomer } from "../Axios";
-import { useState, useEffect } from "react";
+import {
+    fetchCustomers,
+    fetchCustomerById,
+    updateCustomer,
+    createCustomer
+} from "../Axios";
 import { toast, ToastContainer } from 'react-toastify';
-import { Button } from "@mui/material";
 import 'react-toastify/dist/ReactToastify.css';
+import AddButton from "../components/common/AddButton";
 
 const CustomerPortal = () => {
     const [rows, setRows] = useState([]);
@@ -14,7 +19,19 @@ const CustomerPortal = () => {
     const [error, setError] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
-    const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+    // Correct the naming to match the pattern in EmployeePortal
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newCustomer, setNewCustomer] = useState({
+        firstName: "",
+        lastName: "",
+        username: "",
+        email: "",
+        phoneNumber: "",
+        address: "",
+        birthDate: "",
+        gender: "MALE",
+        password: ""
+    });
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
@@ -41,6 +58,8 @@ const CustomerPortal = () => {
                 lastName: row.lastName,
                 email: row.email,
                 phoneNumber: row.phoneNumber,
+                // Store original data for potential updates
+                originalData: { ...row }
             }));
             
             setRows(formattedRows);
@@ -67,7 +86,7 @@ const CustomerPortal = () => {
         }
       
         return strLog; // Return as-is if not in expected format
-      };
+    };
 
     // Handle the row click event to open the edit modal with the customer data pre-filled in the form fields
     const handleRowClick = async (row) => {
@@ -104,7 +123,7 @@ const CustomerPortal = () => {
                 ime: updatedCustomerData.firstName,
                 prezime: updatedCustomerData.lastName,
                 username: updatedCustomerData.username,
-                datum_rodjenja: updatedCustomerData.birthDate,
+                datum_rodjenja: transformDateForApi(updatedCustomerData.birthDate),
                 pol: updatedCustomerData.gender,
                 email: updatedCustomerData.email,
                 broj_telefona: updatedCustomerData.phoneNumber,
@@ -112,6 +131,7 @@ const CustomerPortal = () => {
                 // Only include password if it's provided in the form
                 ...(updatedCustomerData.password && { password: updatedCustomerData.password })
             };
+
             // Update the customer data and show a success message
             await updateCustomer(updatedCustomerData.id, customerPayload);
             setIsEditModalOpen(false);
@@ -121,11 +141,60 @@ const CustomerPortal = () => {
             toast.error(`Failed to update customer: ${error.message}`);
         }
     };
+
+    const transformDateForApi = (dateString) => {
+        // Skip if empty
+        if (!dateString) return null;
+
+        try {
+          // Expecting "DD-MM-YYYY" => split by '-'
+          const [day, month, year] = dateString.split('-');
+
+          // Validate we got three parts
+          if (!day || !month || !year) return null;
+
+          // Construct "YYYYMMDD" and parse it as a number
+          const resultString = `${year}${month}${day}`; // "20020302"
+
+          // Optionally add further checks for valid day/month/year ranges
+          return Number(resultString);
+
+        } catch (error) {
+          console.error('Error converting date:', error);
+          return null;
+        }
+      };
+
+    // Add create customer handler
+    const handleCreateCustomer = async (customerData) => {
+        try {
+            const customerPayload = {
+                ime: customerData.firstName,
+                prezime: customerData.lastName,
+                username: customerData.username,
+                datum_rodjenja: transformDateForApi(customerData.birthDate),
+                pol: customerData.gender,
+                email: customerData.email,
+                broj_telefona: customerData.phoneNumber,
+                adresa: customerData.address,
+                password: customerData.password || "defaultPassword123"
+            };
+
+            await createCustomer(customerPayload);
+            setIsCreateModalOpen(false);
+            toast.success('Customer created successfully');
+            loadCustomers();
+        } catch (error) {
+            toast.error(`Failed to create customer: ${error.message}`);
+        }
+    };
+
+
     // Define the form fields for the customer form in the edit modal
     const customerFormFields = [
         { name: 'firstName', label: 'First Name', required: true },
         { name: 'lastName', label: 'Last Name', required: true },
-        // { name: 'username', label: 'Username', required: true },
+        { name: 'username', label: 'Username', required: true },
         { name: 'email', label: 'Email', required: true, type: 'email' },
         { name: 'phoneNumber', label: 'Phone Number' },
         { name: 'address', label: 'Address' },
@@ -134,12 +203,17 @@ const CustomerPortal = () => {
             { value: 'MALE', label: 'Male' },
             { value: 'FEMALE', label: 'Female' },
             { value: 'OTHER', label: 'Other' }
-        ] },
+        ] }
+    ];
+
+    // Add password field for customer creation
+    const createCustomerFormFields = [
+        ...customerFormFields,
+        { name: 'password', label: 'Password', type: 'password', required: true }
     ];
     
     return (
         <div>
-            <Navbar/>
             <Sidebar/>
             <div style={{ padding: '20px', marginTop: '64px' }}>
                 <h2>Customer Management</h2>
@@ -150,15 +224,16 @@ const CustomerPortal = () => {
                     <p>Error: {error}</p>
                 ) : (
                     // Display the customer data in a table
-                    <SearchDataTable 
+                    <SearchDataTable
                         rows={rows} 
                         columns={columns} 
                         checkboxSelection={false}
                         onRowClick={handleRowClick}
+                        actionButton={<AddButton onClick={() => setIsCreateModalOpen(true)} label="Add Customer" />}
                     />
-                        
                 )}
-                {/*  // Edit modal   */}
+
+                {/* Edit Modal */}
                 {selectedCustomer && (
                     <EditModal
                         open={isEditModalOpen}
@@ -169,6 +244,16 @@ const CustomerPortal = () => {
                         title="Edit Customer"
                     />
                 )}
+
+                {/* Create Modal */}
+                <EditModal
+                    open={isCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    data={newCustomer}
+                    formFields={createCustomerFormFields}
+                    onSave={handleCreateCustomer}
+                    title="Create New Customer"
+                />
 
                 <ToastContainer position="bottom-right" />
             </div>
