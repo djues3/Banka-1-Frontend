@@ -8,6 +8,7 @@ import ThemeToggle from './components/common/ThemeToggle';
 import CustomerPortal from './pages/CustomerPortal';
 import EmployeePortal from './pages/EmployeePortal';
 import PasswordReset from './pages/PasswordReset';
+import PasswordResetConfirmation from './pages/PasswordResetConfirmation';
 import HomePage from './pages/HomePage';
 
 function App() {
@@ -21,7 +22,8 @@ function App() {
           <Route path="/home" element={<HomePage />} />
           <Route path="/customer-portal" element={<CustomerPortal />} />
           <Route path="/employee-portal" element={<EmployeePortal />} />
-          <Route path="/reset-password" element={<PasswordReset />} /> 
+          <Route path="/reset-password-email" element={<PasswordReset />} />
+          <Route path="/reset-password" element={<PasswordResetConfirmation />} />
         </Routes>
         <ThemeToggle />
       </BrowserRouter>
