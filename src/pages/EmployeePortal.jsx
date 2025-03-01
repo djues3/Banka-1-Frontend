@@ -106,6 +106,8 @@ const EmployeePortal = () => {
             setLoading(false);
         }
     };
+
+    
     
     // Handle toggle of active status
     const handleStatusToggle = async (row) => {
@@ -143,6 +145,7 @@ const EmployeePortal = () => {
     const handleRowClick = async (row) => {
         try {
             const response = await fetchEmployeeById(row.id);
+            // console.log(response);
             
             // Extract the actual employee data, avoiding nested data structures
             const employeeData = response.data || response;
