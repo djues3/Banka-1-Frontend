@@ -119,6 +119,7 @@ export const updateEmployee = async (id, employeeData) => {
   }
 };
 
+
 export const resetPassword = async (token, password) => {
   try {
     const response = await api.post("/api/users/reset-password/", {
