@@ -16,13 +16,13 @@ import Grid from '@mui/material/Grid';
 const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
-
+  // Update form data when data prop changes
   useEffect(() => {
     if (data) {
       setFormData(data);
     }
   }, [data]);
-
+  // Handle form field changes
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
     setFormData({
@@ -30,7 +30,7 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
       [name]: type === 'checkbox' ? checked : value
     });
   };
-
+  // Handle save button click
   const handleSave = () => {
     // Basic validation
     const newErrors = {};

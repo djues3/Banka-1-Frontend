@@ -17,6 +17,7 @@ const PasswordReset = () => {
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
 
+    // Handle form submission to request password reset email
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError('');

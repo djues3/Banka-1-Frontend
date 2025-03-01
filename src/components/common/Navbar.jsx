@@ -9,7 +9,7 @@ import LogoutButton from './LogoutButton';
 
 const NavBar = () => {
   
-  
+  // This component displays the navigation bar at the top of the page
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">

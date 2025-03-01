@@ -38,7 +38,6 @@ export const loginUser = async (email, password) => {
     throw error;
   }
 };
-
 export const fetchCustomers = async () => {
   try {
     const response = await api.get("/api/users/search/customers");

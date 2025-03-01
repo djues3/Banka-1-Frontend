@@ -20,8 +20,9 @@ import MailIcon from '@mui/icons-material/Mail';
 import HomeIcon from '@mui/icons-material/Home'; // Added Home icon
 import { useNavigate } from 'react-router-dom';
 
+// Styling for the sidebar
 const drawerWidth = 240;
-
+// Styling for the sidebar components using Emotion CSS-in-JS library
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     flexGrow: 1,
@@ -71,15 +72,15 @@ export default function Sidebar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
-
+  // Functions to open the sidebar
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
+  // Function to close the sidebar
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
+// Function to navigate to the selected page
 const handleNavigation = (text) => {
   if (text === 'Home') {
     navigate('/home');

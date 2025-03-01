@@ -17,6 +17,7 @@ function App() {
       <CssBaseline />
       <BrowserRouter>
         <Routes>
+          {/** Define the routes for the application */}
           <Route path="/" element={<Landing />} /> 
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<HomePage />} />

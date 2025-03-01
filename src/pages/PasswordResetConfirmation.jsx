@@ -21,15 +21,15 @@ const PasswordResetConfirmation = () => {
     const [success, setSuccess] = useState(false);
     const [token, setToken] = useState('');
 
+    // Extract token from URL query parameters
     useEffect(() => {
-        // Extract token from URL query parameters
         const queryParams = new URLSearchParams(location.search);
         const tokenParam = queryParams.get('token');
         if (tokenParam) {
             setToken(tokenParam);
         }
     }, [location]);
-
+    // Validate password complexity
     const validatePassword = (password) => {
         const hasNumber = /[0-9]/.test(password);
         const hasUpperCase = /[A-Z]/.test(password);
@@ -48,7 +48,7 @@ const PasswordResetConfirmation = () => {
         
         return null; // No validation errors
     };
-
+    // Handle form submission to reset password
     const handleSubmit = async (event) => {
         event.preventDefault();
         
