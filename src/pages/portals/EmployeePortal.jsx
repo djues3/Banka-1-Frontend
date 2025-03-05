@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../components/common/Navbar";
-import Sidebar from "../components/common/Sidebar";
-import SearchDataTable from "../components/common/SearchDataTable";
-import EditModal from "../components/common/EditModal";
+import Navbar from "../../components/mainComponents/Navbar";
+import Sidebar from "../../components/mainComponents/Sidebar";
+import SearchDataTable from "../../components/tables/SearchDataTable";
+import EditModal from "../../components/common/EditModal";
 import { 
   fetchEmployees, 
   updateEmployeeStatus, 
   fetchEmployeeById, 
   updateEmployee,
   createEmployee
-} from "../Axios";
+} from "../../services/Axios";
 import Switch from '@mui/material/Switch';
 import Checkbox from '@mui/material/Checkbox';
 import { styled } from '@mui/material/styles';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AddButton from "../components/common/AddButton";
+import AddButton from "../../components/common/AddButton";
 
 // Custom styled switch for active/inactive status
 const StatusSwitch = styled(Switch)(({ theme }) => ({
@@ -178,11 +178,28 @@ const EmployeePortal = () => {
             
             await createEmployee(employeePayload);
             setIsCreateModalOpen(false);
+            resetEmployeeForm();
             toast.success('Employee created successfully');
             loadEmployees(); // Reload the data to reflect changes
         } catch (error) {
             toast.error(`Failed to create employee: ${error.message}`);
         }
+    };
+
+    const resetEmployeeForm = () => {
+        setNewEmployee({
+            firstName: "",
+            lastName: "",
+            username: "",
+            email: "",
+            phoneNumber: "",
+            address: "",
+            birthDate: "",
+            gender: "MALE",
+            department: "ACCOUNTING",
+            active: true,
+            isAdmin: false
+        });
     };
     
     const handleRowClick = async (row) => {
@@ -309,7 +326,10 @@ const EmployeePortal = () => {
                 {/* Create Modal */}
                 <EditModal
                     open={isCreateModalOpen}
-                    onClose={() => setIsCreateModalOpen(false)}
+                    onClose={() => 
+                        {setIsCreateModalOpen(false);
+                        resetEmployeeForm();
+                    }}
                     data={newEmployee}
                     formFields={employeeFormFields}
                     onSave={handleCreateEmployee}

@@ -1,18 +1,20 @@
 import { useState, useMemo } from 'react';
 import DataTable from './DataTable';
+import { useTheme as useMuiTheme } from '@mui/material/styles';
 
 const SearchableDataTable = ({ columns, rows, checkboxSelection = false, onRowClick, actionButton }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const muiTheme = useMuiTheme();
 
   // Filter rows based on search term across all fields
   const filteredRows = useMemo(() => {
     if (!searchTerm.trim()) return rows;
     
     return rows.filter(row => {
-      // Search across all column fields
       return columns.some(column => {
-        const fieldValue = String(row[column.field] || '').toLowerCase();
-        return fieldValue.includes(searchTerm.toLowerCase());
+        const cellValue = row[column.field];
+        if (cellValue == null) return false;
+        return String(cellValue).toLowerCase().includes(searchTerm.toLowerCase());
       });
     });
   }, [rows, columns, searchTerm]);
@@ -37,7 +39,9 @@ const SearchableDataTable = ({ columns, rows, checkboxSelection = false, onRowCl
               padding: '10px',
               fontSize: '16px',
               borderRadius: '5px',
-              border: '1px solid #ccc'
+              border: `1px solid ${muiTheme.palette.mode === 'dark' ? muiTheme.palette.divider : '#ccc'}`,
+              backgroundColor: muiTheme.palette.mode === 'dark' ? muiTheme.palette.surfaceContainer : '#fff',
+              color: muiTheme.palette.text.primary
             }}
           />
         </div>
