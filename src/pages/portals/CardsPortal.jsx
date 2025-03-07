@@ -5,21 +5,14 @@ import AddIcon from "@mui/icons-material/Add";
 import CardSlider from "../../components/common/CardSlider";
 import { useCards } from "../../context/CardContext";
 import CreateCardModal from "../../components/common/CreateCardModal";
+import {fetchAccountsForUser, getUserIdFromToken} from "../../services/AxiosBanking";
 
 const CardsPage = () => {
-  const { cards, fetchCards } = useCards();
   const [modalOpen, setModalOpen] = useState(false);
-  
-  //User id from storage
-  const user = JSON.parse(localStorage.getItem("user"));
-  const accountId = user?.account_id; 
 
-  // Fetching user cards
-  useEffect(() => {
-    if (accountId) {
-      fetchCards(accountId);
-    }
-  }, [accountId, fetchCards]);
+  // const user = JSON.parse(localStorage.getItem("user"));
+  // const accountId = user?.accountID;
+  //
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -41,11 +34,7 @@ const CardsPage = () => {
               Add Card
             </Button>
 
-            {cards.length === 0 ? (
-              <Typography>No cards available</Typography>
-            ) : (
-              <CardSlider accountId={accountId} />
-            )}
+              <CardSlider />
           </Container>
         </div>
       </Box>
