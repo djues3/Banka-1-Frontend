@@ -1,5 +1,4 @@
 .card-slider-container {
-    max-width: 30% !important;
     display: flex;
     flex-direction: row;
     align-items: center;

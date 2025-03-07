@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, {useState} from "react";
 import Sidebar from "../../components/mainComponents/Sidebar";
-import { Box, Typography, Button, Container } from "@mui/material";
+import {Box, Button, Container, Typography} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import CardSlider from "../../components/common/CardSlider";
-import { useCards } from "../../context/CardContext";
 import CreateCardModal from "../../components/common/CreateCardModal";
-import {fetchAccountsForUser, getUserIdFromToken} from "../../services/AxiosBanking";
 
 const CardsPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
-  // const user = JSON.parse(localStorage.getItem("user"));
-  // const accountId = user?.accountID;
-  //
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex" }} flexDirection="row">
       <Sidebar />
       <Box sx={{ flexGrow: 1 }}>
         <div style={{ padding: "20px", marginTop: "64px" }}>

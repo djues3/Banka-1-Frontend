@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Box, Card, CardContent, IconButton, Typography} from "@mui/material";
+import {Box, Card, CardContent, Container, IconButton, Typography} from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CardDetailsModal from "./CardDetailsModal";
@@ -86,7 +86,7 @@ const CardSlider = () => {
     if (isLoading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" p={3}>
-                <CircularProgress />
+                <CircularProgress/>
             </Box>
         );
     }
@@ -113,35 +113,49 @@ const CardSlider = () => {
 
 
     return (
-        <>
-            <Box className="card-slider-container">
+        <Container maxWidth="" sx={{padding: "20px"}}>
+            <Box className="card-slider-container" maxWidth="md">
                 <IconButton onClick={goToPrevCard}>
-                    <ArrowBackIosIcon />
+                    <ArrowBackIosIcon/>
                 </IconButton>
 
                 <Card className="card-slider-card">
                     <CardContent>
 
-                       <Box display="flex" flexDirection="column" gap={2}>
-                           <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
-                               <Typography variant="h6">{currentCard?.cardNumber}</Typography>
-                               <Typography variant="h6">{capitalizeFirstLetter(currentCard?.cardType)} Card</Typography>
-                               <CreditCardIcon/>
-                           </Box>
-                           <Box gap={2}>
-                               <Typography variant="body2">
-                                   Account Number: {currentCard?.account.accountNumber}
-                               </Typography>
-                               <Typography variant="h5">
-                                   {currentCard?.balance} {currentCard?.currency}
-                               </Typography>
-                           </Box>
-                       </Box>
+                        <Box display="flex" flexDirection="column" gap={2}>
+                            <Box display="flex" flexDirection="row" alignItems="center" gap={2}>
+                                <Typography variant="h6">{currentCard?.cardNumber}</Typography>
+                                <Typography
+                                    variant="h6">{capitalizeFirstLetter(currentCard?.cardType)} Card</Typography>
+                                <CreditCardIcon/>
+                            </Box>
+                            <Box gap={2}>
+                                <Typography variant="body2">
+                                    Account Number: {currentCard?.account.accountNumber}
+                                </Typography>
+                                <Typography variant="h5">
+                                    {currentCard?.balance} {currentCard?.currency}
+                                </Typography>
+                            </Box>
+                            {currentCard?.cardType === "DEBIT" ? (<Box gap={2}>
+                                <Typography variant="body2">
+                                    {"Balance: "}
+                                    {currentCard?.cardLimit >
+                                    currentCard?.account.balance ?
+                                        currentCard?.account.balance : currentCard?.cardLimit}
+                                    {" "}
+                                    {currentCard?.account.currencyType}
+                                </Typography>
+                                <Typography variant="body2">
+                                    Expiration date: {new Date(currentCard?.expirationDate * 1000).toLocaleDateString()}
+                                </Typography>
+                            </Box>) : (<></>)}
+                        </Box>
                     </CardContent>
                 </Card>
 
                 <IconButton onClick={goToNextCard}>
-                    <ArrowForwardIosIcon />
+                    <ArrowForwardIosIcon/>
                 </IconButton>
             </Box>
 
@@ -150,7 +164,7 @@ const CardSlider = () => {
                 onClose={() => setDetailsModalOpen(false)}
                 card={currentCard}
             />
-        </>
+        </Container>
     );
 };
 
