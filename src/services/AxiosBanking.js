@@ -210,8 +210,8 @@ export const changeCardName = async (cardId, newName) => {
 // Change card limit
 export const changeCardLimit = async (cardId, newLimit) => {
     try {
-        const response = await apiBanking.patch(`/cards/${cardId}`, {
-            limit: newLimit,
+        const response = await apiBanking.patch(`/cards/${cardId}/limit`, {
+            newLimit: newLimit,
         });
         return response.data;
     } catch (error) {
@@ -223,7 +223,14 @@ export const changeCardLimit = async (cardId, newLimit) => {
 // Block or unblock a card
 export const updateCardStatus = async (cardId, status) => {
     try {
-        const response = await apiBanking.patch(`/cards/${cardId}`, { status });
+        const response = await apiBanking.patch(`/cards/${cardId}`, { status},
+            {
+                headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            }
+        );
+        
         return response.data;
     } catch (error) {
         console.error(`Error updating status for card ${cardId}:`, error);

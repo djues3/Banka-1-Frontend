@@ -114,7 +114,7 @@ const CardSlider = () => {
 
     return (
         <Container maxWidth="" sx={{padding: "20px"}}>
-            <Box className="card-slider-container" maxWidth="md">
+            <Box className="card-slider-container" maxWidth="md"  onClick={() => setDetailsModalOpen(true)}>
                 <Card className="card-slider-card">
                     <CardContent>
                         <Box display="flex" flexDirection="column" gap={2}>
@@ -148,14 +148,13 @@ const CardSlider = () => {
                         </Box>
                     </CardContent>
                 </Card>
-                
-                <IconButton sx={{ mt: 3 }} onClick={goToPrevCard}>
+            </Box>
+            <IconButton sx={{ mt: 3 }} onClick={goToPrevCard}>
                     <ArrowBackIosIcon/>
                 </IconButton>
                 <IconButton  sx={{ mt: 3, ml: 102 }} onClick={goToNextCard}>
                     <ArrowForwardIosIcon/>
                 </IconButton>
-            </Box>
 
             <CardDetailsModal
                 open={detailsModalOpen}
