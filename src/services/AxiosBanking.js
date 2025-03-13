@@ -489,16 +489,6 @@ export const fetchRemainingInstallments = async (loanId) => {
 };
 
 
-export const fetchRemainingInstallments = async (loanId) => {
-    try {
-        const response = await apiBanking.get(`/loans/${loanId}/remaining_installments`);
-        return response.data;
-    } catch (error) {
-        console.error(`Error fetching remaining installments for loan ${loanId}:`, error);
-      throw error;
-    }
-};
-
 export const fetchAllPendingLoans = async () => {
   try {
     const response = await apiBanking.get("/loans/pending");
@@ -537,20 +527,6 @@ export const denyLoan = async (loan_id, deniedLoan) => {
 };
 
 
-export const getPaymentCodes = async () =>{
-    try{
-        const response = await apiBanking.get("/metadata/payment-codes");
-        // console.log("aaaa" + response);
-
-
-        const codes = response.data;
-        return codes;
-    }catch (error) {
-        console.error("Error fetching codes:", error);
-        throw error;
-    }
-
-};
 
 // Exchange Rate Functions
 export const fetchExchangeRates = async () => {

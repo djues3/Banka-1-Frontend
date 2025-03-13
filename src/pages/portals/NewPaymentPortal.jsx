@@ -6,7 +6,7 @@ import "../../styles/NewPaymentPortal.css";
 import PaymentResultModal from "../../components/common/PaymentResultModal";
 import {fetchAccountsForUser, fetchRecipients} from "../../services/AxiosBanking";
 import {createNewMoneyTransfer} from "../../services/AxiosBanking";
-import {createRecipient} from "../../services/AxiosBanking"
+import {createRecipientt} from "../../services/AxiosBanking"
 import {getPaymentCodes} from "../../services/AxiosBanking"
 import { Autocomplete, TextField } from "@mui/material";
 import {jwtDecode} from "jwt-decode";
@@ -27,14 +27,26 @@ const NewPaymentPortal =  () => {
     const handleCreateRecipient = async (recipient) => {
         try {
             const selectedAcc = accounts.find(acc => acc.id.toString() === selectedAccount.id.toString());
-            const createdRecipient = await createRecipient(selectedAcc.accountNumber, recipient);
+            if (!selectedAcc) {
+                console.error("No selected account.");
+                return;
+            }
 
-            setRecipients(prevRecipients => [...prevRecipients, createdRecipient.data]);
+            const recipientData = {
+                ownerAccountId: selectedAcc.id,
+                accountNumber: recipient.accountNumber,
+                fullName: recipient.fullName,
+                address: recipient.address || "",
+            };
 
+            await createRecipientt(recipientData);
+
+            await loadRecipients(selectedAcc.id);
         } catch (error) {
             console.error("Error adding recipient:", error);
         }
     };
+
 
     const handleConfirm = async () => {
         if (isSuccess) {
@@ -43,9 +55,9 @@ const NewPaymentPortal =  () => {
             const lastName = nameParts.slice(1).join(" ") || "N/A";
 
             const newRecipient = {
-                firstName,
-                lastName,
+                fullName: `${firstName} ${lastName}`,
                 accountNumber: newPayment.recipientAccount,
+                address: newPayment.address || ""
             };
 
             try {
@@ -57,6 +69,7 @@ const NewPaymentPortal =  () => {
 
         setOpenModal(false);
     };
+
 
 
 
@@ -102,34 +115,6 @@ const NewPaymentPortal =  () => {
             loadRecipients();
         }
 
-
-
-        // const handleConfirm = async () => {
-        //     if (isSuccess) {
-        //         const nameParts = newPayment.recipientName.trim().split(" ");
-        //         const firstName = nameParts[0];
-        //         const lastName = nameParts.slice(1).join(" ") || "N/A";
-        //
-        //         const newRecipient = {
-        //             firstName,
-        //             lastName,
-        //             accountNumber: newPayment.recipientAccount,
-        //         };
-        //
-        //         try {
-        //             await handleCreateRecipient(newRecipient);
-        //
-        //             setRecipients(prevRecipients => [...prevRecipients, newRecipient]);
-        //
-        //             // await loadRecipients(selectedAccount.id);
-        //         } catch (error) {
-        //             console.error("Error confirming recipient addition:", error);
-        //         }
-        //     }
-        //
-        //     setOpenModal(false);
-        // };
-
         return (
             <PaymentResultModal
                 open={openModal}
@@ -138,32 +123,9 @@ const NewPaymentPortal =  () => {
                 paymentMessage={paymentMessage}
                 onConfirm={handleConfirm}
             />
-
-
         );
 
-
-        // const handleCreateRecipient = async (recipient) => {
-        //     try {
-        //         const selectedAcc = accounts.find(acc => acc.id.toString() === selectedAccount.id.toString());
-        //         const createdRecipient = await createRecipient(selectedAcc.accountNumber, recipient);
-        //
-        //
-        //         setRecipients(prevRecipients => [...prevRecipients, createdRecipient.data]);
-        //
-        //
-        //         // await loadRecipients(selectedAcc.id);
-        //     } catch (error) {
-        //         console.error("Error adding recipient:", error);
-        //     }
-        // };
-
-
-
-
     };
-
-
     useEffect(() => {
         loadPaymentCodes();
     }, []);
@@ -177,9 +139,6 @@ const NewPaymentPortal =  () => {
         }
 
     };
-
-
-
 
     const [newPayment, setNewPayment] = useState({
         payerAccount: "",
@@ -208,7 +167,6 @@ const NewPaymentPortal =  () => {
             return;
         }
 
-        // Logovanje podataka
         const transferData = {
             fromAccountNumber: selectedAccount.accountNumber,
             recipientAccount: newPayment.recipientAccount,
@@ -243,11 +201,6 @@ const NewPaymentPortal =  () => {
     };
 
 
-
-
-
-
-
     return (
         <div>
             <Sidebar/>
@@ -278,7 +231,6 @@ const NewPaymentPortal =  () => {
                                 freeSolo
                                 options={recipients}
                                 getOptionLabel={(option) => {
-                                    if (!option) return "";
                                     const firstName = option.firstName || '';
                                     const lastName = option.lastName || '';
                                     const label = `${firstName} ${lastName}`.trim();
@@ -291,15 +243,17 @@ const NewPaymentPortal =  () => {
                                 }}
                                 isOptionEqualToValue={(option, value) => option?.accountNumber === value?.accountNumber}
                                 value={
-                                    (newPayment.recipientAccount && recipients.find(rec => rec.accountNumber === newPayment.recipientAccount)) ||
-                                    (newPayment.recipientName ? {
-                                        firstName: newPayment.recipientName.split(" ")[0] || "",
-                                        lastName: newPayment.recipientName.split(" ")[1] || "",
-                                        accountNumber: ""
-                                    } : null)
+                                    newPayment.recipientAccount ?
+                                        recipients.find(rec => rec.accountNumber === newPayment.recipientAccount) :
+                                        {
+                                            firstName: newPayment.recipientName.split(" ")[0] || "",
+                                            lastName: newPayment.recipientName.split(" ")[1] || "",
+                                            accountNumber: ""
+                                        }
                                 }
                                 onChange={(event, value) => {
                                     if (typeof value === "string") {
+
                                         setNewPayment({
                                             ...newPayment,
                                             recipientName: value,
@@ -308,7 +262,7 @@ const NewPaymentPortal =  () => {
                                     } else if (value) {
                                         setNewPayment({
                                             ...newPayment,
-                                            recipientName: `${value.firstName ?? ""} ${value.lastName ?? ""}`.trim(),
+                                            recipientName: `${value.firstName} ${value.lastName}`.trim(),
                                             recipientAccount: value.accountNumber,
                                         });
                                     } else {
@@ -331,6 +285,7 @@ const NewPaymentPortal =  () => {
                                 openOnFocus
                                 clearOnBlur={false}
                             />
+
                         </div>
                         <div className="payment-code">
                             <label>Payment Code</label>
@@ -392,7 +347,7 @@ const NewPaymentPortal =  () => {
                                 type="text"
                                 value={newPayment.adress}
                                 onChange={(e) => setNewPayment({...newPayment, adress: e.target.value})}
-
+                                required
                             />
                         </div>
 
