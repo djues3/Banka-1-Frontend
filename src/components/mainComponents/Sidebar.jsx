@@ -34,6 +34,7 @@ import { useEffect, useState } from 'react';
 import { Collapse } from '@mui/material';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
+import {LibraryBooks} from "@mui/icons-material";
 
 const drawerWidth = 240;
 
@@ -71,6 +72,7 @@ export default function Sidebar() {
   const [showPaymentsMenu, setShowPaymentsMenu] = useState(false);
   const [showLoanOptions, setShowLoanOptions] = useState(false);
   const [showExchangeMenu, setShowExchangeMenu] = useState(false);
+  const [hasTradePermission, setHasTradePermission] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,6 +85,8 @@ export default function Sidebar() {
         setPosition(decodedToken.position);
         setIsAdmin(decodedToken.isAdmin);
         setIsEmployed(decodedToken.isEmployed);
+        const permissions = decodedToken.permissions || [];
+        setHasTradePermission(permissions.includes("user.customer.trade")); //MOZDA SE NE BUDE OVAKO ZVALA PERMISIJA
 
         console.log("Set position:", decodedToken.position, "Admin status:", decodedToken.isAdmin, "Employed:", decodedToken.isEmployed);
       } catch (error) {
@@ -216,6 +220,18 @@ export default function Sidebar() {
                       <ListItemText primary="Loans" />
                     </ListItemButton>
                   </ListItem>
+
+                  {/* For Customers with Trade Permission */}
+                  {hasTradePermission && (
+                      <>
+                      <ListItem disablePadding>
+                        <ListItemButton onClick={() => handleNavigation('/portfolio-page')}>
+                          <ListItemIcon><LibraryBooks /></ListItemIcon>
+                          <ListItemText primary="Portfolio" />
+                        </ListItemButton>
+                      </ListItem>
+                        </>
+                  )}
                 </>
             )}
 
@@ -255,6 +271,36 @@ export default function Sidebar() {
                         </ListItemButton>
                       </>
                   )}
+                </>
+            )}
+
+            {/* Supervisor only */}
+            {isEmployed && position === "SUPERVISOR" && (
+                <>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={() => handleNavigation('/actuarial-managment-portal')}>
+                    <ListItemIcon><CompareArrowsIcon /></ListItemIcon>
+                    <ListItemText primary="Actuarial Management" />
+                  </ListItemButton>
+                </ListItem>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleNavigation('/portfolio-page')}>
+                      <ListItemIcon><LibraryBooks /></ListItemIcon>
+                      <ListItemText primary="Portfolio" />
+                    </ListItemButton>
+                  </ListItem>
+                </>
+            )}
+
+            {/* Agent only */}
+            {isEmployed && position === "AGENT" && (
+                <>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleNavigation('/portfolio-page')}>
+                      <ListItemIcon><LibraryBooks /></ListItemIcon>
+                      <ListItemText primary="Portfolio" />
+                    </ListItemButton>
+                  </ListItem>
                 </>
             )}
 

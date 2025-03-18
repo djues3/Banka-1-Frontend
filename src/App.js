@@ -27,6 +27,9 @@ import AllLoansEmployeePortal from "./pages/portals/AllLoansEmployeePortal";
 import PendingLoansEmployeePortal from "./pages/portals/PendingLoansEmployeePortal";
 import ExchangeRateList from "./pages/exchange/ExchangeRateList";
 import CheckEquivalency from "./pages/exchange/CheckEquivalency";
+/* import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal";
+import PortfolioPage from "./pages/portals/PortfolioPage";
+ */
 
 // import CustomerAccountPortal from "./pages/portals/CustomerAccountPortal";
 
@@ -165,6 +168,37 @@ function App() {
                 </AuthGuard>
               }
             />
+
+              {/* NOVO */}
+
+              {/* Special rutes */}
+              <Route
+                  path="/portfolio-page"
+                  element={
+                      <AuthGuard allowedPositions={["SUPERVISOR", "AGENT", "TRADE_CUSTOMER"]}>
+                          {/*<PortfolioPage />*/}
+                      </AuthGuard>
+                  }
+              />
+
+              {/* Routes only for Supervisor */}
+              <Route
+                  path="/actuarial-managment-portal"
+                  element={
+                      <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                          {/* <ActuarialManagementPortal />*/}
+                      </AuthGuard>
+                  }
+              />
+
+              {/* Routes only for Agent */}
+
+
+              {/* Routes only for Trade Customer */}
+
+
+
+              {/* NOVO */}
 
             {/* Customer-Only Routes */}
             <Route

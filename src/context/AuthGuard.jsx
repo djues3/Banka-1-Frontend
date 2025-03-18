@@ -14,34 +14,47 @@ const AuthGuard = ({ allowedPositions, children }) => {
         const isEmployed = decodedToken.isEmployed || false; // true -> Employee, false -> Customer
         const isAdmin = decodedToken.isAdmin || false; // Boolean
         const userPosition = decodedToken.position || null; // "WORKER", "MANAGER", "DIRECTOR", "HR", "NONE"
+                                                            // "SUPERVISOR", "AGENT"
+        const permissions = decodedToken.permissions || []; // List of permissions
 
-        // console.log("User employed:", isEmployed, "Admin status:", isAdmin, "Position:", userPosition);
+        // Check if the customer has trade permissions
+        const hasTradePermission = permissions.includes("user.customer.trade"); //MOZDA SE DRUGACIJE BUDE ZVALA PERMISIJA
 
-        // If User is Employed, we check allowedPositions
-        if (isEmployed) {
+        console.log(
+            "User employed:", isEmployed,
+            "Admin status:", isAdmin,
+            "Position:", userPosition,
+            "Trade Permission:", hasTradePermission
+        );
 
-            // If User is Admin & Route is for Admin => Accept
-            if (isAdmin && allowedPositions.includes("ADMIN")) {
-                return children;
-            }
-
-            // If User is among Users who can access => Accept
-            if (userPosition && allowedPositions.includes(userPosition)) {
-                return children;
-            }
-
-            // If Employee tries to access any page that is only for Customers
-            // If Not Admin Employee tries to access any page that is only for Admin
-            return <Navigate to="/home" replace />;
-        }
-
-
-        // User is Customer & allowedPositions is empty (not public route)
-        if (!isEmployed && (!allowedPositions || allowedPositions.length === 0)) {
+        // The page is accessible to All Users
+        if (!allowedPositions || allowedPositions.length === 0) {
             return children;
         }
 
-        // If Customer tries to access any page that is only for Employees
+        // If the user is Employee, check allowed positions
+        if (isEmployed) {
+            if (isAdmin && allowedPositions.includes("ADMIN")) {
+                return children;
+            }
+            if (userPosition && allowedPositions.includes(userPosition)) {
+                return children;
+            }
+            return <Navigate to="/home" replace />;
+        }
+
+        // If the user is Customer
+        if (!isEmployed) {
+
+            // If the Customer has Trade Permission and the route allows Trade Customers
+            if (hasTradePermission && allowedPositions.includes("TRADE_CUSTOMER")) {
+                return children;
+            }
+
+            // If Customer tries to access a restricted page
+            return <Navigate to="/home" replace />;
+        }
+
         return <Navigate to="/home" replace />;
 
     } catch (error) {
