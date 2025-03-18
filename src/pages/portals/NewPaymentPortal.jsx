@@ -4,9 +4,10 @@ import Sidebar from "../../components/mainComponents/Sidebar";
 import { toast, ToastContainer } from "react-toastify";
 import "../../styles/NewPaymentPortal.css";
 import PaymentResultModal from "../../components/common/PaymentResultModal";
-import {fetchCustomers} from "../../services/AxiosUser";
 import {fetchAccountsForUser, fetchRecipients} from "../../services/AxiosBanking";
-
+import {createNewMoneyTransfer} from "../../services/AxiosBanking";
+import {createRecipientt} from "../../services/AxiosBanking"
+import {getPaymentCodes} from "../../services/AxiosBanking"
 import { Autocomplete, TextField } from "@mui/material";
 import {jwtDecode} from "jwt-decode";
 
@@ -17,15 +18,65 @@ const NewPaymentPortal =  () => {
     const decodedToken = jwtDecode(token);
     const userId = decodedToken.id;
     const [accounts, setAccounts] = useState([]);
-    useEffect(() => {
-        loadAccounts();
-    }, []);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const [recipients, setRecipients] = useState([]);
+    const [dailyLimit, setDailyLimit] = useState(null);
+    const [paymentMessage, setPaymentMessage] = useState("");
+    const [paymentCodes, setPaymentCodes] = useState([]);
+
+    const handleCreateRecipient = async (recipient) => {
+        try {
+            const selectedAcc = accounts.find(acc => acc.id.toString() === selectedAccount.id.toString());
+            if (!selectedAcc) {
+                console.error("No selected account.");
+                return;
+            }
+
+            const recipientData = {
+                ownerAccountId: selectedAcc.id,
+                accountNumber: recipient.accountNumber,
+                fullName: recipient.fullName,
+                address: recipient.address || "",
+            };
+
+            await createRecipientt(recipientData);
+
+            await loadRecipients(selectedAcc.id);
+        } catch (error) {
+            console.error("Error adding recipient:", error);
+        }
+    };
+
+
+    const handleConfirm = async () => {
+        if (isSuccess) {
+            const nameParts = newPayment.recipientName.trim().split(" ");
+            const firstName = nameParts[0];
+            const lastName = nameParts.slice(1).join(" ") || "N/A";
+
+            const newRecipient = {
+                fullName: `${firstName} ${lastName}`,
+                accountNumber: newPayment.recipientAccount,
+                address: newPayment.address || ""
+            };
+
+            try {
+                await handleCreateRecipient(newRecipient);
+            } catch (error) {
+                console.error("Error confirming recipient addition:", error);
+            }
+        }
+
+        setOpenModal(false);
+    };
+
+
+
+
+
     useEffect(() => {
         loadAccounts();
     }, []);
-
 
     const loadAccounts = async () => {
         try {
@@ -34,39 +85,20 @@ const NewPaymentPortal =  () => {
         } catch (err) {
             console.error("Failed to fetch accounts:", err);
         }
-        setAccounts([
-            {
-                id: 1,
-                ownerID: 1,
-                accountNumber: 123456788,
-                currency: "RSD",
-                type: "CURRENT",
-                subtype: "PERSONAL",
-                dailyLimit: 0,
-                monthlyLimit: 0,
-                status: "ACTIVE"
-
-            },
-            {
-                id: 2,
-                ownerID: 2,
-                accountNumber: 123456789,
-                currency: "RSD",
-                type: "CURRENT",
-                subtype: "PERSONAL",
-                dailyLimit: 100000,
-                monthlyLimit: 1000000,
-                status: "ACTIVE"
-
-            }
-        ])
 
     };
 
-    const loadRecipients = async (accountId) => {
+    useEffect(() => {
+        if (selectedAccount) {
+            loadRecipients();
+        }
+    }, [selectedAccount]);
+
+    const loadRecipients = async () => {
         try {
-            const data = await fetchRecipients(accountId);
-            setRecipients(data);
+            const data = await fetchRecipients(selectedAccount.id);
+
+            setRecipients(data.data.receivers);
         } catch (err) {
             console.error("Failed to fetch recipients:", err);
         }
@@ -75,77 +107,99 @@ const NewPaymentPortal =  () => {
     const handleAccountSelection = (accountId) => {
         if (!accountId) return;
 
-        setSelectedAccount(accountId);
-
-        const selectedAcc = accounts.find(acc => acc.ownerID.toString() === accountId);
+        const selectedAcc = accounts.find(acc => acc.id.toString() === accountId);
 
         if (selectedAcc) {
-            console.log("Selected Account:", selectedAcc);
-            console.log("Account Number:", selectedAcc.accountNumber);
-
-             loadRecipients(selectedAcc.id);
-
-            setRecipients([
-                { fullName: "John Doe", accountNumber: "123456789" },
-                { fullName: "Jane Smith", accountNumber: "987654321" },
-                { fullName: "Michael Johnson", accountNumber: "567890123" },
-            ]);
+            setSelectedAccount(selectedAcc);
+            setDailyLimit(selectedAcc.dailyLimit);
+            loadRecipients();
         }
-
-        const handleConfirm = () => {
-            if (newPayment.recipientName && newPayment.recipientAccount) {
-                setRecipients((prevRecipients) => [
-                    ...prevRecipients,
-                    { fullName: newPayment.recipientName, accountNumber: newPayment.recipientAccount }
-                ]);
-            }
-            setOpenModal(false); // ne radi tj ne dodaje recipiante
-        };
 
         return (
             <PaymentResultModal
                 open={openModal}
                 onClose={() => setOpenModal(false)}
                 success={isSuccess}
+                paymentMessage={paymentMessage}
                 onConfirm={handleConfirm}
             />
         );
-    };
 
+    };
+    useEffect(() => {
+        loadPaymentCodes();
+    }, []);
+
+    const loadPaymentCodes = async () => {
+        try {
+            const data = await getPaymentCodes();
+            setPaymentCodes(data.data.codes);
+        } catch (err) {
+            console.error("Failed to fetch accounts:", err);
+        }
+
+    };
 
     const [newPayment, setNewPayment] = useState({
         payerAccount: "",
-        recipientName: recipient.name || "",
-        recipientAccount: recipient.accountNumber || "",
-        paymentCode: "2xx",
+        recipientName: recipient ? `${recipient.firstName} ${recipient.lastName}`.trim() : "",
+        recipientAccount: recipient?.accountNumber || "",
+        paymentCode: "289",
         paymentPurpose: "",
         amount: "",
+        address: "",
         referenceNumber: "",
     });
+
 
     const [openModal, setOpenModal] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [toggleSuccess, setToggleSuccess] = useState(true);
     const [users, setUsers] = useState([]);
 
-    useEffect(() => {
-        fetchCustomers()
-            .then((data) => {
-                if (Array.isArray(data)) {
-                    setUsers(data);
-                } else {
-                    setUsers([]);
-                }
-            })
-            .catch(() => setUsers([]));
-    }, []);
 
-    const handleCreatePayment = (e) => {
+
+    const handleCreatePayment = async (e) => {
         e.preventDefault();
-        setIsSuccess(toggleSuccess);
-        setToggleSuccess(!toggleSuccess);
+
+        if (!selectedAccount || !newPayment.recipientAccount || !newPayment.amount || !newPayment.recipientName) {
+            toast.error("Molimo popunite sva obavezna polja.");
+            return;
+        }
+
+        const transferData = {
+            fromAccountNumber: selectedAccount.accountNumber,
+            recipientAccount: newPayment.recipientAccount,
+            amount: parseFloat(newPayment.amount),
+            receiver: newPayment.recipientName,
+            adress: newPayment.adress,
+            payementCode: newPayment.paymentCode,
+            payementReference: newPayment.referenceNumber,
+            payementDescription: newPayment.paymentPurpose
+        };
+
+        console.log("Data za slanje:", transferData);
+        try {
+            const result = await createNewMoneyTransfer(transferData);
+
+            if (result.success) {
+                toast.success(result.data.message || "Uspešno ste izvršili uplatu!");
+                setIsSuccess(true);
+                setPaymentMessage(result.data?.reason || result.data?.message || "Payment completed successfully.");
+            } else {
+                toast.error(result.error || "Greška prilikom uplate.");
+                setIsSuccess(false);
+                setPaymentMessage(result.data?.reason || result.error || "Payment failed. Please try again.");
+            }
+        } catch (error) {
+            toast.error("Došlo je do greške. Pokušajte ponovo.");
+            setIsSuccess(false);
+            setPaymentMessage(error.response?.data?.reason || error.response?.data?.message || "Unexpected error occurred. Please try again later.");
+        }
+
         setOpenModal(true);
     };
+
 
     return (
         <div>
@@ -158,16 +212,13 @@ const NewPaymentPortal =  () => {
                         <label>Payer Account</label>
                         <select
                             id="accountSelect"
-                            value={selectedAccount || ""}
+                            value={selectedAccount ? selectedAccount.id : ""}
                             onChange={(e) => handleAccountSelection(e.target.value)}
                         >
-                            <option value="" disabled>
-                                Select an account
-                            </option>
-
+                            <option value="" disabled>Select an account</option>
                             {accounts.map((account) => (
                                 <option key={account.id} value={account.id}>
-                                    {account.accountNumber} {}
+                                    {account.accountNumber}
                                 </option>
                             ))}
                         </select>
@@ -177,38 +228,82 @@ const NewPaymentPortal =  () => {
                         <div className="recipient-name">
                             <label>Recipient Name</label>
                             <Autocomplete
+                                freeSolo
                                 options={recipients}
-                                getOptionLabel={(option) => option?.fullName ?? ""}
-                                isOptionEqualToValue={(option, value) => option.accountNumber === value.accountNumber}
-                                value={recipients.find(rec => rec.accountNumber === newPayment.recipientAccount) || null}
-                                onChange={(event, value) => {
-                                    setNewPayment({
-                                        ...newPayment,
-                                        recipientName: value?.fullName || "",
-                                        recipientAccount: value?.accountNumber || "",
-                                    });
-                                    // blurOnSelect={false} // Sprečava brisanje teksta nakon klika van
-                                    // onBlur={(event) => {
-                                    //     // Ova funkcija osigurava da unesena vrednost ne nestane
-                                    //     if (!newPayment.recipientName) {
-                                    //         setNewPayment({...newPayment, recipientName: event.target.value});
-                                    //     }
+                                getOptionLabel={(option) => {
+                                    const firstName = option.firstName || '';
+                                    const lastName = option.lastName || '';
+                                    const label = `${firstName} ${lastName}`.trim();
+
+                                    if (label === "undefined undefined") {
+                                        return "";
+                                    }
+
+                                    return label;
                                 }}
-                                renderInput={(params) => <TextField {...params} label=""/>}
+                                isOptionEqualToValue={(option, value) => option?.accountNumber === value?.accountNumber}
+                                value={
+                                    newPayment.recipientAccount ?
+                                        recipients.find(rec => rec.accountNumber === newPayment.recipientAccount) :
+                                        {
+                                            firstName: newPayment.recipientName.split(" ")[0] || "",
+                                            lastName: newPayment.recipientName.split(" ")[1] || "",
+                                            accountNumber: ""
+                                        }
+                                }
+                                onChange={(event, value) => {
+                                    if (typeof value === "string") {
+
+                                        setNewPayment({
+                                            ...newPayment,
+                                            recipientName: value,
+                                            recipientAccount: "",
+                                        });
+                                    } else if (value) {
+                                        setNewPayment({
+                                            ...newPayment,
+                                            recipientName: `${value.firstName} ${value.lastName}`.trim(),
+                                            recipientAccount: value.accountNumber,
+                                        });
+                                    } else {
+                                        setNewPayment({
+                                            ...newPayment,
+                                            recipientName: "",
+                                            recipientAccount: "",
+                                        });
+                                    }
+                                }}
+                                onBlur={(event) => {
+                                    if (!newPayment.recipientName) {
+                                        setNewPayment({
+                                            ...newPayment,
+                                            recipientName: event.target.value,
+                                        });
+                                    }
+                                }}
+                                renderInput={(params) => <TextField {...params} label="" />}
+                                openOnFocus
+                                clearOnBlur={false}
                             />
+
                         </div>
-
-
                         <div className="payment-code">
                             <label>Payment Code</label>
                             <select
                                 value={newPayment.paymentCode}
-                                onChange={(e) => setNewPayment({...newPayment, paymentCode: e.target.value})}
+                                onChange={(e) => setNewPayment({ ...newPayment, paymentCode: e.target.value })}
+                                required
                             >
-                                <option value="2xx">2xx</option>
-                                <option value="3xx">3xx</option>
+                                <option value="" disabled>Select a payment code</option>
+                                {paymentCodes.map((code) => (
+                                    <option key={code.code} value={code.code}>
+                                        {code.code} - {code.description}
+                                    </option>
+                                ))}
                             </select>
                         </div>
+
+
                     </div>
 
                     <div className="form-row">
@@ -228,7 +323,7 @@ const NewPaymentPortal =  () => {
                                 type="text"
                                 value={newPayment.paymentPurpose}
                                 onChange={(e) => setNewPayment({...newPayment, paymentPurpose: e.target.value})}
-                                required
+                                // required
                             />
                         </div>
                     </div>
@@ -243,9 +338,20 @@ const NewPaymentPortal =  () => {
                                     onChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
                                     required
                                 />
-                                <span className="info-icon">ℹ️</span>
+                                <span title={`Daily Limit: ${dailyLimit ?? "N/A"}`} style={{ cursor: "pointer" }}>ℹ️</span>
                             </div>
                         </div>
+                        <div className="adress">
+                            <label>Address</label>
+                            <input
+                                type="text"
+                                value={newPayment.adress}
+                                onChange={(e) => setNewPayment({...newPayment, adress: e.target.value})}
+                                required
+                            />
+                        </div>
+
+
                     </div>
 
                     <div className="reference-row">
@@ -264,7 +370,13 @@ const NewPaymentPortal =  () => {
 
                 <ToastContainer position="bottom-right"/>
 
-                <PaymentResultModal open={openModal} onClose={() => setOpenModal(false)} success={isSuccess}/>
+                <PaymentResultModal
+                    open={openModal}
+                    onClose={() => setOpenModal(false)}
+                    success={isSuccess}
+                    paymentMessage={paymentMessage}
+                    onConfirm={handleConfirm}
+                />
             </div>
         </div>
     );
