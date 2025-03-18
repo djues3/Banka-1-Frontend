@@ -78,7 +78,6 @@ const LoansPortal = () => {
                 >
                     Apply for loan
                 </Button>
-
                 <DataTable rows={rows} columns={columns} checkboxSelection={false} />
             </div>
 
@@ -87,6 +86,7 @@ const LoansPortal = () => {
 
             {/* Pop up za novi zahtev */}
             <LoanRequestModal open={loanModalOpen} onClose={() => setLoanModalOpen(false)} />
+
         </div>
     );
 };
