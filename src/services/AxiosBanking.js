@@ -643,4 +643,30 @@ export const getPaymentCodes = async () => {
   }
 };
 
+// Block card
+export const blockCard = async (cardId, status) => {
+  try {
+    const response = await apiBanking.patch(`/cards/${cardId}`, {
+      status: status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error blocking card ${cardId}:`, error);
+    throw error;
+  }
+};
+
+// Deactive card
+export const deactivateCard = async (cardId, status) => {
+  try {
+    const response = await apiBanking.patch(`/cards/admin/${cardId}`, {
+      status: status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error deactivating card ${cardId}:`, error);
+    throw error;
+  }
+};
+
 export default apiBanking;
