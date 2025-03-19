@@ -63,6 +63,7 @@ presubmits:
               # image koji ima ovaj hash kao svoj tag.
               commit_hash=$(git rev-parse HEAD)
               
+              serviceName="frontend"
               
               # Builduje frontend
               docker build -t harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest .
