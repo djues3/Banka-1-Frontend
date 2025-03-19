@@ -301,6 +301,12 @@ export default function Sidebar() {
                       <ListItemText primary="Important Files" />
                     </ListItemButton>
                   </ListItem>
+                  <ListItem disablePadding>
+                    <ListItemButton disabled={true}>
+                      <ListItemIcon><FolderTwoTone /></ListItemIcon>
+                      <ListItemText primary="Orders" />
+                    </ListItemButton>
+                  </ListItem>
                 </>
             )}
 
