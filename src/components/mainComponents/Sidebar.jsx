@@ -34,7 +34,7 @@ import { useEffect, useState } from 'react';
 import { Collapse } from '@mui/material';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
-import {LibraryBooks} from "@mui/icons-material";
+import {AttachFile, FileCopyTwoTone, FolderTwoTone, LibraryBooks} from "@mui/icons-material";
 
 const drawerWidth = 240;
 
@@ -230,6 +230,12 @@ export default function Sidebar() {
                           <ListItemText primary="Portfolio" />
                         </ListItemButton>
                       </ListItem>
+                        <ListItem disablePadding>
+                          <ListItemButton onClick={() => handleNavigation('/client-buying-portal')}>
+                            <ListItemIcon><FolderTwoTone /></ListItemIcon>
+                            <ListItemText primary="Important Files" />
+                          </ListItemButton>
+                        </ListItem>
                         </>
                   )}
                 </>
@@ -278,15 +284,21 @@ export default function Sidebar() {
             {isEmployed && position === "SUPERVISOR" && (
                 <>
                 <ListItem disablePadding>
-                  <ListItemButton onClick={() => handleNavigation('/actuarial-managment-portal')}>
+                  <ListItemButton onClick={() => handleNavigation('/actuarial-management-portal')}>
                     <ListItemIcon><CompareArrowsIcon /></ListItemIcon>
-                    <ListItemText primary="Actuarial Management" />
+                    <ListItemText primary="Agent Management" />
                   </ListItemButton>
                 </ListItem>
                   <ListItem disablePadding>
                     <ListItemButton onClick={() => handleNavigation('/portfolio-page')}>
                       <ListItemIcon><LibraryBooks /></ListItemIcon>
                       <ListItemText primary="Portfolio" />
+                    </ListItemButton>
+                  </ListItem>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleNavigation('/actuary-buying-portal')}>
+                      <ListItemIcon><FolderTwoTone /></ListItemIcon>
+                      <ListItemText primary="Important Files" />
                     </ListItemButton>
                   </ListItem>
                 </>
@@ -301,10 +313,16 @@ export default function Sidebar() {
                       <ListItemText primary="Portfolio" />
                     </ListItemButton>
                   </ListItem>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleNavigation('/actuary-buying-portal')}>
+                      <ListItemIcon><FolderTwoTone /></ListItemIcon>
+                      <ListItemText primary="Important Files" />
+                    </ListItemButton>
+                  </ListItem>
                 </>
             )}
 
-            {/* Route only for Admin */}
+            {/* Admin only */}
             {isAdmin && (
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => handleNavigation('/employee-portal')}>

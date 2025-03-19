@@ -30,7 +30,8 @@ import CheckEquivalency from "./pages/exchange/CheckEquivalency";
 /*
 import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal";
 import PortfolioPage from "./pages/portals/PortfolioPage";
-
+import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ActuarySecuritiesBuyingPortal";
+import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
  */
 
 // import CustomerAccountPortal from "./pages/portals/CustomerAccountPortal";
@@ -182,10 +183,18 @@ function App() {
                       </AuthGuard>
                   }
               />
+              <Route
+                  path="/actuary-buying-portal"
+                  element={
+                      <AuthGuard allowedPositions={["SUPERVISOR", "AGENT"]}>
+                          {/*<ActuarySecuritiesBuyingPortal />*/}
+                      </AuthGuard>
+                  }
+              />
 
               {/* Routes only for Supervisor */}
               <Route
-                  path="/actuarial-managment-portal"
+                  path="/actuarial-management-portal"
                   element={
                       <AuthGuard allowedPositions={["SUPERVISOR"]}>
                           {/* <ActuarialManagementPortal />*/}
@@ -193,12 +202,15 @@ function App() {
                   }
               />
 
-              {/* Routes only for Agent */}
-
-
               {/* Routes only for Trade Customer */}
-
-
+              <Route
+                  path="/client-buying-portal"
+                  element={
+                      <AuthGuard allowedPositions={["TRADE_CUSTOMER"]}>
+                          {/* <ClientSecuritiesBuyingPortal />*/}
+                      </AuthGuard>
+                  }
+              />
 
               {/* DO OVDE */}
 
