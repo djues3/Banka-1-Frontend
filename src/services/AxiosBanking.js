@@ -363,10 +363,10 @@ export const fetchAccountsId1 = async (id) => {
   }
 };
 
-export const fetchRecipientsForFast = async (userId) => {
+export const fetchRecipientsForFast = async (accountId) => {
   try {
-    console.log("UserId = " + userId);
-    const response = await apiBanking.get(`/receiver/${userId}`);
+    console.log("AccountId = " + accountId);
+    const response = await apiBanking.get(`/receiver/${accountId}`);
 
     // Logujemo celu strukturu odgovora
     console.log("Response data:", response.data);
