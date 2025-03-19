@@ -302,7 +302,7 @@ export default function Sidebar() {
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding>
-                    <ListItemButton disabled={true}>
+                    <ListItemButton onClick={() => handleNavigation('/view-order-portal')}>
                       <ListItemIcon><FolderTwoTone /></ListItemIcon>
                       <ListItemText primary="Orders" />
                     </ListItemButton>

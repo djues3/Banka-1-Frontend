@@ -32,6 +32,7 @@ import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal
 import PortfolioPage from "./pages/portals/PortfolioPage";
 import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ActuarySecuritiesBuyingPortal";
 import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
+import ViewOrderPortal from "./pages/portals/ViewOrderPortal"
  */
 
 // import CustomerAccountPortal from "./pages/portals/CustomerAccountPortal";
@@ -198,6 +199,14 @@ function App() {
                   element={
                       <AuthGuard allowedPositions={["SUPERVISOR"]}>
                           {/* <ActuarialManagementPortal />*/}
+                      </AuthGuard>
+                  }
+              />
+              <Route
+                  path="/view-order-portal"
+                  element={
+                      <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                          {/* <ViewOrderPortal />*/}
                       </AuthGuard>
                   }
               />
