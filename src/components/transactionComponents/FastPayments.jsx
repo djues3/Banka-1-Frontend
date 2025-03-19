@@ -3,14 +3,14 @@ import { Button, Box, Typography} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AddFastPayment from "./AddFastPayment";
 import {
-    createRecipient,
+    createRecipient, createRecipientt,
     fetchRecipientsForFast,
     getUserIdFromToken
 } from "../../services/AxiosBanking";
 
 
 
-const FastPayments = () => {
+const FastPayments = ({ accountId }) => {
 
     //state za modal, state za novu osobu za brzo placanje,
     // state za upravljanje osobama za brzo placanje, poruka za error
@@ -20,6 +20,7 @@ const FastPayments = () => {
     const [recipientList, setRecipientList] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
+    console.log("Received accountId:", accountId);
 
     useEffect(() => {
         const userId = getUserIdFromToken();
@@ -27,7 +28,7 @@ const FastPayments = () => {
             const fetchRecipients1 = async () => {
                 try {
                     setLoading(true);
-                    const data = await fetchRecipientsForFast(userId);
+                    const data = await fetchRecipientsForFast(accountId);
                     console.log(data);
                     setRecipientList(data || []);
                 } catch {
@@ -41,7 +42,7 @@ const FastPayments = () => {
             setError("User ID not found.");
             setLoading(false);
         }
-    }, []);
+    }, [accountId]);
 
 
     // Funkcija za dodavanje novog primaoca, imitira API POST poziv,
@@ -60,21 +61,16 @@ const FastPayments = () => {
         }
 
         const newRecipient = {
-            ownerAccountId: userId,  // Dinamički podatak
+            ownerAccountId: accountId,
             accountNumber: recipient.accountNumber,
             fullName: recipient.name
         };
 
         try {
 
-            await createRecipient(userId, newRecipient);
-
-            const updatedRecipients = await fetchRecipientsForFast(userId);
-
-
+            await createRecipientt(newRecipient);
+            const updatedRecipients = await fetchRecipientsForFast(accountId);
             setRecipientList(updatedRecipients);
-
-
 
             // Resetuj formu
             setOpenModal(false);
@@ -104,7 +100,7 @@ const FastPayments = () => {
                         key={index}
                         variant="contained"
                         sx={{ marginRight: 1 }}
-                        //ovde kad se klikne treba da se otvori stranica za placanje sa datim
+                        //ovde kad se klikne treba da se otvori stranica za placanje sa datim recipientom
                         onClick={() => navigate("/new-payment-portal", { state: { recipient } })}
                     >
                         {recipient.firstName}{recipient.lastName}
