@@ -27,8 +27,10 @@ import AllLoansEmployeePortal from "./pages/portals/AllLoansEmployeePortal";
 import PendingLoansEmployeePortal from "./pages/portals/PendingLoansEmployeePortal";
 import ExchangeRateList from "./pages/exchange/ExchangeRateList";
 import CheckEquivalency from "./pages/exchange/CheckEquivalency";
-/* import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal";
+/*
+import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal";
 import PortfolioPage from "./pages/portals/PortfolioPage";
+
  */
 
 // import CustomerAccountPortal from "./pages/portals/CustomerAccountPortal";
@@ -50,7 +52,7 @@ function App() {
             />
             <Route path="/set-password" element={<PasswordSetConfirmation />} />
 
-            {/* Employee-Only Routes (Admin or  not) */}
+            {/* Employee-Only routes (Admin or  not) */}
             <Route
               path="/admin-home"
               element={
@@ -198,7 +200,7 @@ function App() {
 
 
 
-              {/* NOVO */}
+              {/* DO OVDE */}
 
             {/* Customer-Only Routes */}
             <Route

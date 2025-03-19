@@ -32,8 +32,9 @@ const AuthGuard = ({ allowedPositions, children }) => {
             return children;
         }
 
-        // If the user is Employee, check allowed positions
+        // If the user is Employee (check allowed positions)
         if (isEmployed) {
+
             if (isAdmin && allowedPositions.includes("ADMIN")) {
                 return children;
             }
@@ -43,17 +44,22 @@ const AuthGuard = ({ allowedPositions, children }) => {
             return <Navigate to="/home" replace />;
         }
 
-        // If the user is Customer
+        // If User is Customer
         if (!isEmployed) {
 
-            // If the Customer has Trade Permission and the route allows Trade Customers
-            if (hasTradePermission && allowedPositions.includes("TRADE_CUSTOMER")) {
+            // If route requires Customer with Permission for Trading (check for Trade Permission)
+            if (allowedPositions.includes("TRADE_CUSTOMER")) {
+                return hasTradePermission ? children : <Navigate to="/home" replace />;
+            }
+
+            // If the route is for All Customers
+            if (!allowedPositions.includes("TRADE_CUSTOMER")) {
                 return children;
             }
 
-            // If Customer tries to access a restricted page
             return <Navigate to="/home" replace />;
         }
+
 
         return <Navigate to="/home" replace />;
 
