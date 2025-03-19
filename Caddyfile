@@ -12,7 +12,7 @@ localhost {
 	}
 
 	handle_path /api/trading/* {
-	  reverse_proxy host.docker.internal:3000
+	  reverse_proxy trading-service:3000
 	}
 
 	handle {
