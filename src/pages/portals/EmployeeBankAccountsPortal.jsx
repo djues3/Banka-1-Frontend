@@ -33,6 +33,7 @@ const EmployeeBankAccountsPortal = () => {
   ];
 
   useEffect(() => {
+    console.log(localStorage.getItem('token'));
     loadAccounts();
   }, []);
 
