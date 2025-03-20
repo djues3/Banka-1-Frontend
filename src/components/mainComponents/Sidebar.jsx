@@ -165,7 +165,7 @@ export default function Sidebar() {
                       {showPaymentsMenu ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </ListItemButton>
                   </ListItem>
-                  <Collapse in={showExchangeMenu} timeout="auto" unmountOnExit>
+                  <Collapse in={showPaymentsMenu} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/new-payment-portal')}>
                           <ListItemIcon><AttachMoneyIcon /></ListItemIcon>
@@ -265,7 +265,7 @@ export default function Sidebar() {
                       {showLoanOptions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </ListItemButton>
                   </ListItem>
-                  <Collapse in={showExchangeMenu} timeout="auto" unmountOnExit>
+                  <Collapse in={showLoanOptions} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                         <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/all-loans-employee')}>
                           <ListItemIcon><ReceiptIcon /></ListItemIcon>
