@@ -15,16 +15,16 @@ const AuthGuard = ({ allowedPositions, children }) => {
         const isAdmin = decodedToken.isAdmin || false; // Boolean
         const userPosition = decodedToken.position || null; // "WORKER", "MANAGER", "DIRECTOR", "HR", "NONE"
                                                             // "SUPERVISOR", "AGENT"
-        const permissions = decodedToken.permissions || []; // List of permissions
+        //const permissions = decodedToken.permissions || []; // List of permissions
 
         // Check if the customer has trade permissions
-        const hasTradePermission = permissions.includes("user.customer.trade"); //MOZDA SE DRUGACIJE BUDE ZVALA PERMISIJA
+        //const hasTradePermission = permissions.includes("user.customer.trade"); //MOZDA SE DRUGACIJE BUDE ZVALA PERMISIJA
 
         console.log(
             "User employed:", isEmployed,
             "Admin status:", isAdmin,
             "Position:", userPosition,
-            "Trade Permission:", hasTradePermission
+            //"Trade Permission:", hasTradePermission
         );
 
         // The page is accessible to All Users
@@ -46,20 +46,14 @@ const AuthGuard = ({ allowedPositions, children }) => {
 
         // If User is Customer
         if (!isEmployed) {
-
-            // If route requires Customer with Permission for Trading (check for Trade Permission)
-            if (allowedPositions.includes("TRADE_CUSTOMER")) {
-                return hasTradePermission ? children : <Navigate to="/home" replace />;
+            // If the route is for Employees => deny access
+            if (allowedPositions.some(pos => ["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"].includes(pos))) {
+                return <Navigate to="/home" replace/>;
             }
 
-            // If the route is for All Customers
-            if (!allowedPositions.includes("TRADE_CUSTOMER")) {
-                return children;
-            }
-
-            return <Navigate to="/home" replace />;
+            // Otherwise => allow access
+            return children;
         }
-
 
         return <Navigate to="/home" replace />;
 
@@ -70,3 +64,22 @@ const AuthGuard = ({ allowedPositions, children }) => {
 };
 
 export default AuthGuard;
+
+
+        /*
+            // If User is Customer
+            if (!isEmployed) {
+
+                // If route requires Customer with Permission for Trading (check for Trade Permission)
+                if (allowedPositions.includes("TRADE_CUSTOMER")) {
+                    return hasTradePermission ? children : <Navigate to="/home" replace />;
+                }
+
+                // If the route is for All Customers
+                if (!allowedPositions.includes("TRADE_CUSTOMER")) {
+                    return children;
+                }
+
+                return <Navigate to="/home" replace />;
+            }
+        */

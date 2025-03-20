@@ -221,23 +221,21 @@ export default function Sidebar() {
                     </ListItemButton>
                   </ListItem>
 
-                  {/* For Customers with Trade Permission */}
-                  {hasTradePermission && (
-                      <>
-                      <ListItem disablePadding>
-                        <ListItemButton onClick={() => handleNavigation('/portfolio-page')}>
-                          <ListItemIcon><LibraryBooks /></ListItemIcon>
-                          <ListItemText primary="Portfolio" />
-                        </ListItemButton>
-                      </ListItem>
-                        <ListItem disablePadding>
-                          <ListItemButton onClick={() => handleNavigation('/client-buying-portal')}>
-                            <ListItemIcon><FolderTwoTone /></ListItemIcon>
-                            <ListItemText primary="Important Files" />
-                          </ListItemButton>
-                        </ListItem>
-                        </>
-                  )}
+                  {/* For Customers with Trade Permission  LATER*/}
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleNavigation('/portfolio-page')}>
+                      <ListItemIcon><LibraryBooks /></ListItemIcon>
+                      <ListItemText primary="Portfolio" />
+                    </ListItemButton>
+                  </ListItem>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleNavigation('/client-buying-portal')}>
+                      <ListItemIcon><FolderTwoTone /></ListItemIcon>
+                      <ListItemText primary="Important Files" />
+                    </ListItemButton>
+                  </ListItem>
+
+                  {/*DO OVDE*/}
                 </>
             )}
 
