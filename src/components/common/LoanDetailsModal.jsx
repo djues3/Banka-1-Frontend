@@ -17,6 +17,7 @@ const LoanDetailsModal = ({ open, onClose, loanId }) => {
             const loadLoanDetails = async () => {
                 setLoading(true);
                 try {
+                    console.log("Fetching loan details for ID:", loanId); // Debug log
                     const loanResponse = await fetchLoanDetails(loanId);
                     const installmentsResponse = await fetchRemainingInstallments(loanId);
 
@@ -32,6 +33,9 @@ const LoanDetailsModal = ({ open, onClose, loanId }) => {
             };
 
             loadLoanDetails();
+        }
+        if(!open){
+            setLoanDetails(null); // Resetuje podatke kada se modal zatvori
         }
     }, [open, loanId]);
 

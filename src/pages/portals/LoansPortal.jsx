@@ -34,9 +34,11 @@ const LoansPortal = () => {
     ];
 
     const handleOpenModal = (loanId) => {
+        console.log("Opening modal for loan ID:", loanId); // Debug log
         setSelectedLoanId(loanId);
         setModalOpen(true);
     };
+
 
     const handleCloseModal = () => {
         setModalOpen(false);
