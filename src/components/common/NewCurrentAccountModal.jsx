@@ -117,7 +117,8 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                     dailyLimit: 0,
                     monthlyLimit: 0,
                     status: "ACTIVE",
-                    createCard: makeCard
+                    createCard: makeCard,
+                    balance: parseFloat(startingBalance),
                 }
             };
 
