@@ -20,11 +20,11 @@ npm install
 ```
 ### Second run the back using the command:
 ```<bash>
-docker compose up -d
+docker compose up -d --pull always
 ```
 Or if using podman
 ```<bash>
-podman compose up -d
+podman compose up -d --pull always
 ```
 ### Third start the local development server:
 ```<bash>
