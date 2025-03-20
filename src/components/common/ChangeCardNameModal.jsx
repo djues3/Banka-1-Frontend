@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Modal, Box, Typography, Button, TextField } from "@mui/material";
-import { useCards } from "../../context/CardContext";
+import { changeCardName } from "../../services/AxiosBanking";
 
 const ChangeCardNameModal = ({ open, onClose, card }) => {
-  const { updateCardName } = useCards();
+
   const [newName, setNewName] = useState("");
 
   const handleSave = async () => {
     if (!newName.trim()) return;
-    await updateCardName(card.id, newName);
+    await changeCardName(card.id, newName);
+    window.location.reload();
     onClose();
   };
 

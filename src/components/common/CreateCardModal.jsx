@@ -93,7 +93,6 @@ const CreateCardModal = ({open, onClose, accountId}) => {
                         displayEmpty
                         variant="outlined">
                         <MenuItem key="DEBIT" value="DEBIT">Debit</MenuItem>
-                        <MenuItem key="CREDIT" value="CREDIT">Credit</MenuItem>
                     </Select>
 
                 </FormControl>

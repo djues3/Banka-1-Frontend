@@ -8,6 +8,7 @@ const ChangeCardLimitModal = ({ open, onClose, card }) => {
   const handleSave = async () => {
     if (!newLimit.trim()) return;
     await changeCardLimit(card.id, newLimit);
+    window.location.reload();
     onClose();
   };
 
