@@ -128,4 +128,14 @@ export const updateOrder = async (orderId, action, newQuantity = null) => {
     }
 };
 
+export const resetUsedLimit = async (id) => {
+  try {
+    await apiBanking.put(`/actuaries/${id}/reset-used-limit`);
+    return { message: "Used limit reset successfully" };
+  } catch (error) {
+    console.error("Error resetting used limit:", error);
+    throw error;
+  }
+};
+
 export default apiTrading;
