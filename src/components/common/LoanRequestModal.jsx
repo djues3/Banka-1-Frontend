@@ -15,17 +15,18 @@ import { fetchAccountsForUser, submitLoanRequest } from "../../services/AxiosBan
 const LoanRequestModal = ({ open, onClose }) => {
   const [loanType, setLoanType] = useState("");
   const [loanAmount, setLoanAmount] = useState("");
-  const [loanReason, setLoanReason] = useState("");
   const [currencyType, setCurrencyType] = useState("");
+  const [loanPurpose, setLoanPurpose] = useState("");
   const [numberOfInstallments, setNumberOfInstallments] = useState("");
-  const [nominalRate, setNominalRate] = useState("");
-  const [effectiveRate, setEffectiveRate] = useState("");
   const [interestType, setInterestType] = useState("FIXED");
+  const [salaryAmount, setSalaryAmount] = useState("");
+  const [employmentStatus, setEmploymentStatus] = useState("");
+  const [employmentDuration, setEmploymentDuration] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState("");
   const [loading, setLoading] = useState(false);
 
-  //dobavljanje racuna
   useEffect(() => {
     const fetchUserAccounts = async () => {
       try {
@@ -39,11 +40,10 @@ const LoanRequestModal = ({ open, onClose }) => {
     if (open) fetchUserAccounts();
   }, [open]);
 
- //automatski postavlja polje valute na onu valutu koja je na racunu 
   const handleAccountChange = (e) => {
     const accountId = e.target.value;
     const selectedAcc = accounts.find(acc => acc.id === accountId);
-    
+
     if (selectedAcc) {
       setSelectedAccount(accountId);
       setCurrencyType(selectedAcc.currencyType);
@@ -59,32 +59,26 @@ const LoanRequestModal = ({ open, onClose }) => {
   };
 
   const handleSubmit = async () => {
-    if (!selectedAccount) {
-      alert("You must select an account before submitting the request.");
+    if (!selectedAccount || !loanType || !loanAmount || !currencyType || !loanPurpose || !salaryAmount || !employmentStatus || !employmentDuration || !phoneNumber || !numberOfInstallments) {
+      alert("Please fill in all required fields.");
       return;
     }
 
-    // if (!loanType || !loanAmount || !currencyType) {
-    //   alert("Please fill in all required fields.");
-    //   return;
-    // } // nije definisano po spec, samo racun je obavezan
-
     const requestData = {
-      loanReason,
+      loanPurpose,
       loanType,
-      numberOfInstallments: Number(numberOfInstallments) || 0, 
+      numberOfInstallments: Number(numberOfInstallments),
       interestType,
-      nominalRate: Number(nominalRate) || 0, 
-      effectiveRate: Number(effectiveRate) || 0, 
-      loanAmount: Number(loanAmount) || 0, 
-      duration: 0,
-      allowedDate: 0,
-      monthlyPayment: 0,
+      loanAmount: Number(loanAmount),
+      salaryAmount: Number(salaryAmount),
+      employmentStatus,
+      employmentDuration: Number(employmentDuration),
+      phoneNumber,
       currencyType,
-      accountId: selectedAccount
+      accountId: selectedAccount,
     };
 
-    console.log("Submitting loan request:", requestData); 
+    console.log("Submitting loan request:", requestData);
 
     try {
       setLoading(true);
@@ -92,23 +86,25 @@ const LoanRequestModal = ({ open, onClose }) => {
       alert("Loan request submitted successfully!");
       resetForm();
       onClose();
+      window.location.reload();
     } catch (error) {
       console.error("Error submitting loan request:", error);
-      console.log("Backend response:", error.response?.data); 
       alert("Failed to submit loan request. Please try again.");
     }
     setLoading(false);
-};
+  };
 
   const resetForm = () => {
     setLoanType("");
     setLoanAmount("");
-    setLoanReason("");
     setCurrencyType("");
+    setLoanPurpose("");
     setNumberOfInstallments("");
-    setNominalRate("");
-    setEffectiveRate("");
-    setInterestType("FIXED");
+    setSalaryAmount("");
+    setEmploymentStatus("");
+    setEmploymentDuration("");
+    setPhoneNumber("");
+    setInterestType("");
     setSelectedAccount("");
   };
 
@@ -120,19 +116,19 @@ const LoanRequestModal = ({ open, onClose }) => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 500,
+          width: 550, 
           bgcolor: "#1c1f2b",
           color: "white",
-          p: 4,
+          p: 3,
           borderRadius: 2,
           boxShadow: 24
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2, textAlign: "center", fontWeight: "bold" }}>
-          New Loan Request 
+        <Typography variant="h6" sx={{ mb: 1.5, textAlign: "center", fontWeight: "bold" }}>
+          New Loan Request
         </Typography>
 
-        <FormControl fullWidth sx={{ mb: 2 }} error={!selectedAccount}>
+        <FormControl fullWidth sx={{ mb: 1 }}>
           <InputLabel>Select account</InputLabel>
           <Select value={selectedAccount} onChange={handleAccountChange}>
             {accounts.map((acc) => (
@@ -143,47 +139,27 @@ const LoanRequestModal = ({ open, onClose }) => {
           </Select>
         </FormControl>
 
-        <TextField
-          label="Currency"
-          value={currencyType}
-          fullWidth
-          disabled
-          sx={{ mb: 2 }}
-        />
+        <TextField label="Currency" value={currencyType} fullWidth disabled sx={{ mb: 1 }} />
 
-        <FormControl fullWidth sx={{ mb: 2 }}>
-          <InputLabel>Loan type</InputLabel>
-          <Select value={loanType} onChange={(e) => setLoanType(e.target.value)}>
-            <MenuItem value="CASH">Cash</MenuItem>
-            <MenuItem value="MORTGAGE">Mortgage</MenuItem>
-            <MenuItem value="AUTO">Auto</MenuItem>
-            <MenuItem value="REFINANCING">Refinancing</MenuItem>
-            <MenuItem value="STUDENT">Student</MenuItem>
-          </Select>
-        </FormControl>
+        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+          <FormControl fullWidth>
+            <InputLabel>Loan type</InputLabel>
+            <Select value={loanType} onChange={(e) => setLoanType(e.target.value)}>
+              <MenuItem value="CASH">Cash</MenuItem>
+              <MenuItem value="MORTGAGE">Mortgage</MenuItem>
+              <MenuItem value="AUTO">Auto</MenuItem>
+              <MenuItem value="REFINANCING">Refinancing</MenuItem>
+              <MenuItem value="STUDENT">Student</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField label="Loan amount" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} fullWidth />
+        </Box>
 
-        <TextField
-          label="Loan amount"
-          value={loanAmount}
-          onChange={(e) => setLoanAmount(e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
+        <TextField label="Loan purpose" value={loanPurpose} onChange={(e) => setLoanPurpose(e.target.value)} fullWidth sx={{ mb: 1 }} />
 
-        <TextField
-          label="Loan reason"
-          value={loanReason}
-          onChange={(e) => setLoanReason(e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
-
-        <FormControl fullWidth sx={{ mb: 2 }}>
+        <FormControl fullWidth sx={{ mb: 1 }}>
           <InputLabel>Number of installments</InputLabel>
-          <Select
-            value={numberOfInstallments}
-            onChange={(e) => setNumberOfInstallments(e.target.value)}
-          >
+          <Select value={numberOfInstallments} onChange={(e) => setNumberOfInstallments(e.target.value)}>
             {installmentOptions[loanType]?.map((option) => (
               <MenuItem key={option} value={option}>
                 {option}
@@ -191,8 +167,7 @@ const LoanRequestModal = ({ open, onClose }) => {
             ))}
           </Select>
         </FormControl>
-
-        <FormControl fullWidth sx={{ mb: 2 }}>
+        <FormControl fullWidth sx={{ mb: 1 }}>
           <InputLabel>Interest type</InputLabel>
           <Select value={interestType} onChange={(e) => setInterestType(e.target.value)}>
             <MenuItem value="FIXED">Fixed</MenuItem>
@@ -200,33 +175,28 @@ const LoanRequestModal = ({ open, onClose }) => {
           </Select>
         </FormControl>
 
-        <TextField
-          label="Nominal rate"
-          value={nominalRate}
-          onChange={(e) => setNominalRate(e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
+        <TextField label="Salary amount" value={salaryAmount} onChange={(e) => setSalaryAmount(e.target.value)} fullWidth sx={{ mb: 1 }} />
 
-        <TextField
-          label="Effective rate"
-          value={effectiveRate}
-          onChange={(e) => setEffectiveRate(e.target.value)}
-          fullWidth
-          sx={{ mb: 2 }}
-        />
+        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+          <FormControl fullWidth>
+            <InputLabel>Employment status</InputLabel>
+            <Select value={employmentStatus} onChange={(e) => setEmploymentStatus(e.target.value)}>
+              <MenuItem value="PERMANENT">Permanent</MenuItem>
+              <MenuItem value="TEMPORARY">Temporary</MenuItem>
+              <MenuItem value="UNEMPLOYED">Unemployed</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField label="Employment duration (months)" value={employmentDuration} onChange={(e) => setEmploymentDuration(e.target.value)} fullWidth />
+        </Box>
+
+        <TextField label="Phone number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} fullWidth sx={{ mb: 1 }} />
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
           <Button variant="contained" color="error" onClick={() => { resetForm(); onClose(); }}>
             Cancel
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={!selectedAccount || loading}
-          >
-            {loading ? "Submitting..." : "Submit loan request"}
+          <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading}>
+            {loading ? "Submitting..." : "Submit"}
           </Button>
         </Box>
       </Box>
@@ -235,22 +205,3 @@ const LoanRequestModal = ({ open, onClose }) => {
 };
 
 export default LoanRequestModal;
-
-
-//Kod za dodavanje dugmeta koje otvara modal - dodati na pocetnu stranicu za kredite
-
-//import LoanRequestModal from "../../components/common/LoanRequestModal"; // 
-
-
- // const [setLoanModalOpen] = useState(false);
-
-            // <Button 
-            //   variant="contained"     
-            //   color="primary"          
-            //   onClick={() => setLoanModalOpen(true)}  
-            // >
-            //   Apply for loan
-            // </Button>
-
-// {/* Dodajemo modal za kredit */}
-//     <LoanRequestModal open={loanModalOpen} onClose={() => setLoanModalOpen(false)} />
