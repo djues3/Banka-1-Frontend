@@ -618,16 +618,29 @@ export const convertCurrency = async (amount, fromCurrency, toCurrency) => {
   };
 
   // Submit loan request - podnosenje zahteva za kredit
-export const submitLoanRequest = async (loanData) => {
-  try {
-    console.log(loanData);
-    const response = await apiBanking.post("/loans/", loanData);
-    return response.data;
-  } catch (error) {
-    console.error("Error submitting loan request:", error);
-    throw error;
-  }
-};
+  export const submitLoanRequest = async (loanData) => {
+    try {
+      console.log("Submitting loan request:", loanData);
+      const response = await apiBanking.post("/loans/", {
+        loanPurpose: loanData.loanPurpose,
+        loanType: loanData.loanType,
+        numberOfInstallments: loanData.numberOfInstallments,
+        interestType: loanData.interestType,
+        loanAmount: loanData.loanAmount,
+        salaryAmount: loanData.salaryAmount,
+        employmentStatus: loanData.employmentStatus,
+        employmentDuration: loanData.employmentDuration,
+        phoneNumber: loanData.phoneNumber,
+        currencyType: loanData.currencyType,
+        accountId: loanData.accountId
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error submitting loan request:", error);
+      throw error;
+    }
+  };
+  
 
 export const getPaymentCodes = async () => {
   try {

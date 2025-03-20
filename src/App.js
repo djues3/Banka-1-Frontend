@@ -178,7 +178,7 @@ function App() {
               path="/portfolio-page"
               element={
                 <AuthGuard
-                  allowedPositions={["SUPERVISOR", "AGENT", "TRADE_CUSTOMER"]}
+                  allowedPositions={["SUPERVISOR", "AGENT"]}
                 >
                   <PortfolioPage />
                 </AuthGuard>
@@ -211,7 +211,7 @@ function App() {
               }
             />
 
-            {/* Routes only for Trade Customer */}
+            {/* Routes only for Trade Customer
             <Route
               path="/client-buying-portal"
               element={
@@ -220,6 +220,17 @@ function App() {
                 </AuthGuard>
               }
             />
+            <Route
+              path="/portfolio-page"
+              element={
+                <AuthGuard
+                  allowedPositions={["TRADE_CUSTOMER"]}
+                >
+                  <PortfolioPage />
+                </AuthGuard>
+              }
+            />
+            */}
 
             {/* DO OVDE */}
 
@@ -232,6 +243,24 @@ function App() {
                 </AuthGuard>
               }
             />
+              {/*NOVO*/}
+              <Route
+                  path="/portfolio-page"
+                  element={
+                      <AuthGuard>
+                          <PortfolioPage />
+                      </AuthGuard>
+                  }
+              />
+              <Route
+                  path="/client-buying-portal"
+                  element={
+                      <AuthGuard>
+                          <ClientSecuritiesBuyingPortal />
+                      </AuthGuard>
+                  }
+              />
+              {/*NOVO*/}
             <Route
               path="/accounts-portal"
               element={

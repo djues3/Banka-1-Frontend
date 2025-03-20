@@ -12,11 +12,16 @@ import {
 import { useTheme } from "../../context/ThemeContext";
 import AccountNameChangeModal from "./AccountNameChangeModal";
 import AccountLimitChangeModal from "./AccountLimitChangeModal";
+import { Link as RouterLink } from "react-router-dom";
+import CreateCardModal from "../../components/common/CreateCardModal";
+
 
 const AccountDetailsModal = ({ open, onClose, account }) => {
   const { mode } = useTheme();
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
+  const [isCardModalOpen, setIsCardModalOpen] = useState(false);
+
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -50,14 +55,40 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
         {/* Linkovi za otvaranje modala */}
         <Grid container spacing={2} mt={3}>
           <Grid item xs={6}>
-            {/*<Link href="#" onClick={() => setIsNameModalOpen(true)} sx={{ color: "#FDD835", textDecoration: "none", fontSize: "0.9rem", "&:hover": { textDecoration: "underline" } }}>Name change</Link>
+            {/*<Link onClick={() => setIsNameModalOpen(true)} sx={{ color: "#FDD835", textDecoration: "none", fontSize: "0.9rem", "&:hover": { textDecoration: "underline" } }}>Name change</Link>
             <br />*/}
-            <Link href="#" onClick={() => setIsLimitModalOpen(true)} sx={{ color: "#FDD835", textDecoration: "none", fontSize: "0.9rem", "&:hover": { textDecoration: "underline" } }}>Limit Change</Link>
+            <Link onClick={() => setIsLimitModalOpen(true)} sx={{ color: "#FDD835", textDecoration: "none", fontSize: "0.9rem", "&:hover": { textDecoration: "underline" } }}>Limit Change</Link>
           </Grid>
           <Grid item xs={6} textAlign="right">
-            <Link href="#" sx={{ color: "#FDD835", textDecoration: "none", fontSize: "0.9rem", "&:hover": { textDecoration: "underline" } }}>New payment</Link>
-            <br />
-            <Link href="#" sx={{ color: "#FDD835", textDecoration: "none", fontSize: "0.9rem", "&:hover": { textDecoration: "underline" } }}>New card</Link>
+
+          <Link
+            component={RouterLink}
+            to="/new-payment-portal"
+            sx={{
+              color: "#FDD835",
+              textDecoration: "none",
+              fontSize: "0.9rem",
+              "&:hover": { textDecoration: "underline" }
+            }}
+            >
+            New payment
+          </Link>            
+          
+          <br />
+
+          <Link
+            component={RouterLink}
+            to="/cards-portal"
+            sx={{
+              color: "#FDD835",
+              textDecoration: "none",
+              fontSize: "0.9rem",
+              "&:hover": { textDecoration: "underline" }
+            }}
+            >
+            New Card
+          </Link> 
+
           </Grid>
         </Grid>
       </DialogContent>
@@ -87,6 +118,7 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
           setIsLimitModalOpen(false);
         }}
       />
+      
     </Dialog>
   );
 };

@@ -165,26 +165,26 @@ export default function Sidebar() {
                       {showPaymentsMenu ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </ListItemButton>
                   </ListItem>
-                  {showPaymentsMenu && (
-                      <>
-                        <ListItemButton onClick={() => handleNavigation('/new-payment-portal')}>
+                  <Collapse in={showPaymentsMenu} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/new-payment-portal')}>
                           <ListItemIcon><AttachMoneyIcon /></ListItemIcon>
                           <ListItemText primary="New Payment" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => handleNavigation('/internal-transfer-portal')}>
+                        <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/internal-transfer-portal')}>
                           <ListItemIcon><TransferWithinAStationIcon /></ListItemIcon>
                           <ListItemText primary="Transfer" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => handleNavigation('/receiver-portal')}>
+                        <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/receiver-portal')}>
                           <ListItemIcon><PersonAddIcon /></ListItemIcon>
                           <ListItemText primary="Payment Receivers" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => handleNavigation('/transactions-page')}>
+                        <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/transactions-page')}>
                           <ListItemIcon><ReceiptIcon /></ListItemIcon>
                           <ListItemText primary="Payment Overview" />
                         </ListItemButton>
-                      </>
-                  )}
+                    </List>
+                  </Collapse>
 
                   {/* Exchange Dropdown */}
                   <ListItem disablePadding>
@@ -221,23 +221,21 @@ export default function Sidebar() {
                     </ListItemButton>
                   </ListItem>
 
-                  {/* For Customers with Trade Permission */}
-                  {hasTradePermission && (
-                      <>
-                      <ListItem disablePadding>
-                        <ListItemButton onClick={() => handleNavigation('/portfolio-page')}>
-                          <ListItemIcon><LibraryBooks /></ListItemIcon>
-                          <ListItemText primary="Portfolio" />
-                        </ListItemButton>
-                      </ListItem>
-                        <ListItem disablePadding>
-                          <ListItemButton onClick={() => handleNavigation('/client-buying-portal')}>
-                            <ListItemIcon><FolderTwoTone /></ListItemIcon>
-                            <ListItemText primary="Important Files" />
-                          </ListItemButton>
-                        </ListItem>
-                        </>
-                  )}
+                  {/* For Customers with Trade Permission  LATER*/}
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleNavigation('/portfolio-page')}>
+                      <ListItemIcon><LibraryBooks /></ListItemIcon>
+                      <ListItemText primary="Portfolio" />
+                    </ListItemButton>
+                  </ListItem>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleNavigation('/client-buying-portal')}>
+                      <ListItemIcon><FolderTwoTone /></ListItemIcon>
+                      <ListItemText primary="Important Files" />
+                    </ListItemButton>
+                  </ListItem>
+
+                  {/*DO OVDE*/}
                 </>
             )}
 
@@ -265,18 +263,18 @@ export default function Sidebar() {
                       {showLoanOptions ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                     </ListItemButton>
                   </ListItem>
-                  {showLoanOptions && (
-                      <>
-                        <ListItemButton onClick={() => handleNavigation('/all-loans-employee')}>
+                  <Collapse in={showLoanOptions} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/all-loans-employee')}>
                           <ListItemIcon><ReceiptIcon /></ListItemIcon>
                           <ListItemText primary="All Loans" />
                         </ListItemButton>
-                        <ListItemButton onClick={() => handleNavigation('/pending-loans-employee')}>
+                        <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/pending-loans-employee')}>
                           <ListItemIcon><AttachMoneyIcon /></ListItemIcon>
                           <ListItemText primary="Pending Loans" />
                         </ListItemButton>
-                      </>
-                  )}
+                    </List>
+                  </Collapse>
                 </>
             )}
 
