@@ -22,18 +22,17 @@ import CardsPortal from "./pages/portals/CardsPortal";
 import ReceiversPortal from "./pages/portals/ReceiversPortal";
 import EmployeeCardsPortal from "./pages/portals/EmployeeCardsPortal";
 import CustomerAccountPortal from "./pages/portals/CustomerAccountPortal";
-import LoansPortal from "./pages/portals/LoansPortal"
+import LoansPortal from "./pages/portals/LoansPortal";
 import AllLoansEmployeePortal from "./pages/portals/AllLoansEmployeePortal";
 import PendingLoansEmployeePortal from "./pages/portals/PendingLoansEmployeePortal";
 import ExchangeRateList from "./pages/exchange/ExchangeRateList";
 import CheckEquivalency from "./pages/exchange/CheckEquivalency";
-/*
+
 import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal";
 import PortfolioPage from "./pages/portals/PortfolioPage";
 import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ActuarySecuritiesBuyingPortal";
 import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
-import ViewOrderPortal from "./pages/portals/ViewOrderPortal"
- */
+// import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 
 // import CustomerAccountPortal from "./pages/portals/CustomerAccountPortal";
 
@@ -130,38 +129,37 @@ function App() {
               path={"/all-loans-employee"}
               element={
                 <AuthGuard
-                   allowedPositions={[
-                      "WORKER",
-                      "MANAGER",
-                      "DIRECTOR",
-                      "HR",
-                      "ADMIN",
-                      "NONE",
-                   ]}
-                  >
-                    <AllLoansEmployeePortal />
-                  </AuthGuard>
+                  allowedPositions={[
+                    "WORKER",
+                    "MANAGER",
+                    "DIRECTOR",
+                    "HR",
+                    "ADMIN",
+                    "NONE",
+                  ]}
+                >
+                  <AllLoansEmployeePortal />
+                </AuthGuard>
               }
-              />
+            />
 
-              <Route
-                  path={"/pending-loans-employee"}
-                  element={
-                      <AuthGuard
-                          allowedPositions={[
-                              "WORKER",
-                              "MANAGER",
-                              "DIRECTOR",
-                              "HR",
-                              "ADMIN",
-                              "NONE",
-                          ]}
-                      >
-                          <PendingLoansEmployeePortal />
-                      </AuthGuard>
-                  }
-              />
-
+            <Route
+              path={"/pending-loans-employee"}
+              element={
+                <AuthGuard
+                  allowedPositions={[
+                    "WORKER",
+                    "MANAGER",
+                    "DIRECTOR",
+                    "HR",
+                    "ADMIN",
+                    "NONE",
+                  ]}
+                >
+                  <PendingLoansEmployeePortal />
+                </AuthGuard>
+              }
+            />
 
             {/* Admin Only */}
             <Route
@@ -173,55 +171,57 @@ function App() {
               }
             />
 
-              {/* NOVO */}
+            {/* NOVO */}
 
-              {/* Special rutes */}
-              <Route
-                  path="/portfolio-page"
-                  element={
-                      <AuthGuard allowedPositions={["SUPERVISOR", "AGENT", "TRADE_CUSTOMER"]}>
-                          {/*<PortfolioPage />*/}
-                      </AuthGuard>
-                  }
-              />
-              <Route
-                  path="/actuary-buying-portal"
-                  element={
-                      <AuthGuard allowedPositions={["SUPERVISOR", "AGENT"]}>
-                          {/*<ActuarySecuritiesBuyingPortal />*/}
-                      </AuthGuard>
-                  }
-              />
+            {/* Special rutes */}
+            <Route
+              path="/portfolio-page"
+              element={
+                <AuthGuard
+                  allowedPositions={["SUPERVISOR", "AGENT", "TRADE_CUSTOMER"]}
+                >
+                  <PortfolioPage />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/actuary-buying-portal"
+              element={
+                <AuthGuard allowedPositions={["SUPERVISOR", "AGENT"]}>
+                  <ActuarySecuritiesBuyingPortal />
+                </AuthGuard>
+              }
+            />
 
-              {/* Routes only for Supervisor */}
-              <Route
-                  path="/actuarial-management-portal"
-                  element={
-                      <AuthGuard allowedPositions={["SUPERVISOR"]}>
-                          {/* <ActuarialManagementPortal />*/}
-                      </AuthGuard>
-                  }
-              />
-              <Route
-                  path="/view-order-portal"
-                  element={
-                      <AuthGuard allowedPositions={["SUPERVISOR"]}>
-                          {/* <ViewOrderPortal />*/}
-                      </AuthGuard>
-                  }
-              />
+            {/* Routes only for Supervisor */}
+            <Route
+              path="/actuarial-management-portal"
+              element={
+                <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                  <ActuarialManagementPortal />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/view-order-portal"
+              element={
+                <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                  {/* <ViewOrderPortal />*/}
+                </AuthGuard>
+              }
+            />
 
-              {/* Routes only for Trade Customer */}
-              <Route
-                  path="/client-buying-portal"
-                  element={
-                      <AuthGuard allowedPositions={["TRADE_CUSTOMER"]}>
-                          {/* <ClientSecuritiesBuyingPortal />*/}
-                      </AuthGuard>
-                  }
-              />
+            {/* Routes only for Trade Customer */}
+            <Route
+              path="/client-buying-portal"
+              element={
+                <AuthGuard allowedPositions={["TRADE_CUSTOMER"]}>
+                  <ClientSecuritiesBuyingPortal />
+                </AuthGuard>
+              }
+            />
 
-              {/* DO OVDE */}
+            {/* DO OVDE */}
 
             {/* Customer-Only Routes */}
             <Route
@@ -280,14 +280,14 @@ function App() {
                 </AuthGuard>
               }
             />
-              <Route
-                  path="/loans-portal"
-                  element={
-                      <AuthGuard>
-                          <LoansPortal />
-                      </AuthGuard>
-                  }
-              />
+            <Route
+              path="/loans-portal"
+              element={
+                <AuthGuard>
+                  <LoansPortal />
+                </AuthGuard>
+              }
+            />
             <Route
               path="/exchange-rates"
               element={
