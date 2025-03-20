@@ -193,8 +193,8 @@ export const createCard = async (
 
 // Change card name
 export const changeCardName = async (cardId, newName) => {
-  try {
-    const response = await apiBanking.patch(`/cards/${cardId}`, {
+  try { 
+    const response = await apiBanking.post(`/cards/${cardId}/name`, {
       name: newName,
     });
     return response.data;
@@ -207,7 +207,7 @@ export const changeCardName = async (cardId, newName) => {
 // Change card limit
 export const changeCardLimit = async (cardId, newLimit) => {
   try {
-    const response = await apiBanking.patch(`/cards/${cardId}/limit`, {
+    const response = await apiBanking.post(`/cards/${cardId}/limit`, {
       newLimit: newLimit,
     });
     return response.data;
@@ -220,7 +220,7 @@ export const changeCardLimit = async (cardId, newLimit) => {
 // Block or unblock a card
 export const updateCardStatus = async (cardId, status) => {
   try {
-    const response = await apiBanking.patch(
+    const response = await apiBanking.post(
       `/cards/${cardId}`,
       { status },
       {
@@ -250,7 +250,7 @@ export const fetchAdminUserCards = async (accountId) => {
 
 export const updateCardStatusAdmin = async (accountId, cardId, status) => {
   try {
-    const response = await apiBanking.patch(
+    const response = await apiBanking.post(
       `/cards/admin/${accountId}?card_id=${cardId}`,
       { status }
     );
@@ -276,7 +276,6 @@ export const fetchAccountsTransactions = async (accountId) => {
 export const fetchCardsByAccountId = async (accountId) => {
   try {
     const response = await apiBanking.get(`/cards/admin/${accountId}`);
-    console.log(response);
     return response.data;
   } catch (error) {
     console.error("Error fetching cards:", error);
@@ -363,10 +362,10 @@ export const fetchAccountsId1 = async (id) => {
   }
 };
 
-export const fetchRecipientsForFast = async (userId) => {
+export const fetchRecipientsForFast = async (accountId) => {
   try {
-    console.log("UserId = " + userId);
-    const response = await apiBanking.get(`/receiver/${userId}`);
+    console.log("AccountId = " + accountId);
+    const response = await apiBanking.get(`/receiver/${accountId}`);
 
     // Logujemo celu strukturu odgovora
     console.log("Response data:", response.data);
@@ -619,16 +618,29 @@ export const convertCurrency = async (amount, fromCurrency, toCurrency) => {
   };
 
   // Submit loan request - podnosenje zahteva za kredit
-export const submitLoanRequest = async (loanData) => {
-  try {
-    console.log(loanData);
-    const response = await apiBanking.post("/loans/", loanData);
-    return response.data;
-  } catch (error) {
-    console.error("Error submitting loan request:", error);
-    throw error;
-  }
-};
+  export const submitLoanRequest = async (loanData) => {
+    try {
+      console.log("Submitting loan request:", loanData);
+      const response = await apiBanking.post("/loans/", {
+        loanPurpose: loanData.loanPurpose,
+        loanType: loanData.loanType,
+        numberOfInstallments: loanData.numberOfInstallments,
+        interestType: loanData.interestType,
+        loanAmount: loanData.loanAmount,
+        salaryAmount: loanData.salaryAmount,
+        employmentStatus: loanData.employmentStatus,
+        employmentDuration: loanData.employmentDuration,
+        phoneNumber: loanData.phoneNumber,
+        currencyType: loanData.currencyType,
+        accountId: loanData.accountId
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error submitting loan request:", error);
+      throw error;
+    }
+  };
+  
 
 export const getPaymentCodes = async () => {
   try {
@@ -639,6 +651,32 @@ export const getPaymentCodes = async () => {
     return codes;
   } catch (error) {
     console.error("Error fetching codes:", error);
+    throw error;
+  }
+};
+
+// Block card
+export const blockCard = async (cardId, status) => {
+  try {
+    const response = await apiBanking.patch(`/cards/${cardId}`, {
+      status: status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error blocking card ${cardId}:`, error);
+    throw error;
+  }
+};
+
+// Deactive card
+export const deactivateCard = async (cardId, status) => {
+  try {
+    const response = await apiBanking.patch(`/cards/admin/${cardId}`, {
+      status: status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error deactivating card ${cardId}:`, error);
     throw error;
   }
 };
