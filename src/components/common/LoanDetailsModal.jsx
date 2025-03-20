@@ -19,6 +19,7 @@ const LoanDetailsModal = ({ open, onClose, loanId }) => {
                 try {
                     console.log("Fetching loan details for ID:", loanId); // Debug log
                     const loanResponse = await fetchLoanDetails(loanId);
+                    console.log(loanResponse);
                     const installmentsResponse = await fetchRemainingInstallments(loanId);
 
                     setLoanDetails({
