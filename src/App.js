@@ -27,318 +27,216 @@ import AllLoansEmployeePortal from "./pages/portals/AllLoansEmployeePortal";
 import PendingLoansEmployeePortal from "./pages/portals/PendingLoansEmployeePortal";
 import ExchangeRateList from "./pages/exchange/ExchangeRateList";
 import CheckEquivalency from "./pages/exchange/CheckEquivalency";
-
 import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal";
 import PortfolioPage from "./pages/portals/PortfolioPage";
 import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ActuarySecuritiesBuyingPortal";
 import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
-// import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
-
-// import CustomerAccountPortal from "./pages/portals/CustomerAccountPortal";
 
 function App() {
-  return (
-    <ThemeProvider>
-      <CardProvider>
-        <CssBaseline />
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/reset-password-email" element={<PasswordReset />} />
-            <Route
-              path="/reset-password"
-              element={<PasswordResetConfirmation />}
-            />
-            <Route path="/set-password" element={<PasswordSetConfirmation />} />
+    return (
+        <ThemeProvider>
+            <CardProvider>
+                <CssBaseline />
+                <BrowserRouter>
+                    <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<Landing />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/reset-password-email" element={<PasswordReset />} />
+                        <Route path="/reset-password" element={<PasswordResetConfirmation />} />
+                        <Route path="/set-password" element={<PasswordSetConfirmation />} />
 
-            {/* Employee-Only routes (Admin or  not) */}
-            <Route
-              path="/admin-home"
-              element={
-                <AuthGuard
-                  allowedPositions={[
-                    "WORKER",
-                    "MANAGER",
-                    "DIRECTOR",
-                    "HR",
-                    "ADMIN",
-                    "NONE",
-                  ]}
-                >
-                  <HomePage />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/customer-portal"
-              element={
-                <AuthGuard
-                  allowedPositions={[
-                    "WORKER",
-                    "MANAGER",
-                    "DIRECTOR",
-                    "HR",
-                    "ADMIN",
-                    "NONE",
-                  ]}
-                >
-                  <CustomerPortal />
-                </AuthGuard>
-              }
-            />
+                        {/* Employee-Only Routes */}
+                        <Route
+                            path="/admin-home"
+                            element={
+                                <AuthGuard allowedPositions={["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"]}>
+                                    <HomePage />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/customer-portal"
+                            element={
+                                <AuthGuard allowedPositions={["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"]}>
+                                    <CustomerPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/employee-bank-accounts-portal"
+                            element={
+                                <AuthGuard allowedPositions={["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"]}>
+                                    <EmployeeBankAccountsPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/employee-cards-portal"
+                            element={
+                                <AuthGuard allowedPositions={["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"]}>
+                                    <EmployeeCardsPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path={"/all-loans-employee"}
+                            element={
+                                <AuthGuard allowedPositions={["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"]}>
+                                    <AllLoansEmployeePortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path={"/pending-loans-employee"}
+                            element={
+                                <AuthGuard allowedPositions={["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"]}>
+                                    <PendingLoansEmployeePortal />
+                                </AuthGuard>
+                            }
+                        />
 
-            <Route
-              path="/employee-bank-accounts-portal"
-              element={
-                <AuthGuard
-                  allowedPositions={[
-                    "WORKER",
-                    "MANAGER",
-                    "DIRECTOR",
-                    "HR",
-                    "ADMIN",
-                    "NONE",
-                  ]}
-                >
-                  <EmployeeBankAccountsPortal />
-                </AuthGuard>
-              }
-            />
+                        {/* Admin-Only Routes */}
+                        <Route
+                            path="/employee-portal"
+                            element={
+                                <AuthGuard allowedPositions={["ADMIN"]}>
+                                    <EmployeePortal />
+                                </AuthGuard>
+                            }
+                        />
 
-            <Route
-              path="/employee-cards-portal"
-              element={
-                <AuthGuard
-                  allowedPositions={[
-                    "WORKER",
-                    "MANAGER",
-                    "DIRECTOR",
-                    "HR",
-                    "ADMIN",
-                    "NONE",
-                  ]}
-                >
-                  <EmployeeCardsPortal />
-                </AuthGuard>
-              }
-            />
+                        {/* Special Employee Routes (Supervisor, Agent) */}
 
-            <Route
-              path={"/all-loans-employee"}
-              element={
-                <AuthGuard
-                  allowedPositions={[
-                    "WORKER",
-                    "MANAGER",
-                    "DIRECTOR",
-                    "HR",
-                    "ADMIN",
-                    "NONE",
-                  ]}
-                >
-                  <AllLoansEmployeePortal />
-                </AuthGuard>
-              }
-            />
+                        <Route
+                            path="/home"
+                            element={
+                                <AuthGuard allowedPositions={["AGENT", "SUPERVISOR"]}>
+                                    <HomePage />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/portfolio-page"
+                            element={
+                                <AuthGuard allowedPositions={["SUPERVISOR", "AGENT"]}>
+                                    <PortfolioPage />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/actuary-buying-portal"
+                            element={
+                                <AuthGuard allowedPositions={["SUPERVISOR", "AGENT"]}>
+                                    <ActuarySecuritiesBuyingPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/actuarial-management-portal"
+                            element={
+                                <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                                    <ActuarialManagementPortal />
+                                </AuthGuard>
+                            }
+                        />
 
-            <Route
-              path={"/pending-loans-employee"}
-              element={
-                <AuthGuard
-                  allowedPositions={[
-                    "WORKER",
-                    "MANAGER",
-                    "DIRECTOR",
-                    "HR",
-                    "ADMIN",
-                    "NONE",
-                  ]}
-                >
-                  <PendingLoansEmployeePortal />
-                </AuthGuard>
-              }
-            />
+                        <Route
+                            path="/portfolio-page"
+                            element={
+                                <AuthGuard allowedPositions={["NONE", "SUPERVISOR", "AGENT"]}>
+                                    <PortfolioPage />
+                                </AuthGuard>
+                            }
+                        />
 
-            {/* Admin Only */}
-            <Route
-              path="/employee-portal"
-              element={
-                <AuthGuard allowedPositions={["ADMIN"]}>
-                  <EmployeePortal />
-                </AuthGuard>
-              }
-            />
-
-            {/* NOVO */}
-
-            {/* Special rutes */}
-            <Route
-              path="/portfolio-page"
-              element={
-                <AuthGuard
-                  allowedPositions={["SUPERVISOR", "AGENT"]}
-                >
-                  <PortfolioPage />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/actuary-buying-portal"
-              element={
-                <AuthGuard allowedPositions={["SUPERVISOR", "AGENT"]}>
-                  <ActuarySecuritiesBuyingPortal />
-                </AuthGuard>
-              }
-            />
-
-            {/* Routes only for Supervisor */}
-            <Route
-              path="/actuarial-management-portal"
-              element={
-                <AuthGuard allowedPositions={["SUPERVISOR"]}>
-                  <ActuarialManagementPortal />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/view-order-portal"
-              element={
-                <AuthGuard allowedPositions={["SUPERVISOR"]}>
-                  {/* <ViewOrderPortal />*/}
-                </AuthGuard>
-              }
-            />
-
-            {/* Routes only for Trade Customer
-            <Route
-              path="/client-buying-portal"
-              element={
-                <AuthGuard allowedPositions={["TRADE_CUSTOMER"]}>
-                  <ClientSecuritiesBuyingPortal />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/portfolio-page"
-              element={
-                <AuthGuard
-                  allowedPositions={["TRADE_CUSTOMER"]}
-                >
-                  <PortfolioPage />
-                </AuthGuard>
-              }
-            />
-            */}
-
-            {/* DO OVDE */}
-
-            {/* Customer-Only Routes */}
-            <Route
-              path="/home"
-              element={
-                <AuthGuard>
-                  <CustomerAccountPortal />
-                </AuthGuard>
-              }
-            />
-              {/*NOVO*/}
-              <Route
-                  path="/portfolio-page"
-                  element={
-                      <AuthGuard>
-                          <PortfolioPage />
-                      </AuthGuard>
-                  }
-              />
-              <Route
-                  path="/client-buying-portal"
-                  element={
-                      <AuthGuard>
-                          <ClientSecuritiesBuyingPortal />
-                      </AuthGuard>
-                  }
-              />
-              {/*NOVO*/}
-            <Route
-              path="/accounts-portal"
-              element={
-                <AuthGuard>
-                  <AccountsPortal />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/new-payment-portal"
-              element={
-                <AuthGuard>
-                  <NewPaymentPortal />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/internal-transfer-portal"
-              element={
-                <AuthGuard>
-                  <InternalTransferPortal />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/receiver-portal"
-              element={
-                <AuthGuard>
-                  <ReceiversPortal />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/transactions-page"
-              element={
-                <AuthGuard>
-                  <TransactionsPage />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/cards-portal"
-              element={
-                <AuthGuard>
-                  <CardsPortal />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/loans-portal"
-              element={
-                <AuthGuard>
-                  <LoansPortal />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/exchange-rates"
-              element={
-                <AuthGuard>
-                  <ExchangeRateList />
-                </AuthGuard>
-              }
-            />
-            <Route
-              path="/currency-converter"
-              element={
-                <AuthGuard>
-                  <CheckEquivalency />
-                </AuthGuard>
-              }
-            />
-          </Routes>
-          <ThemeToggle />
-        </BrowserRouter>
-      </CardProvider>
-    </ThemeProvider>
-  );
+                        {/* Customer-Only Routes */}
+                        <Route
+                            path="/client-buying-portal"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <ClientSecuritiesBuyingPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/accounts-portal"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <AccountsPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/new-payment-portal"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <NewPaymentPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/internal-transfer-portal"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <InternalTransferPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/receiver-portal"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <ReceiversPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/transactions-page"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <TransactionsPage />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/cards-portal"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <CardsPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/loans-portal"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <LoansPortal />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/exchange-rates"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <ExchangeRateList />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="/currency-converter"
+                            element={
+                                <AuthGuard allowedPositions={["NONE"]}>
+                                    <CheckEquivalency />
+                                </AuthGuard>
+                            }
+                        />
+                    </Routes>
+                    <ThemeToggle />
+                </BrowserRouter>
+            </CardProvider>
+        </ThemeProvider>
+    );
 }
 
 export default App;
