@@ -14,9 +14,9 @@ const AccountTransactionsList = ({ accountId }) => {
   // Define columns for the data grid displaying transactions
   const columns = [
     { field: "id", headerName: "ID", width: 90 },
-    { field: "date", headerName: "Datum", width: 150 },
-    { field: "amount", headerName: "Iznos", width: 130 },
-    { field: "description", headerName: "Opis", width: 250 },
+    { field: "date", headerName: "Date", width: 150 },
+    { field: "amount", headerName: "Amount", width: 130 },
+    { field: "description", headerName: "Description", width: 250 },
   ];
 
   // Format the date in the log to YYYY-MM-DD

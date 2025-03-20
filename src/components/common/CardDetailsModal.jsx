@@ -51,7 +51,7 @@ const CardDetailsModal = ({ open, onClose, card }) => {
               <Typography className="modal-label">Card name</Typography>
               <TextField className="modal-input"
                fullWidth disabled
-               value = {card.cardBrand} />
+               value = {card.cardName} />
             </Grid>
 
             <Grid item xs={12}>
@@ -110,11 +110,19 @@ const CardDetailsModal = ({ open, onClose, card }) => {
           </DialogActions>
 
           <DialogActions sx={{justifyContent: "center", alignItems: "center"}}>
-            <Link className="modal-link" onClick={() => updateCardStatus(card.id, "BLOCKED")}>
-              Block card
-            </Link>
-            <Link className="modal-link" onClick={() => navigate("/new-payment-portal")}>
-              New payment
+            <Link
+                className="modal-link"
+                onClick={async () => {
+                  try {
+                    await updateCardStatus(card.id, true);
+                    alert("Card successfully blocked!");
+                  } catch (error) {
+                    alert("Failed to block card.");
+                    console.error("Error blocking card:", error);
+                  }
+                }}
+              >
+                Block card
             </Link>
           </DialogActions>
 

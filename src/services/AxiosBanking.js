@@ -193,8 +193,8 @@ export const createCard = async (
 
 // Change card name
 export const changeCardName = async (cardId, newName) => {
-  try {
-    const response = await apiBanking.patch(`/cards/${cardId}`, {
+  try { 
+    const response = await apiBanking.post(`/cards/${cardId}/name`, {
       name: newName,
     });
     return response.data;
@@ -207,7 +207,7 @@ export const changeCardName = async (cardId, newName) => {
 // Change card limit
 export const changeCardLimit = async (cardId, newLimit) => {
   try {
-    const response = await apiBanking.patch(`/cards/${cardId}/limit`, {
+    const response = await apiBanking.post(`/cards/${cardId}/limit`, {
       newLimit: newLimit,
     });
     return response.data;
@@ -220,7 +220,7 @@ export const changeCardLimit = async (cardId, newLimit) => {
 // Block or unblock a card
 export const updateCardStatus = async (cardId, status) => {
   try {
-    const response = await apiBanking.patch(
+    const response = await apiBanking.post(
       `/cards/${cardId}`,
       { status },
       {
@@ -250,7 +250,7 @@ export const fetchAdminUserCards = async (accountId) => {
 
 export const updateCardStatusAdmin = async (accountId, cardId, status) => {
   try {
-    const response = await apiBanking.patch(
+    const response = await apiBanking.post(
       `/cards/admin/${accountId}?card_id=${cardId}`,
       { status }
     );
@@ -276,7 +276,6 @@ export const fetchAccountsTransactions = async (accountId) => {
 export const fetchCardsByAccountId = async (accountId) => {
   try {
     const response = await apiBanking.get(`/cards/admin/${accountId}`);
-    console.log(response);
     return response.data;
   } catch (error) {
     console.error("Error fetching cards:", error);
