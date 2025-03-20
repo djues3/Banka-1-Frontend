@@ -170,7 +170,8 @@ const EmployeeCardsPortal = () => {
             firstName: selectedAccount.firstName,
             lastName: selectedAccount.lastName,
             active: row.active,
-            cardLimit: row.cardLimit
+            cardLimit: row.cardLimit,
+            blocked: row.blocked
           }));
 
       setCards(formattedRows);
