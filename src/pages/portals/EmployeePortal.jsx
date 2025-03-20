@@ -263,7 +263,7 @@ const EmployeePortal = () => {
                 address: updatedEmployeeData.address,
                 birthDate: updatedEmployeeData.birthDate,
                 gender: updatedEmployeeData.gender,
-                position: "NONE", // Hardcoded to "Nijedna" as requested
+                position: "NONE",
                 department: updatedEmployeeData.department,
                 active: updatedEmployeeData.active,
                 isAdmin: updatedEmployeeData.isAdmin
@@ -296,7 +296,9 @@ const EmployeePortal = () => {
             { value: 'MARKETING', label: 'Marketing' },
             { value: 'HR', label: 'HR' },
             { value: 'SALES', label: 'Sales' },
-            { value: 'IT', label: 'IT' }
+            { value: 'IT', label: 'IT' },
+            { value: 'SUPERVISOR', label: 'Supervisor' },
+            { value: 'AGENT', label: 'Agent' }
         ] },
         { name: 'active', label: 'Active', type: 'switch' },
         { name: 'isAdmin', label: 'Admin', type: 'switch' }
