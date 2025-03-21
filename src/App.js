@@ -142,6 +142,15 @@ function App() {
                         />
 
                         <Route
+                        path="/view-order-portal"
+                        element={
+                          <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                            <ViewOrderPortal />
+                          </AuthGuard>
+                        }
+                        />
+
+                      <Route
                             path="/portfolio-page"
                             element={
                                 <AuthGuard allowedPositions={["NONE", "SUPERVISOR", "AGENT"]}>
