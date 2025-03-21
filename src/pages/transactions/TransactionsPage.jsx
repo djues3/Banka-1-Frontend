@@ -5,7 +5,7 @@ import {
 } from "@mui/material";
 import TransactionList from "../../components/transactionTable/TransactionList";
 import { fetchAccountsForUser, fetchAccountsTransactions } from "../../services/transactionService";
-import { Tune, Refresh, AccountBalanceWallet } from "@mui/icons-material";
+import { Tune, Refresh } from "@mui/icons-material";
 
 const TransactionsPage = () => {
     const [selectedTab, setSelectedTab] = useState(0);
@@ -48,25 +48,8 @@ const TransactionsPage = () => {
                 }
 
                 const accountTransactions = await fetchAccountsTransactions(selectedAccount);
-
                 const formattedTransactions = accountTransactions.map(transaction => {
-                    let timestamp = transaction.timestamp;
-
-                    if (timestamp > 9999999999999) {
-                        timestamp = Math.floor(timestamp / 1000);
-                    }
-
-                    const dateObj = new Date(timestamp);
-
-                    if (isNaN(dateObj.getTime())) {
-
-                        return {
-                            ...transaction,
-                            date: "N/A",
-                            time: "N/A"
-                        };
-                    }
-
+                    const dateObj = new Date(transaction.timestamp);
                     return {
                         ...transaction,
                         date: dateObj.toISOString().split("T")[0],
@@ -74,9 +57,34 @@ const TransactionsPage = () => {
                     };
                 });
 
-                formattedTransactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                const selectedAccountObj = accounts.find(acc => acc.id === selectedAccount);
 
-                setTransactions(formattedTransactions);
+                const fakeTransaction = {
+                    id: 999,
+                    sender: "Ognjen Kojic",
+                    senderAccount: "111000100000000120",
+                    receiver: "Kojic Ognjen",
+                    receiverAccount: "6543210987654321",
+                    paymentPurpose: "Test payment",
+                    amount: 1500,
+                    currency: "RSD",
+                    status: "COMPLETED",
+                    timestamp: Date.now(),
+                    date: new Date().toISOString().split("T")[0],
+                    time: new Date().toLocaleTimeString(),
+                    paymentCode: "N/A",
+                    referenceNumber: "N/A",
+                    loanId: null
+                };
+
+                let allTransactions = formattedTransactions;
+
+                if (selectedAccountObj?.accountNumber === fakeTransaction.senderAccount) {
+                    allTransactions = [...formattedTransactions, fakeTransaction];
+                }
+
+                allTransactions.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                setTransactions(allTransactions);
             } catch (err) {
                 console.error("Failed to load transactions:", err);
                 setError("Failed to load transactions. Please try again.");
@@ -87,42 +95,16 @@ const TransactionsPage = () => {
 
         loadTransactions();
     }, [selectedAccount]);
+
     const filteredTransactions = transactions.filter(transaction => {
-        try {
-            if (selectedTab === 1) return false;
+        if (selectedTab === 1) return false;
 
-            let timestamp = transaction.timestamp;
-
-            if (!timestamp || isNaN(timestamp)) {
-
-                if (transaction.completedAt) {
-                    const parsedDate = transaction.completedAt.split(",")[0].split("/");
-                    const parsedTime = transaction.completedAt.split(",")[1]?.trim();
-
-                    if (parsedDate.length === 3) {
-                        const [day, month, year] = parsedDate;
-                        timestamp = new Date(`${year}-${month}-${day}T${parsedTime || "00:00:00"}`).getTime();
-                    }
-                }
-            }
-
-            if (!timestamp || isNaN(timestamp)) {
-                console.warn("Still invalid timestamp:", transaction);
-                return false;
-            }
-
-
-            const transactionDate = new Date(timestamp).toISOString().split("T")[0];
-
-            return (
-                (!dateFilter || transactionDate === dateFilter) &&
-                (!amountFilter || transaction.amount.toString().includes(amountFilter)) &&
-                (!statusFilter || transaction.status === statusFilter)
-            );
-        } catch (error) {
-            console.error("Error filtering transaction:", error, transaction);
-            return false;
-        }
+        const transactionDate = transaction.date;
+        return (
+            (!dateFilter || transactionDate === dateFilter) &&
+            (!amountFilter || transaction.amount.toString().includes(amountFilter)) &&
+            (!statusFilter || transaction.status === statusFilter)
+        );
     });
 
     const resetFilters = () => {
@@ -154,15 +136,9 @@ const TransactionsPage = () => {
                                         borderRadius: 2,
                                         height: "45px",
                                         backgroundColor: "#2C2F36",
-                                        "& .MuiOutlinedInput-notchedOutline": {
-                                            border: "none",
-                                        },
-                                        "&:hover .MuiOutlinedInput-notchedOutline": {
-                                            border: "1px solid #444",
-                                        },
-                                        "& .MuiSelect-icon": {
-                                            color: "#A1A1A6",
-                                        },
+                                        "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                                        "&:hover .MuiOutlinedInput-notchedOutline": { border: "1px solid #444" },
+                                        "& .MuiSelect-icon": { color: "#A1A1A6" },
                                     }}
                                 >
                                     {accounts.map(account => (
@@ -189,9 +165,9 @@ const TransactionsPage = () => {
                             onChange={(_, newValue) => setSelectedTab(newValue)}
                             sx={{
                                 marginBottom: 2,
-                                "& .MuiTabs-indicator": { backgroundColor: "#F4D03F" },
+                                "& .MuiTabs-indicator": { backgroundColor: "#fdfdfd" },
                                 "& .MuiTab-root": { color: "#fff", fontWeight: "bold" },
-                                "& .Mui-selected": { color: "#F4D03F" }
+                                "& .Mui-selected": { color: "#e7e7e7" }
                             }}
                         >
                             <Tab label="Domestic Payments" />
@@ -205,15 +181,13 @@ const TransactionsPage = () => {
                                         <TextField
                                             fullWidth
                                             type="date"
-                                            placeholder="dd.mm.yyyy"
                                             InputLabelProps={{ shrink: true }}
                                             value={dateFilter}
                                             onChange={(e) => setDateFilter(e.target.value)}
                                             sx={{
                                                 backgroundColor: "#fff",
                                                 borderRadius: 1,
-                                                "& .MuiInputBase-input": { color: "#000" },
-                                                "& .MuiInputBase-input::placeholder": { color: "#555" }
+                                                "& .MuiInputBase-input": { color: "#000" }
                                             }}
                                         />
                                     </Grid>
@@ -227,15 +201,10 @@ const TransactionsPage = () => {
                                             sx={{
                                                 backgroundColor: "#fff",
                                                 borderRadius: 1,
-                                                "& .MuiInputBase-input": { color: "#000" },
-                                                "& .MuiInputBase-input::placeholder": { color: "#555" }
+                                                "& .MuiInputBase-input": { color: "#000" }
                                             }}
                                             InputProps={{
-                                                startAdornment: (
-                                                    <InputAdornment position="start">
-                                                        RSD
-                                                    </InputAdornment>
-                                                )
+                                                startAdornment: <InputAdornment position="start">RSD</InputAdornment>
                                             }}
                                         />
                                     </Grid>
@@ -260,7 +229,7 @@ const TransactionsPage = () => {
                                     <Grid item xs={12} sm={1}>
                                         <IconButton
                                             onClick={resetFilters}
-                                            sx={{ backgroundColor: "#F4D03F", color: "#000", borderRadius: 1 }}
+                                            sx={{ backgroundColor: "#f3f3f3", color: "#000", borderRadius: 1 }}
                                         >
                                             <Refresh />
                                         </IconButton>
@@ -278,4 +247,3 @@ const TransactionsPage = () => {
 };
 
 export default TransactionsPage;
-
