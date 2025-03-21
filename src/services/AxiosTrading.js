@@ -2,29 +2,29 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const apiTrading = axios.create({
-  baseURL: "http://localhost:3000/trading",
+  baseURL: `${process.env.REACT_APP_TRADING_API_URL}`,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 apiTrading.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    (config) => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
 
-      console.log(
-        `${config.method.toUpperCase()} ${
-          config.url
-        } - Token: ${token.substring(0, 20)}...`
-      );
+        console.log(
+            `${config.method.toUpperCase()} ${
+                config.url
+            } - Token: ${token.substring(0, 20)}...`
+        );
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
 );
 
 export const getActuaries = async () => {
@@ -159,6 +159,45 @@ export const updateSecurity = async (ticker, newData) => {
     return response.data;
   } catch (error) {
     console.error(`Greška pri ažuriranju hartije ${ticker}:`, error);
+    throw error;
+  }
+};
+
+export const fetchStock = async (ticker) => {
+  try {
+    const response = await apiTrading.get(`/stocks/${ticker}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching stock:", error);
+    throw error;
+  }
+};
+export const fetchForex = async (ticker) => {
+  try {
+    const response = await apiTrading.get(`/forex/${ticker}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching stock:", error);
+    throw error;
+  }
+};
+
+export const fetchStockPriceByMonth = async (ticker) => {
+  try {
+    const response = await apiTrading.get(`/stocks/${ticker}/history`);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error while fetching stock price by month:", error);
+    throw error;
+  }
+};
+
+export const fetchStockPriceByDate = async (ticker, date) => {
+  try {
+    const response = await apiTrading.get(`/stocks/${ticker}/history/${date}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching stock price by date:", error);
     throw error;
   }
 };

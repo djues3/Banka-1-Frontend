@@ -8,6 +8,7 @@ import {
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {fetchAvailableSecurities, fetchSecurities, updateSecurity} from "../../services/AxiosTrading";
 import DataTable from "../tables/DataTable";
+import SecuritiesModal from "../common/SecuritiesModal";
 
 const SecuritiesTable = ({ role }) => {
     const [securities, setSecurities] = useState([]);
@@ -128,6 +129,16 @@ const SecuritiesTable = ({ role }) => {
             )}
     ];
 
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const openDetailsModal = () => {
+        setIsDetailsModalOpen(true);
+    }
+    const closeDetailsModal =() => {
+        setIsDetailsModalOpen(false);
+    }
+
+
+
     return (
         <div>
             <h2>Hartije od vrednosti</h2>
@@ -197,6 +208,14 @@ const SecuritiesTable = ({ role }) => {
 
             {/* DataGrid iz DataTable komponente */}
             <DataTable rows={filteredSecurities} columns={columns} checkboxSelection={false} />
+            <Button onClick={() => openDetailsModal()}>Dugme</Button>
+
+            <SecuritiesModal
+                isOpen={isDetailsModalOpen}
+                onClose={closeDetailsModal}
+                ticker={"USD/RSD"}
+                type={"forex"}
+            />
         </div>
     );
 };

@@ -27,11 +27,11 @@ import AllLoansEmployeePortal from "./pages/portals/AllLoansEmployeePortal";
 import PendingLoansEmployeePortal from "./pages/portals/PendingLoansEmployeePortal";
 import ExchangeRateList from "./pages/exchange/ExchangeRateList";
 import CheckEquivalency from "./pages/exchange/CheckEquivalency";
+import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
 
 import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal";
 import PortfolioPage from "./pages/portals/PortfolioPage";
 import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ActuarySecuritiesBuyingPortal";
-import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
 // import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 
 // import CustomerAccountPortal from "./pages/portals/CustomerAccountPortal";
@@ -44,6 +44,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             {/* Public Routes */}
+
+              <Route path="/securities" element={<ClientSecuritiesBuyingPortal />} />
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password-email" element={<PasswordReset />} />
