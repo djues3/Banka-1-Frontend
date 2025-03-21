@@ -8,9 +8,13 @@ import {
     createRecipient, createRecipientt,
     deleteRecipient,
     fetchAccountsForUser,
-    fetchRecipients,
+    fetchRecipients, fetchUserLoans,
     updateRecipient, updateRecipientt
 } from "../../services/AxiosBanking";
+import Button from "@mui/material/Button";
+import DataTable from "../../components/tables/DataTable";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
 
 function ReceiversPortal() {
     const token = localStorage.getItem("token");
@@ -25,9 +29,45 @@ function ReceiversPortal() {
         accountNumber: "",
     });
 
+
     const [accounts, setAccounts] = useState([]);
     const [selectedAccount, setSelectedAccount] = useState(null);
-    const [recipients, setRecipients] = useState([]);
+
+    const [rows, setRows] = useState([]);
+    const columns = [
+        { field: "id", headerName: "ID", width: 200 },
+        { field: "recipient", headerName: "Recipient", width: 150 },
+        { field: "accountNumber", headerName: "Account Number", width: 150 },
+        {
+            field: "Edit",
+            headerName: "",
+            width: 120,
+            renderCell: (params) => (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => openEditModal(params.row)}
+                >
+                    Edit
+                </Button>
+            ),
+        },{
+            field: "Delete",
+            headerName: "",
+            width: 120,
+            renderCell: (params) => (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={() => handleDeleteRecipient(params.row.id)}
+                >
+                    Delete
+                </Button>
+            ),
+        },
+    ];
 
     useEffect(() => {
         loadAccounts();
@@ -36,11 +76,11 @@ function ReceiversPortal() {
     const openEditModal = (recipient) => {
         const newRecipient = {
             id: recipient.id,
-            fullName: recipient.firstName + " " + recipient.lastName,
+            fullName: recipient.recipient,
             accountNumber: recipient.accountNumber,
             address: recipient.address || "",
         };
-
+        console.log("Recipient data for edit modal1:", recipient);
         console.log("Recipient data for edit modal:", newRecipient);
 
         setEditRecipient(newRecipient);
@@ -68,6 +108,9 @@ function ReceiversPortal() {
             const fetchedAccounts = await fetchAccountsForUser(userId);
             console.log("Fetched accounts:", fetchedAccounts);
             if (fetchedAccounts && Array.isArray(fetchedAccounts)) {
+
+
+
                 setAccounts(fetchedAccounts);
                 console.log("Accounts set:", fetchedAccounts);
             } else {
@@ -82,7 +125,14 @@ function ReceiversPortal() {
     const loadRecipients = async (accountId) => {
         try {
             const data = await fetchRecipients(accountId);
-            setRecipients(data.data.receivers);
+            const formattedRecievers = data.data.receivers.map((receiver) => ({
+                id: receiver.id,
+                recipient: receiver.firstName + " " + receiver.lastName,
+                accountNumber: receiver.accountNumber,
+            }));
+            setRows(formattedRecievers);
+            console.log(formattedRecievers)
+
         } catch (err) {
             console.error("Failed to fetch recipients:", err);
         }
@@ -90,7 +140,7 @@ function ReceiversPortal() {
 
     const handleCreateRecipient = async (recipient) => {
         try {
-            const selectedAcc = accounts.find(acc => acc.id.toString() === selectedAccount);
+            const selectedAcc = accounts.find(acc => acc.id === selectedAccount);
             if (!selectedAcc) {
                 console.error("No selected account.");
                 return;
@@ -120,7 +170,7 @@ function ReceiversPortal() {
                 return;
             }
 
-            const selectedAcc = accounts.find(acc => acc.id.toString() === selectedAccount);
+            const selectedAcc = accounts.find(acc => acc.id === selectedAccount);
             if (!selectedAcc) {
                 console.error("No account selected.");
                 return;
@@ -149,7 +199,7 @@ function ReceiversPortal() {
     const handleDeleteRecipient = async (recipientId) => {
         try {
             await deleteRecipient(recipientId);
-            const selectedAcc = accounts.find(acc => acc.id.toString() === selectedAccount);
+            const selectedAcc = accounts.find(acc => acc.id === selectedAccount);
             await loadRecipients(selectedAcc.id);
         } catch (error) {
             console.error("Error deleting recipient:", error);
@@ -157,9 +207,11 @@ function ReceiversPortal() {
     };
 
     const handleAccountSelection = (accountId) => {
+
         if (!accountId) return;
         setSelectedAccount(accountId);
-        const selectedAcc = accounts.find(acc => acc.id.toString() === accountId);
+        const selectedAcc = accounts.find(acc => acc.id === accountId);
+
         if (selectedAcc) {
             loadRecipients(selectedAcc.id);
         }
@@ -167,81 +219,109 @@ function ReceiversPortal() {
 
     return (
         <div className={styles.page}>
-            <Sidebar />
-            <div className={styles.container}>
-                <h1 className={styles.title}>Recipients</h1>
-                <select
-                    id="accountSelect"
-                    value={selectedAccount || ""}
-                    onChange={(e) => handleAccountSelection(e.target.value)}
-                    className={styles.dropdown}
-                >
-                    <option value="" disabled>
-                        Select an account
-                    </option>
-                    {accounts.map((account) => (
-                        <option key={account.id} value={account.id}>
-                            {account.accountNumber}
-                        </option>
-                    ))}
-                </select>
-                <table className={styles.table}>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Recipient</th>
-                        <th>Account Number</th>
-                        <th></th>
-                        <th className={styles.addButtonWrapper}>
-                            <button
-                                onClick={openAddModal}
-                                className={styles.addButton}>
-                                Add Recipient
-                            </button>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {recipients.map((recipient) => (
-                        <tr key={recipient.id}>
-                            <td>{recipient.id}</td>
-                            <td>{recipient.firstName + " " + recipient.lastName}</td>
-                            <td>{recipient.accountNumber}</td>
-                            <td>
-                                <button
-                                    onClick={() => openEditModal(recipient)}
-                                    className={styles.editButton}>
-                                    Edit
-                                </button>
-                            </td>
-                            <td>
-                                <button
-                                    onClick={() => handleDeleteRecipient(recipient.id)}
-                                    className={styles.deleteButton}>
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+            <Sidebar/>
+            {/*<div className={styles.container}>*/}
+            <h1 className={styles.title}>Recipients</h1>
 
-                <RecipientModal
-                    isOpen={isEditModalOpen}
-                    onClose={closeEditModal}
-                    data={editRecipient}
-                    onSave={handleEditRecipient}
-                    tittle={"Edit Recipient"}
-                />
 
-                <RecipientModal
-                    isOpen={isAddModalOpen}
-                    onClose={closeAddModal}
-                    data={newRecipient}
-                    onSave={handleCreateRecipient}
-                    tittle={"Add New Recipient"}
-                />
+            <div style={{padding: "20px", marginTop: "64px", width: "100%", textAlign: "left", fontSize: 20}}>
+                <h2>Recepients Overview</h2>
+
+
+                    <div className={styles.dropdown}>
+                        <TextField
+                            id="accounts"
+                            select
+                            label="Select an account"
+                            value={selectedAccount || ""}
+                            onChange={(e) => handleAccountSelection(e.target.value)}
+                            helperText="Please select your account"
+                            variant="standard"
+
+                        >
+                            {accounts.map((option) => (
+                                <MenuItem key={option.id} value={option.id}>
+                                    {option.accountNumber}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </div>
+                    <div className={styles.addButton}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={openAddModal}
+                            className={styles.addButton}
+
+                            >
+                            Add Recipient
+                        </Button>
+                    </div>
+
+                <div style={{ maxWidth: "99%" }}>
+                    <DataTable rows={rows} columns={columns} checkboxSelection={false}/>
+                </div>
             </div>
+
+
+            {/*<table className={styles.table}>*/}
+            {/*    <thead>*/}
+            {/*    <tr>*/}
+            {/*        <th>ID</th>*/}
+            {/*        <th>Recipient</th>*/}
+            {/*        <th>Account Number</th>*/}
+            {/*        <th></th>*/}
+            {/*        <th className={styles.addButtonWrapper}>*/}
+            {/*            <button*/}
+            {/*                onClick={openAddModal}*/}
+            {/*                className={styles.addButton}>*/}
+            {/*                Add Recipient*/}
+            {/*            </button>*/}
+            {/*        </th>*/}
+            {/*    </tr>*/}
+            {/*    </thead>*/}
+            {/*    <tbody>*/}
+            {/*    {recipients.map((recipient) => (*/}
+            {/*        <tr key={recipient.id}>*/}
+            {/*            <td>{recipient.id}</td>*/}
+            {/*            <td>{recipient.firstName + " " + recipient.lastName}</td>*/}
+            {/*            <td>{recipient.accountNumber}</td>*/}
+            {/*            <td>*/}
+            {/*                <button*/}
+            {/*                    onClick={() => openEditModal(recipient)}*/}
+            {/*                    className={styles.editButton}>*/}
+            {/*                    Edit*/}
+            {/*                </button>*/}
+            {/*            </td>*/}
+            {/*            <td>*/}
+            {/*                <button*/}
+            {/*                    onClick={() => handleDeleteRecipient(recipient.id)}*/}
+            {/*                    className={styles.deleteButton}>*/}
+            {/*                    Delete*/}
+            {/*                </button>*/}
+            {/*            </td>*/}
+            {/*        </tr>*/}
+            {/*    ))}*/}
+            {/*    </tbody>*/}
+            {/*</table>*/}
+            {/*<DataTable rows={rows} columns={columns} checkboxSelection={false}/>*/}
+
+            <RecipientModal
+                isOpen={isEditModalOpen}
+                onClose={closeEditModal}
+                data={editRecipient}
+                onSave={handleEditRecipient}
+                title={"Edit Recipient"}
+            />
+
+            <RecipientModal
+                isOpen={isAddModalOpen}
+                onClose={closeAddModal}
+                data={newRecipient}
+                onSave={handleCreateRecipient}
+                title={"Add New Recipient"}
+            />
+            {/*</div>*/}
         </div>
     );
 }

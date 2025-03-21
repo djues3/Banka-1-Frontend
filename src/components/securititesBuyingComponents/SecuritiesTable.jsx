@@ -192,6 +192,16 @@ const SecuritiesTable = ({ role }) => {
             )}
     ];
 
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const openDetailsModal = () => {
+        setIsDetailsModalOpen(true);
+    }
+    const closeDetailsModal =() => {
+        setIsDetailsModalOpen(false);
+    }
+
+
+
     return (
         <div>
             <h2>Securities</h2>
@@ -295,6 +305,7 @@ const SecuritiesTable = ({ role }) => {
             </div>
 
             {/* DataGrid iz DataTable komponente */}
+
             <DataTable rows={filteredSecurities} columns={columns} checkboxSelection={false}/>
 
             {

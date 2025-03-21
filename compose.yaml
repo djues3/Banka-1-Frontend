@@ -35,7 +35,7 @@ services:
   message-broker:
     image: 'apache/activemq-classic:latest'
     ports:
-      - '61616:61616'
+      - '61701:61616'
     healthcheck:
       test: [ "CMD-SHELL", "echo 'OK'" ]
       interval: 10s

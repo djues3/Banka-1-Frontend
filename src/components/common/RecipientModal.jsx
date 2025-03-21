@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../../styles/ReceiversModal.module.css';
+import DialogTitle from "@mui/material/DialogTitle";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import Button from "@mui/material/Button";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
 
 function RecipientModal({ isOpen, onClose, data, onSave, title }) {
     const [formData, setFormData] = useState({
@@ -50,6 +56,8 @@ function RecipientModal({ isOpen, onClose, data, onSave, title }) {
             validationErrors.accountNumber = "Account number is required.";
         }
 
+        console.log(errors)
+
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
@@ -61,42 +69,48 @@ function RecipientModal({ isOpen, onClose, data, onSave, title }) {
     };
 
     return (
-        <div className={styles.modal} onClick={handleBackgroundClick}>
-            <div className={styles.modalContent}>
-                <span className={styles.closeButton} onClick={onClose}>&times;</span>
-                <h2>{title}</h2>
+        <Dialog open={isOpen} onClose={onClose} maxWidth="md" fullWidth>
+            <DialogTitle>{title}</DialogTitle>
+
+            <DialogContent>
                 <form onSubmit={handleSubmit}>
                     <div className={styles.inputContainer}>
-                        <label className={styles.textboxLabel}>Recipient Name:</label>
-                        <input
-                            className={styles.textbox}
-                            type="text"
-                            value={formData.fullName}
-                            placeholder="Enter recipient name"
-                            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+
+                        <TextField
+                            fullWidth
+                            label={"Recipient Name:"}
+                            name={"Recipient Name"}
+                            type={'text'}
+                            value={formData.fullName || ''}
+                            onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+
                         />
                         {errors.fullName && <p className={styles.error}>{errors.fullName}</p>}
                     </div>
 
+
                     <div className={styles.inputContainer}>
-                        <label className={styles.textboxLabel}>Account Number:</label>
-                        <input
-                            className={styles.textbox}
-                            type="text"
-                            value={formData.accountNumber}
-                            placeholder="Enter account number"
-                            onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+
+                        <TextField
+                            fullWidth
+                            label={"Account Number:"}
+                            name={"Account Number"}
+                            type={'text'}
+                            value={formData.accountNumber || ''}
+                            onChange={(e) => setFormData({...formData, accountNumber: e.target.value})}
                         />
                         {errors.accountNumber && <p className={styles.error}>{errors.accountNumber}</p>}
                     </div>
 
-                    <div className={styles.buttonContainer}>
-                        <button onClick={onClose} className={styles.cancelButton} type="button">Cancel</button>
-                        <button className={styles.saveButton} type="submit">Save</button>
-                    </div>
+                    <DialogActions>
+                        <Button onClick={onClose}>Cancel</Button>
+                        <Button type="submit" variant="contained">Save</Button>
+                    </DialogActions>
+
                 </form>
-            </div>
-        </div>
+            </DialogContent>
+
+        </Dialog>
     );
 }
 
