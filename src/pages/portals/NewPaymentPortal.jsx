@@ -4,16 +4,20 @@ import Sidebar from "../../components/mainComponents/Sidebar";
 import { toast, ToastContainer } from "react-toastify";
 import "../../styles/NewPaymentPortal.css";
 import PaymentResultModal from "../../components/common/PaymentResultModal";
-import {fetchAccountsForUser, fetchRecipients} from "../../services/AxiosBanking";
-import {createNewMoneyTransfer} from "../../services/AxiosBanking";
-import {createRecipientt} from "../../services/AxiosBanking"
-import {getPaymentCodes} from "../../services/AxiosBanking"
-import { Autocomplete, TextField } from "@mui/material";
-import {jwtDecode} from "jwt-decode";
+import { fetchAccountsForUser, fetchRecipients } from "../../services/AxiosBanking";
+import { createNewMoneyTransfer, verifyOTP } from "../../services/AxiosBanking";
+import { createRecipientt } from "../../services/AxiosBanking";
+import { getPaymentCodes } from "../../services/AxiosBanking";
+import { Autocomplete, TextField, Button} from "@mui/material";
+import { jwtDecode } from "jwt-decode";
+import VerificationModal from "../../components/transferComponents/VerificationModal";
 
-const NewPaymentPortal =  () => {
+
+const NewPaymentPortal = () => {
     const location = useLocation();
     const recipient = location.state?.recipient || {};
+    const payerAccountId = recipient?.ownerAccountId || null;
+
     const token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
     const userId = decodedToken.id;
@@ -23,6 +27,13 @@ const NewPaymentPortal =  () => {
     const [dailyLimit, setDailyLimit] = useState(null);
     const [paymentMessage, setPaymentMessage] = useState("");
     const [paymentCodes, setPaymentCodes] = useState([]);
+    const [verificationCode, setVerificationCode] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [transactionId, setTransactionId] = useState('');
+
+    const getFullName = (r) => `${r.firstName || ""} ${r.lastName || ""}`.trim();
+
+    const [autocompleteInput, setAutocompleteInput] = useState(getFullName(recipient));
 
     const handleCreateRecipient = async (recipient) => {
         try {
@@ -40,11 +51,51 @@ const NewPaymentPortal =  () => {
             };
 
             await createRecipientt(recipientData);
-
             await loadRecipients(selectedAcc.id);
         } catch (error) {
             console.error("Error adding recipient:", error);
         }
+    };
+
+    const handleVerificationConfirm = async (verificationCode) => {
+        console.log("Transfer confirmed with verification code: ", verificationCode);
+
+        const otpVerificationData = {
+            transferId: transactionId, // postavljen nakon sto se kreira transakcija
+            otpCode: verificationCode
+        };
+
+        try {
+            const response = await verifyOTP(otpVerificationData);
+            if (response.status === 200) {
+                console.log("Transaction successfully verified!");
+                alert("Transaction successfully verified!");
+                setShowModal(false);
+            } else {
+                console.error("Invalid OTP or expired OTP.");
+            }
+        } catch (error) {
+            if (error.response?.status === 401) {
+                console.error("Invalid OTP code.");
+                alert("Invalid OTP code.");
+            } else if (error.response?.status === 408) {
+                console.error("OTP code expired.");
+                alert("OTP code expired.");
+            } else {
+                console.log(error.response?.status);
+                console.error("Error during OTP verification: ", error);
+            }
+        }
+        
+        setOpenModal(true);
+        handleCancel();
+    };
+
+    const handleCancel = () => {
+        setShowModal(false);
+        setVerificationCode('');
+        // setOpenModal(true);
+
     };
 
 
@@ -69,10 +120,7 @@ const NewPaymentPortal =  () => {
 
         setOpenModal(false);
     };
-
-
-
-
+    
 
     useEffect(() => {
         loadAccounts();
@@ -85,8 +133,18 @@ const NewPaymentPortal =  () => {
         } catch (err) {
             console.error("Failed to fetch accounts:", err);
         }
-
     };
+
+    useEffect(() => {
+        if (payerAccountId && accounts.length > 0) {
+            const foundAccount = accounts.find(acc => acc.id.toString() === payerAccountId.toString());
+            if (foundAccount) {
+                setSelectedAccount(foundAccount);
+                setDailyLimit(foundAccount.dailyLimit);
+                loadRecipients(foundAccount.id);
+            }
+        }
+    }, [payerAccountId, accounts]);
 
     useEffect(() => {
         if (selectedAccount) {
@@ -97,7 +155,6 @@ const NewPaymentPortal =  () => {
     const loadRecipients = async () => {
         try {
             const data = await fetchRecipients(selectedAccount.id);
-
             setRecipients(data.data.receivers);
         } catch (err) {
             console.error("Failed to fetch recipients:", err);
@@ -106,26 +163,14 @@ const NewPaymentPortal =  () => {
 
     const handleAccountSelection = (accountId) => {
         if (!accountId) return;
-
         const selectedAcc = accounts.find(acc => acc.id.toString() === accountId);
-
         if (selectedAcc) {
             setSelectedAccount(selectedAcc);
             setDailyLimit(selectedAcc.dailyLimit);
             loadRecipients();
         }
-
-        return (
-            <PaymentResultModal
-                open={openModal}
-                onClose={() => setOpenModal(false)}
-                success={isSuccess}
-                paymentMessage={paymentMessage}
-                onConfirm={handleConfirm}
-            />
-        );
-
     };
+
     useEffect(() => {
         loadPaymentCodes();
     }, []);
@@ -137,27 +182,23 @@ const NewPaymentPortal =  () => {
         } catch (err) {
             console.error("Failed to fetch accounts:", err);
         }
-
     };
 
     const [newPayment, setNewPayment] = useState({
         payerAccount: "",
-        recipientName: recipient ? `${recipient.firstName} ${recipient.lastName}`.trim() : "",
+        recipientName: getFullName(recipient),
         recipientAccount: recipient?.accountNumber || "",
         paymentCode: "289",
         paymentPurpose: "",
         amount: "",
-        address: "",
+        address: recipient?.address || "",
         referenceNumber: "",
     });
-
 
     const [openModal, setOpenModal] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [toggleSuccess, setToggleSuccess] = useState(true);
     const [users, setUsers] = useState([]);
-
-
 
     const handleCreatePayment = async (e) => {
         e.preventDefault();
@@ -178,9 +219,11 @@ const NewPaymentPortal =  () => {
             payementDescription: newPayment.paymentPurpose
         };
 
-        console.log("Data za slanje:", transferData);
         try {
             const result = await createNewMoneyTransfer(transferData);
+
+            const transactionId = result.data.transferId;
+            setTransactionId(transactionId);
 
             if (result.success) {
                 toast.success(result.data.message || "Uspešno ste izvršili uplatu!");
@@ -196,14 +239,15 @@ const NewPaymentPortal =  () => {
             setIsSuccess(false);
             setPaymentMessage(error.response?.data?.reason || error.response?.data?.message || "Unexpected error occurred. Please try again later.");
         }
+        
 
-        setOpenModal(true);
+        setShowModal(true);
+        // setOpenModal(true);
     };
-
 
     return (
         <div>
-            <Sidebar/>
+            <Sidebar />
             <div className="payment-container">
                 <h2>New Payment</h2>
 
@@ -214,6 +258,7 @@ const NewPaymentPortal =  () => {
                             id="accountSelect"
                             value={selectedAccount ? selectedAccount.id : ""}
                             onChange={(e) => handleAccountSelection(e.target.value)}
+                            disabled={payerAccountId !== null}
                         >
                             <option value="" disabled>Select an account</option>
                             {accounts.map((account) => (
@@ -233,60 +278,38 @@ const NewPaymentPortal =  () => {
                                 getOptionLabel={(option) => {
                                     const firstName = option.firstName || '';
                                     const lastName = option.lastName || '';
-                                    const label = `${firstName} ${lastName}`.trim();
-
-                                    if (label === "undefined undefined") {
-                                        return "";
-                                    }
-
-                                    return label;
+                                    return `${firstName} ${lastName}`.trim();
                                 }}
                                 isOptionEqualToValue={(option, value) => option?.accountNumber === value?.accountNumber}
-                                value={
-                                    newPayment.recipientAccount ?
-                                        recipients.find(rec => rec.accountNumber === newPayment.recipientAccount) :
-                                        {
-                                            firstName: newPayment.recipientName.split(" ")[0] || "",
-                                            lastName: newPayment.recipientName.split(" ")[1] || "",
-                                            accountNumber: ""
-                                        }
-                                }
-                                onChange={(event, value) => {
-                                    if (typeof value === "string") {
 
-                                        setNewPayment({
-                                            ...newPayment,
-                                            recipientName: value,
-                                            recipientAccount: "",
-                                        });
-                                    } else if (value) {
+                                value={recipients.find(rec => rec.accountNumber === newPayment.recipientAccount) || null}
+                                inputValue={autocompleteInput}
+
+                                onInputChange={(e, newInput) => {
+                                    setAutocompleteInput(newInput);
+                                    setNewPayment({
+                                        ...newPayment,
+                                        recipientName: newInput
+                                    });
+                                }}
+
+                                onChange={(event, value) => {
+                                    if (value) {
                                         setNewPayment({
                                             ...newPayment,
                                             recipientName: `${value.firstName} ${value.lastName}`.trim(),
                                             recipientAccount: value.accountNumber,
                                         });
-                                    } else {
-                                        setNewPayment({
-                                            ...newPayment,
-                                            recipientName: "",
-                                            recipientAccount: "",
-                                        });
-                                    }
-                                }}
-                                onBlur={(event) => {
-                                    if (!newPayment.recipientName) {
-                                        setNewPayment({
-                                            ...newPayment,
-                                            recipientName: event.target.value,
-                                        });
+                                        setAutocompleteInput(`${value.firstName} ${value.lastName}`.trim());
                                     }
                                 }}
                                 renderInput={(params) => <TextField {...params} label="" />}
                                 openOnFocus
                                 clearOnBlur={false}
+                                disabled={recipient.id !== undefined}
                             />
-
                         </div>
+
                         <div className="payment-code">
                             <label>Payment Code</label>
                             <select
@@ -302,8 +325,6 @@ const NewPaymentPortal =  () => {
                                 ))}
                             </select>
                         </div>
-
-
                     </div>
 
                     <div className="form-row">
@@ -312,8 +333,9 @@ const NewPaymentPortal =  () => {
                             <input
                                 type="text"
                                 value={newPayment.recipientAccount}
-                                onChange={(e) => setNewPayment({...newPayment, recipientAccount: e.target.value})}
+                                onChange={(e) => setNewPayment({ ...newPayment, recipientAccount: e.target.value })}
                                 required
+                                disabled={recipient.id !== undefined}
                             />
                         </div>
 
@@ -322,8 +344,7 @@ const NewPaymentPortal =  () => {
                             <input
                                 type="text"
                                 value={newPayment.paymentPurpose}
-                                onChange={(e) => setNewPayment({...newPayment, paymentPurpose: e.target.value})}
-                                // required
+                                onChange={(e) => setNewPayment({ ...newPayment, paymentPurpose: e.target.value })}
                             />
                         </div>
                     </div>
@@ -335,7 +356,7 @@ const NewPaymentPortal =  () => {
                                 <input
                                     type="number"
                                     value={newPayment.amount}
-                                    onChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
+                                    onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
                                     required
                                 />
                                 <span title={`Daily Limit: ${dailyLimit ?? "N/A"}`} style={{ cursor: "pointer" }}>ℹ️</span>
@@ -346,12 +367,10 @@ const NewPaymentPortal =  () => {
                             <input
                                 type="text"
                                 value={newPayment.adress}
-                                onChange={(e) => setNewPayment({...newPayment, adress: e.target.value})}
+                                onChange={(e) => setNewPayment({ ...newPayment, adress: e.target.value })}
                                 required
                             />
                         </div>
-
-
                     </div>
 
                     <div className="reference-row">
@@ -360,15 +379,36 @@ const NewPaymentPortal =  () => {
                             <input
                                 type="text"
                                 value={newPayment.referenceNumber}
-                                onChange={(e) => setNewPayment({...newPayment, referenceNumber: e.target.value})}
+                                onChange={(e) => setNewPayment({ ...newPayment, referenceNumber: e.target.value })}
                                 required
                             />
                         </div>
-                        <button type="submit" className="submit-button">Continue</button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            onClick={handleConfirm}
+                            disabled={
+                                !selectedAccount ||
+                                !newPayment.recipientAccount ||
+                                !newPayment.amount ||
+                                !newPayment.recipientName
+                            }
+                            sx={{ width: '25ch' }}
+                        >
+                            Continue
+                        </Button>
+
                     </div>
+
                 </form>
 
-                <ToastContainer position="bottom-right"/>
+                <ToastContainer position="bottom-right" />
+                <VerificationModal
+                    open={showModal}
+                    onClose={handleCancel}
+                    onConfirm={handleVerificationConfirm}
+                />
 
                 <PaymentResultModal
                     open={openModal}
