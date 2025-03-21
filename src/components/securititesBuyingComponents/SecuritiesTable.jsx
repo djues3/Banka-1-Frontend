@@ -68,6 +68,7 @@ const SecuritiesTable = ({ role }) => {
 
                 // Računanje `initialMarginCost`
                 const initialMarginCost = (maintenanceMargin * 1.1).toFixed(2);
+                const index = 1;
 
                 return {
                     id: sec.ticker || index,
