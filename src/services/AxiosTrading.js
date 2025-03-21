@@ -2,7 +2,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 const apiTrading = axios.create({
-  baseURL: "http://localhost:3000/trading",
+  baseURL: `${process.env.REACT_APP_TRADING_API_URL}`,
   headers: {
     "Content-Type": "application/json",
   },

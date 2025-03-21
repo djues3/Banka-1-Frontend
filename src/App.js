@@ -31,6 +31,7 @@ import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal
 import PortfolioPage from "./pages/portals/PortfolioPage";
 import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ActuarySecuritiesBuyingPortal";
 import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
+import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 
 function App() {
     return (
@@ -142,6 +143,15 @@ function App() {
                         />
 
                         <Route
+                        path="/view-order-portal"
+                        element={
+                          <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                            <ViewOrderPortal />
+                          </AuthGuard>
+                        }
+                        />
+
+                      <Route
                             path="/portfolio-page"
                             element={
                                 <AuthGuard allowedPositions={["NONE", "SUPERVISOR", "AGENT"]}>
