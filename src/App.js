@@ -31,6 +31,7 @@ import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal
 import PortfolioPage from "./pages/portals/PortfolioPage";
 import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ActuarySecuritiesBuyingPortal";
 import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
+import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 
 function App() {
     return (

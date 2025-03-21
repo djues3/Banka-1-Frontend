@@ -34,6 +34,7 @@ const AuthGuard = ({ allowedPositions, children }) => {
         // If the user is Employee, check department first
         if (isEmployed) {
 
+
             //  If user has a department, check department-level permissions
             if (userDepartment && allowedPositions.includes(userDepartment)) {
                 return children;
@@ -53,7 +54,9 @@ const AuthGuard = ({ allowedPositions, children }) => {
             if (allowedPositions.includes("NONE")) {
                 return <Navigate to="/home" replace />;
             }
-
+            // if (isAdmin) {
+            //     return children;
+            // }
             return <Navigate to="/home" replace />;
         }
 

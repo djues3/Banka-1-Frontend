@@ -21,7 +21,8 @@ import {
 } from '@mui/material';
 import {toast} from 'react-toastify';
 import apiTrading, {getSecurities} from '../../services/AxiosTrading';
-import {fetchCustomers, fetchEmployees} from "../../services/AxiosUser";
+import {fetchCustomers} from "../../services/AxiosUser";
+import Sidebar from "../../components/mainComponents/Sidebar";
 
 const ViewOrderPortal = () => {
   const [orders, setOrders] = useState([]);
@@ -151,155 +152,156 @@ const ViewOrderPortal = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{mt: 4}}>
-      <Typography variant="h4" gutterBottom>Order Management Portal</Typography>
-      <Typography variant="subtitle1" color="text.secondary" gutterBottom>
-        View and manage orders as a supervisor
-      </Typography>
-
-      <Grid container spacing={3} sx={{mb: 3}}>
-        <Grid item xs={12} md={6}>
-          <FormControl fullWidth>
-            <InputLabel id="status-filter-label">Filter by Status</InputLabel>
-            <Select
-              labelId="status-filter-label"
-              id="status-filter"
-              value={filterStatus}
-              label="Filter by Status"
-              onChange={(e) => setFilterStatus(e.target.value)}
-              variant="outlined">
-              <MenuItem value="all">All Orders</MenuItem>
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="approved">Approved</MenuItem>
-              <MenuItem value="declined">Declined</MenuItem>
-              <MenuItem value="done">Done</MenuItem>
-            </Select>
-          </FormControl>
+    <div>
+      <Sidebar/>
+      <Container maxWidth="xl" sx={{mt: 16}}>
+        <Typography variant="h4" gutterBottom>Order Management Portal</Typography>
+        <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+          View and manage orders as a supervisor
+        </Typography>
+        <Grid container spacing={3} sx={{mb: 3}}>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel id="status-filter-label">Filter by Status</InputLabel>
+              <Select
+                labelId="status-filter-label"
+                id="status-filter"
+                value={filterStatus}
+                label="Filter by Status"
+                onChange={(e) => setFilterStatus(e.target.value)}
+                variant="outlined">
+                <MenuItem value="all">All Orders</MenuItem>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="approved">Approved</MenuItem>
+                <MenuItem value="declined">Declined</MenuItem>
+                <MenuItem value="done">Done</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
         </Grid>
-      </Grid>
 
-      {loading ? (
-        <Box display="flex" justifyContent="center" sx={{my: 5}}>
-          <CircularProgress/>
-        </Box>
-      ) : (
-        <TableContainer component={Paper} elevation={2}>
-          <Table sx={{minWidth: 650}} aria-label="orders table">
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>User</TableCell>
-                <TableCell>Security</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Direction</TableCell>
-                <TableCell>Quantity</TableCell>
-                <TableCell>Contract Size</TableCell>
-                <TableCell>Price Per Unit</TableCell>
-                <TableCell>Remaining</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orders.length > 0 ? (
-                orders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell>{order.id}</TableCell>
-                    <TableCell>{users[order.user_id] || order.user_id}</TableCell>
-                    <TableCell>{securities[order.security_id] || order.security_id}</TableCell>
-                    <TableCell>{order.order_type}</TableCell>
-                    <TableCell>
-                      <Chip
-                        label={order.direction.toUpperCase()}
-                        color={order.direction === 'buy' ? 'success' : 'error'}
-                      />
-                    </TableCell>
-                    <TableCell>{order.quantity}</TableCell>
-                    <TableCell>{order.contract_size}</TableCell>
-                    <TableCell>{formatCurrency(order.price_per_unit)}</TableCell>
-                    {/*<TableCell>{Math.round(order.quantity * Math.random())}</TableCell>*/}
-                    <TableCell>{order.remaining_parts}</TableCell>
-                    <TableCell>{getStatusChip(order.status)}</TableCell>
-                    <TableCell>
-                      {order.status === 'pending' && (
-                        <Box>
-                          <Button
-                            variant="contained"
-                            color="success"
-                            size="small"
-                            sx={{mr: 1}}
-                            onClick={() => handleApprove(order.id)}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            variant="contained"
-                            color="error"
-                            size="small"
-                            onClick={() => handleDecline(order.id)}
-                          >
-                            Decline
-                          </Button>
-                        </Box>
-                      )}
+        {loading ? (
+          <Box display="flex" justifyContent="center" sx={{my: 5}}>
+            <CircularProgress/>
+          </Box>
+        ) : (
+          <TableContainer component={Paper} elevation={2}>
+            <Table sx={{minWidth: 650}} aria-label="orders table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>User</TableCell>
+                  <TableCell>Security</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Direction</TableCell>
+                  <TableCell>Quantity</TableCell>
+                  <TableCell>Contract Size</TableCell>
+                  <TableCell>Price Per Unit</TableCell>
+                  <TableCell>Remaining</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {orders.length > 0 ? (
+                  orders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell>{order.id}</TableCell>
+                      <TableCell>{users[order.user_id] || order.user_id}</TableCell>
+                      <TableCell>{securities[order.security_id] || order.security_id}</TableCell>
+                      <TableCell>{order.order_type}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={order.direction.toUpperCase()}
+                          color={order.direction === 'buy' ? 'success' : 'error'}
+                        />
+                      </TableCell>
+                      <TableCell>{order.quantity}</TableCell>
+                      <TableCell>{order.contract_size}</TableCell>
+                      <TableCell>{formatCurrency(order.price_per_unit)}</TableCell>
+                      {/*<TableCell>{Math.round(order.quantity * Math.random())}</TableCell>*/}
+                      <TableCell>{order.remaining_parts}</TableCell>
+                      <TableCell>{getStatusChip(order.status)}</TableCell>
+                      <TableCell>
+                        {order.status === 'pending' && (
+                          <Box>
+                            <Button
+                              variant="contained"
+                              color="success"
+                              size="small"
+                              sx={{mr: 1}}
+                              onClick={() => handleApprove(order.id)}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              variant="contained"
+                              color="error"
+                              size="small"
+                              onClick={() => handleDecline(order.id)}
+                            >
+                              Decline
+                            </Button>
+                          </Box>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={11} align="center">
+                      <Typography variant="body1">
+                        No orders found with the selected filter
+                      </Typography>
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={11} align="center">
-                    <Typography variant="body1">
-                      No orders found with the selected filter
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
 
-      <Box sx={{mt: 4}}>
-        <Typography variant="h5" gutterBottom>Order Type Legend</Typography>
-        <Box component="ul" sx={{listStyleType: 'none', pl: 0}}>
-          <Box component="li" sx={{mb: 1}}>
-            <Typography variant="body1">
-              <strong>Market Order:</strong> Executed immediately at the current market price
-            </Typography>
-          </Box>
-          <Box component="li" sx={{mb: 1}}>
-            <Typography variant="body1">
-              <strong>Limit Order:</strong> Executed only at specified price or better
-            </Typography>
-          </Box>
-          <Box component="li" sx={{mb: 1}}>
-            <Typography variant="body1">
-              <strong>Stop Order:</strong> Becomes a market order when a specified price is reached
-            </Typography>
-          </Box>
-          <Box component="li" sx={{mb: 1}}>
-            <Typography variant="body1">
-              <strong>Stop-Limit Order:</strong> Combines features of stop and limit orders
-            </Typography>
+        <Box sx={{mt: 4}}>
+          <Typography variant="h5" gutterBottom>Order Type Legend</Typography>
+          <Box component="ul" sx={{listStyleType: 'none', pl: 0}}>
+            <Box component="li" sx={{mb: 1}}>
+              <Typography variant="body1">
+                <strong>Market Order:</strong> Executed immediately at the current market price
+              </Typography>
+            </Box>
+            <Box component="li" sx={{mb: 1}}>
+              <Typography variant="body1">
+                <strong>Limit Order:</strong> Executed only at specified price or better
+              </Typography>
+            </Box>
+            <Box component="li" sx={{mb: 1}}>
+              <Typography variant="body1">
+                <strong>Stop Order:</strong> Becomes a market order when a specified price is reached
+              </Typography>
+            </Box>
+            <Box component="li" sx={{mb: 1}}>
+              <Typography variant="body1">
+                <strong>Stop-Limit Order:</strong> Combines features of stop and limit orders
+              </Typography>
+            </Box>
           </Box>
         </Box>
-      </Box>
 
-      <Box sx={{mt: 3, mb: 5}}>
-        <Typography variant="h5" gutterBottom>Additional Information</Typography>
-        <Typography variant="body1" paragraph>
-          <strong>After Hours:</strong> Orders placed less than 4 hours after market close are marked as "After Hours"
-          and will execute more slowly.
-        </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>All or None (AON):</strong> Orders that must be executed in their entirety or not at all.
-        </Typography>
-        <Typography variant="body1" paragraph>
-          <strong>Margin:</strong> Orders that utilize credit to execute.
-        </Typography>
-      </Box>
-    </Container>
-  );
+        <Box sx={{mt: 3, mb: 5}}>
+          <Typography variant="h5" gutterBottom>Additional Information</Typography>
+          <Typography variant="body1" paragraph>
+            <strong>After Hours:</strong> Orders placed less than 4 hours after market close are marked as "After Hours"
+            and will execute more slowly.
+          </Typography>
+          <Typography variant="body1" paragraph>
+            <strong>All or None (AON):</strong> Orders that must be executed in their entirety or not at all.
+          </Typography>
+          <Typography variant="body1" paragraph>
+            <strong>Margin:</strong> Orders that utilize credit to execute.
+          </Typography>
+        </Box>
+      </Container>
+    </div>);
 };
 
 export default ViewOrderPortal;
