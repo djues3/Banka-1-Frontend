@@ -146,6 +146,11 @@ function ReceiversPortal() {
                 return;
             }
 
+            if (!/^\d{16,}$/.test(recipient.accountNumber)) {
+                toast.error("Account number must be at least 16 digits.");
+                return;
+            }
+
             const recipientData = {
                 ownerAccountId: selectedAcc.id,
                 accountNumber: recipient.accountNumber,
