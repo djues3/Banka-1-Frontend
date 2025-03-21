@@ -14,7 +14,7 @@ const BuyModal = ({ open, onClose, selectedSecurity }) => {
     const [orderType, setOrderType] = useState("market");
     const [pricePerUnit, setPricePerUnit] = useState(0);
     const contractSize = 1; //izmeniti
-    const approximatePrice = contractSize * pricePerUnit * quantity;
+    const [approximatePrice, setApproximatePrice] = useState(0);
     const [accounts, setAccounts] = useState([]);
     const [outflowAccount, setOutflowAccount] = useState('');
     const id = 1; //izmeniti
@@ -56,21 +56,25 @@ const BuyModal = ({ open, onClose, selectedSecurity }) => {
 
     //odredjivanje tipa ordera i cene
     useEffect(() => {
-        if (!selectedSecurity) return;
+        let newPricePerUnit = selectedSecurity.lastPrice || 0;
+
         if (limitValue && stopValue) {
             setOrderType("stop-limit");
-            setPricePerUnit(limitValue);
+            newPricePerUnit = limitValue;
         } else if (limitValue) {
             setOrderType("limit");
-            setPricePerUnit(limitValue);
+            newPricePerUnit = limitValue;
         } else if (stopValue) {
             setOrderType("stop");
-            setPricePerUnit(stopValue);
+            newPricePerUnit = stopValue;
         } else {
             setOrderType("market");
-            setPricePerUnit(selectedSecurity.lastPrice || 0);
         }
-    }, [limitValue, stopValue, selectedSecurity]);
+
+        setPricePerUnit(newPricePerUnit);
+        setApproximatePrice(contractSize * newPricePerUnit * quantity);
+    }, [limitValue, stopValue, selectedSecurity, quantity]);
+
 
 
     //kolicina ne moze da bude manja od 1
@@ -85,11 +89,11 @@ const BuyModal = ({ open, onClose, selectedSecurity }) => {
     const handleConfirm = async () => {
 
         const orderData = {
-            userId: getUserIdFromToken(),
-            securityId: id,
-            orderType: orderType,
+            user_id: getUserIdFromToken(),
+            security_id: id,
+            order_type: orderType,
             quantity: quantity,
-            contractSize: contractSize,
+            contract_size: contractSize,
             stopPricePerUnit : stopValue,
             limitPricePerUnit: limitValue,
             pricePerUnit: pricePerUnit,
