@@ -12,9 +12,12 @@ const BuyModal = ({ open, onClose, selectedSecurity }) => {
     const [margin, setMargin] = useState(false);
     const [isOverview, setIsOverview] = useState(false);
     const [orderType, setOrderType] = useState("market");
-    const approximatePrice = selectedSecurity.contract_size * selectedSecurity.price_per_unit * quantity;
+    const [pricePerUnit, setPricePerUnit] = useState(0);
+    const contractSize = 1; //izmeniti
+    const approximatePrice = contractSize * pricePerUnit * quantity;
     const [accounts, setAccounts] = useState([]);
     const [outflowAccount, setOutflowAccount] = useState('');
+    const id = 1; //izmeniti
 
 
     //racuni klijenta
@@ -51,18 +54,24 @@ const BuyModal = ({ open, onClose, selectedSecurity }) => {
         }
     }, [open]);
 
-    //odredjivanje tipa ordera na osnovu limita i stopa
+    //odredjivanje tipa ordera i cene
     useEffect(() => {
+        if (!selectedSecurity) return;
         if (limitValue && stopValue) {
             setOrderType("stop-limit");
+            setPricePerUnit(limitValue);
         } else if (limitValue) {
             setOrderType("limit");
+            setPricePerUnit(limitValue);
         } else if (stopValue) {
             setOrderType("stop");
+            setPricePerUnit(stopValue);
         } else {
             setOrderType("market");
+            setPricePerUnit(selectedSecurity.lastPrice || 0);
         }
-    }, [limitValue, stopValue]);
+    }, [limitValue, stopValue, selectedSecurity]);
+
 
     //kolicina ne moze da bude manja od 1
     const handleQuantityChange = (event) => {
@@ -72,17 +81,24 @@ const BuyModal = ({ open, onClose, selectedSecurity }) => {
         }
     };
 
-   //post zahtev, proveriti orderData
+    // proveriti orderData
     const handleConfirm = async () => {
+
         const orderData = {
-            user_id: getUserIdFromToken(),
-            security_id: selectedSecurity.id,
-            order_type: orderType,
+            userId: getUserIdFromToken(),
+            securityId: id,
+            orderType: orderType,
             quantity: quantity,
-            contract_size: selectedSecurity.contract_size,
-            price_per_unit: selectedSecurity.price_per_unit,
+            contractSize: contractSize,
+            stopPricePerUnit : stopValue,
+            limitPricePerUnit: limitValue,
+            pricePerUnit: pricePerUnit,
             direction: "buy",
+            aon:allOrNone,
+            margin: margin,
+            accountId: outflowAccount
         };
+
         console.log("Order Data:", orderData);
 
         try {
@@ -93,6 +109,7 @@ const BuyModal = ({ open, onClose, selectedSecurity }) => {
             console.error("Error creating order:", error);
         }
     };
+
 
     return (
         <Modal open={open} onClose={onClose} aria-labelledby="buy-modal-title">
@@ -151,36 +168,36 @@ const BuyModal = ({ open, onClose, selectedSecurity }) => {
 
                         {/* Limit Value */}
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <TextField
-                            label="Limit Value"
-                            type="number"
-                            value={limitValue}
-                            onChange={(e) => setLimitValue(e.target.value)}
-                            fullWidth
-                            sx={{ mt: 2 }}
-                            variant="standard"
+                            <TextField
+                                label="Limit Value"
+                                type="number"
+                                value={limitValue}
+                                onChange={(e) => setLimitValue(e.target.value)}
+                                fullWidth
+                                sx={{ mt: 2 }}
+                                variant="standard"
 
-                        />
-                        <Typography variant="body1">
-                            {currency} {/* valuta koju ima account */}
-                        </Typography>
+                            />
+                            <Typography variant="body1">
+                                {currency} {/* valuta koju ima account */}
+                            </Typography>
                         </Box>
 
                         {/* Stop Value */}
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <TextField
-                            label="Stop Value"
-                            type="number"
-                            value={stopValue}
-                            onChange={(e) => setStopValue(e.target.value)}
-                            fullWidth
-                            sx={{ mt: 2 }}
-                            variant="standard"
+                            <TextField
+                                label="Stop Value"
+                                type="number"
+                                value={stopValue}
+                                onChange={(e) => setStopValue(e.target.value)}
+                                fullWidth
+                                sx={{ mt: 2 }}
+                                variant="standard"
 
-                        />
-                        <Typography variant="body1">
-                            {currency} {/* valuta koju ima account */}
-                        </Typography>
+                            />
+                            <Typography variant="body1">
+                                {currency} {/* valuta koju ima account */}
+                            </Typography>
                         </Box>
 
                         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "start", mt: 2 }}>
@@ -214,7 +231,7 @@ const BuyModal = ({ open, onClose, selectedSecurity }) => {
                             <strong>Quantity:</strong> {quantity}
                         </Typography>
                         <Typography variant="body1">
-                            <strong>Order Type:</strong> {orderType}
+                            <strong>Order Type:</strong> {orderType} order
                         </Typography>
                         <Typography variant="body1">
                             <strong>Approximate Price:</strong> {approximatePrice.toFixed(2)} {currency}

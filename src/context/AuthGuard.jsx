@@ -11,50 +11,68 @@ const AuthGuard = ({ allowedPositions, children }) => {
 
     try {
         const decodedToken = jwtDecode(token);
-        const isEmployed = decodedToken.isEmployed || false; // true -> Employee, false -> Customer
         const isAdmin = decodedToken.isAdmin || false; // Boolean
-        const userPosition = decodedToken.position || null; // "WORKER", "MANAGER", "DIRECTOR", "HR", "NONE"
-                                                            // "SUPERVISOR", "AGENT"
-        //const permissions = decodedToken.permissions || []; // List of permissions
+        const userDepartment = decodedToken.department || null; // "SUPERVISOR", "AGENT"
+        const userPosition = decodedToken.position || null; // "WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN", "NONE"
 
-        // Check if the customer has trade permissions
-        //const hasTradePermission = permissions.includes("user.customer.trade"); //MOZDA SE DRUGACIJE BUDE ZVALA PERMISIJA
+        // Determine if the user is employee based on department or position
+        const isEmployed = userDepartment !== null || (userPosition && userPosition !== "NONE");
+        const isCustomer = !isEmployed; // If not employed, must be a customer
 
         console.log(
-            "User employed:", isEmployed,
-            "Admin status:", isAdmin,
-            "Position:", userPosition,
-            //"Trade Permission:", hasTradePermission
+            "User Department:", userDepartment,
+            "User Position:", userPosition,
+            "User Employed:", isEmployed,
+            "User Admin:", isAdmin
         );
 
-        // The page is accessible to All Users
+        // Public pages
         if (!allowedPositions || allowedPositions.length === 0) {
             return children;
         }
 
-        // If the user is Employee (check allowed positions)
+        // If the user is Employee, check department first
         if (isEmployed) {
 
+
+            //  If user has a department, check department-level permissions
+            if (userDepartment && allowedPositions.includes(userDepartment)) {
+                return children;
+            }
+
+            // If department is not agent or supervisor, check position instead
+            if (!userDepartment && allowedPositions.includes(userPosition)) {
+                return children;
+            }
+
+            // If the route is for Admin only
             if (isAdmin && allowedPositions.includes("ADMIN")) {
                 return children;
             }
-            if (userPosition && allowedPositions.includes(userPosition)) {
-                return children;
+
+            // If the employee tries to access customer-only page
+            if (allowedPositions.includes("NONE")) {
+                return <Navigate to="/home" replace />;
             }
+            // if (isAdmin) {
+            //     return children;
+            // }
             return <Navigate to="/home" replace />;
         }
 
-        // If User is Customer
-        if (!isEmployed) {
-            // If the route is for Employees => deny access
+        // If the user is Customer (position is NONE)
+        if (isCustomer) {
+
+            // If trying to access Employee-only page, deny access
             if (allowedPositions.some(pos => ["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"].includes(pos))) {
-                return <Navigate to="/home" replace/>;
+                return <Navigate to="/home" replace />;
             }
 
-            // Otherwise => allow access
+            // Otherwise, allow access
             return children;
         }
 
+        // If nothing matches, deny access
         return <Navigate to="/home" replace />;
 
     } catch (error) {
@@ -64,22 +82,3 @@ const AuthGuard = ({ allowedPositions, children }) => {
 };
 
 export default AuthGuard;
-
-
-        /*
-            // If User is Customer
-            if (!isEmployed) {
-
-                // If route requires Customer with Permission for Trading (check for Trade Permission)
-                if (allowedPositions.includes("TRADE_CUSTOMER")) {
-                    return hasTradePermission ? children : <Navigate to="/home" replace />;
-                }
-
-                // If the route is for All Customers
-                if (!allowedPositions.includes("TRADE_CUSTOMER")) {
-                    return children;
-                }
-
-                return <Navigate to="/home" replace />;
-            }
-        */

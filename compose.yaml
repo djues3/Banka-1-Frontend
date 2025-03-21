@@ -202,6 +202,8 @@ services:
       - 'user_db_data:/var/lib/postgresql/data/'
   trading-service:
     image: harbor.k8s.elab.rs/banka-1/trading-service:latest
+    ports:
+      - '3000:3000'
     depends_on:
       trading-db:
         condition: service_healthy
@@ -209,7 +211,7 @@ services:
       - proxy-net
       - trading-net
     healthcheck:
-      test: [ "CMD-SHELL", "echo okay"]
+      test: [ "CMD-SHELL", "echo OK"]
   trading-db:
     image: 'postgres:17-alpine'
     healthcheck:

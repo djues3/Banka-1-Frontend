@@ -140,7 +140,7 @@ const TransactionDetailsModal = ({ open, onClose, transaction }) => {
                 </Box>
 
                 <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-                    <Button variant="contained" onClick={onClose} sx={{ bgcolor: "#F4D03F", color: "#000", "&:hover": { bgcolor: "#F1C40F" } }}>
+                    <Button variant="contained" onClick={onClose} sx={{ bgcolor: "#fcfcfc", color: "#000", "&:hover": { bgcolor: "#e3e3e3" } }}>
                         CLOSE
                     </Button>
                     <Button variant="contained" onClick={handleDownloadPDF} sx={{ bgcolor: "#4CAF50", color: "#fff", "&:hover": { bgcolor: "#388E3C" } }}>
