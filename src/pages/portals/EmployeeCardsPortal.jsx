@@ -4,16 +4,18 @@ import {
   Paper,
   Grid,
   Button,
-  Box
+  Box, Select
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/mainComponents/Sidebar';
 import DataTable from '../../components/tables/DataTable';
-import {blockCard, deactivateCard, fetchCardsByAccountId} from '../../services/AxiosBanking';
+import {blockCard, changingAccountStatus, deactivateCard, fetchCardsByAccountId} from '../../services/AxiosBanking';
 import { toast } from 'react-toastify';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {styled} from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
+import MenuItem from "@mui/material/MenuItem";
+import {updateCustomer} from "../../services/AxiosUser";
 
 const StatusSwitch = styled(Switch)(({ theme }) => ({
   '& .MuiSwitch-switchBase.Mui-checked': {
@@ -193,6 +195,16 @@ const EmployeeCardsPortal = () => {
     navigate('/employee-bank-accounts-portal');
   };
 
+  const handleStatusChange = async (status) => {
+    try{
+      await changingAccountStatus(selectedAccount.id, status);
+      toast.success('Account status updated successfully.');
+      navigate('/employee-bank-accounts-portal')
+    } catch {
+      toast.error('Account status failed.');
+    }
+  }
+
   return (
     <div>
       <Sidebar />
@@ -244,6 +256,18 @@ const EmployeeCardsPortal = () => {
                 <Grid item xs={12} md={2}>
                   <Typography variant="subtitle2" color="text.secondary">Currency Type</Typography>
                   <Typography variant="body1" color="text.primary">{selectedAccount.currencyType}</Typography>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <Typography variant="subtitle2" color="text.secondary">Status</Typography>
+                  <Select
+                      value={selectedAccount.status}
+                      onChange={(event) => handleStatusChange(event.target.value)}
+                  >
+                    <MenuItem value="ACTIVE">ACTIVE</MenuItem>
+                    <MenuItem value="BLOCKED">BLOCKED</MenuItem>
+                    <MenuItem value="CLOSED">CLOSED</MenuItem>
+                    <MenuItem value="FROZEN">FROZEN</MenuItem>
+                  </Select>
                 </Grid>
               </Grid>
             </Paper>

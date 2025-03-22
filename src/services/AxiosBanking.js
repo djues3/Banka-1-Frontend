@@ -681,4 +681,16 @@ export const deactivateCard = async (cardId, status) => {
   }
 };
 
+export const changingAccountStatus = async (accountId, status) => {
+  try {
+    const response = await apiBanking.put(`/accounts/${accountId}`, {
+      status: status,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error changing status for account ${accountId}:`, error);
+    throw error;
+  }
+}
+
 export default apiBanking;

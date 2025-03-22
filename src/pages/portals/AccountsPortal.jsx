@@ -84,8 +84,13 @@ const AccountsPortal = () => {
                     monthlyMaintenanceFee: row.monthlyMaintenanceFee,
                     company: row.company ? row.company.name : "N/A"
                 }));
-    
-                setRows(formattedRows);
+
+                const filteredAccountsThatAreActive = formattedRows
+                    .filter(row => row.status !== 'CLOSED')
+                    .sort((a, b) => b.balance - a.balance);
+
+                setRows(filteredAccountsThatAreActive);
+
             } catch (err) {
                 console.error(err);
                 setError("Failed to load customers data");
