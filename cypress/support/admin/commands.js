@@ -68,10 +68,14 @@ Cypress.Commands.add('addEmployee', () => {
   cy.contains('Employees').click();
   cy.contains('Add Employee').click();
 
-  cy.get('input[name="firstName"]').type('Vuja');
-  cy.get('input[name="lastName"]').type('Vujic');
-  cy.get('input[name="username"]').type('M@R@K@K');
-  cy.get('input[name="email"]').type('vuja@vuja.com');
+  const randomString = () => Math.random().toString(36).substring(2, 8);
+  const randomEmail = () => `${randomString()}@test.com`;
+
+  cy.get('input[name="firstName"]').type(`Ime${randomString()}`);
+  cy.get('input[name="lastName"]').type(`Prezime${randomString()}`);
+  cy.get('input[name="username"]').type(`user_${randomString()}`);
+  cy.get('input[name="email"]').type(randomEmail());
+
   cy.get('input[name="phoneNumber"]').type('063457734');
   cy.get('input[name="address"]').type('Georgi Dimitrova 12');
   cy.get('input[name="birthDate"]').type('1995-01-01');
@@ -108,3 +112,61 @@ Cypress.Commands.add('changeCustomerDetails', () => {
 
   cy.contains('Save').click();
 });
+/**
+ * Add a new account
+ */
+Cypress.Commands.add('CreateAccount', () => {
+  cy.get('button[aria-label="open drawer"]').click();
+  cy.contains('Employee Bank Accounts').click();
+
+  cy.contains('Add').click();
+
+  cy.contains('Choose the account you want to create') 
+  .parent()
+  .find('[role="combobox"]') 
+  .click();
+
+// Select the first option from the list
+  cy.get('[role="listbox"] [role="option"]').eq(1).click();
+
+
+  cy.contains('Choose the type of account you want to create') 
+  .parent()
+  .find('[role="combobox"]') 
+  .click();
+
+// Select the first option from the list
+  cy.get('[role="listbox"] [role="option"]').eq(1).click();
+
+  
+  cy.contains('Continue').click();
+
+  cy.contains('Choose a customer') 
+  .parent()
+  .find('[role="combobox"]') 
+  .click();
+
+// Select the first option from the list
+  cy.get('[role="listbox"] [role="option"]').eq(1).click();
+
+  cy.contains('Make a card').click();
+
+  cy.get('input[type="number"]').first().clear().type('99999');
+
+  cy.contains('Confirm').click();
+  
+  });
+
+  Cypress.Commands.add('denyLoan', () => {
+    cy.get('button[aria-label="open drawer"]').click();
+    cy.contains('Loans').click();
+    cy.contains('Pending Loans').click();
+  
+    cy.get('[data-rowindex="0"]').within(() => {
+      // Find the switch input inside the "active" cell
+      cy.contains('Deny').click();
+      cy.contains('Deny').click();
+    });
+  
+  
+  });
