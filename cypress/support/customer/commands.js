@@ -65,11 +65,27 @@ Cypress.Commands.add('createCard', () => {
     
     cy.contains("Add Card").should('be.visible');
     cy.contains("Add Card").click();
-    
+    //Select data
+    cy.get('div[role="combobox"]').eq(0).should('be.visible').click();
+    cy.get('ul[role="listbox"] li').first().click();
+    cy.get('div[role="combobox"]').eq(1).should('be.visible').click();
+    cy.get('ul[role="listbox"] li').first().click();
+    cy.get('div[role="combobox"]').eq(2).should('be.visible').click();
+    cy.get('ul[role="listbox"] li').first().click();
 
-  
-    //Limit change is clicked
-  
-    
+    cy.contains("Confirm").click()
+})
+
+
+Cypress.Commands.add('applyLoan', () => {
+    //Opens hamburger and 
+    cy.get('button[aria-label="open drawer"]').click();
+    cy.contains('Loans').click();
+    cy.contains("Loans Overview").should('be.visible');
+    cy.contains("Apply for loan").click();
+    cy.contains("New Loan Request").should('be.visible')
+    cy.get('MuiBackdrop-root').eq(0).should('be.visible').click();
+    cy.get('ul[role="listbox"] li').first().click();
+    cy.contains("Confirm").click()
 })
 
