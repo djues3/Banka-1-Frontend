@@ -26,7 +26,7 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-        Detalji računa
+        Account Details
       </DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
