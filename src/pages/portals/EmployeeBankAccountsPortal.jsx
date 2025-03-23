@@ -29,7 +29,8 @@ const EmployeeBankAccountsPortal = () => {
     { field: 'lastName', headerName: 'Owner Last Name', width: 150 },
     { field: 'accountType', headerName: 'Personal/Business', width: 150 },
     { field: 'currencyType', headerName: 'Current/Foreign', width: 150 },
-    { field: 'balance', headerName: 'Balance', width: 150}
+    { field: 'balance', headerName: 'Balance', width: 100},
+    { field: 'status', headerName: 'Status', width: 150}
   ];
 
   useEffect(() => {
@@ -59,7 +60,8 @@ const EmployeeBankAccountsPortal = () => {
               lastName: customerData.data.lastName || 'N/A',
               accountType: account.subtype === "BUSINESS" ? "Business" : "Personal",
               currencyType: account.type === "CURRENT" ? "Current" : "Foreign",
-              balance: account.balance || 0
+              balance: account.balance || 0,
+              status: account.status
             };
           } catch (error) {
             console.error(`Error fetching customer for account ${account.id}:`, error);
@@ -70,7 +72,9 @@ const EmployeeBankAccountsPortal = () => {
               lastName: 'Loading',
               accountType: account.subtype === "BUSINESS" ? "Business" : "Personal",
               currencyType: account.type === "CURRENT" ? "Current" : "Foreign",
-              balance: account.balance || 0
+              balance: account.balance || 0,
+              status: account.status
+
             };
           }
         })
