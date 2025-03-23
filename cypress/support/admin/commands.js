@@ -70,13 +70,14 @@ Cypress.Commands.add('addEmployee', () => {
 
   const randomString = () => Math.random().toString(36).substring(2, 8);
   const randomEmail = () => `${randomString()}@test.com`;
+  const randomNumber = () => Math.floor(Math.random() * 10);
 
   cy.get('input[name="firstName"]').type(`Ime${randomString()}`);
   cy.get('input[name="lastName"]').type(`Prezime${randomString()}`);
   cy.get('input[name="username"]').type(`user_${randomString()}`);
   cy.get('input[name="email"]').type(randomEmail());
 
-  cy.get('input[name="phoneNumber"]').type('063457734');
+  cy.get('input[name="phoneNumber"]').type(`0${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}`);
   cy.get('input[name="address"]').type('Georgi Dimitrova 12');
   cy.get('input[name="birthDate"]').type('1995-01-01');
 
@@ -164,7 +165,6 @@ Cypress.Commands.add('CreateAccount', () => {
   
     cy.get('[data-rowindex="0"]').within(() => {
       // Find the switch input inside the "active" cell
-      cy.contains('Deny').click();
       cy.contains('Deny').click();
     });
   
