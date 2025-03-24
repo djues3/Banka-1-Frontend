@@ -24,13 +24,14 @@ const ExchangeRateList = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const supportedCurrencies = ['RSD', 'CHF', 'USD', 'GBP', 'JPY', 'CAD', 'AUD'];
+    const supportedCurrencies = ['EUR', 'CHF', 'USD', 'GBP', 'JPY', 'CAD', 'AUD'];
 
     useEffect(() => {
         const loadExchangeRates = async () => {
             try {
                 const response = await fetchExchangeRates();
-                setExchangeRates(response.rates);
+                setExchangeRates(response.data.rates);
+                console.log(response.data.rates);
             } catch (err) {
                 setError('Failed to fetch exchange rates. Please try again later.');
                 console.error('Error fetching exchange rates:', err);
@@ -78,7 +79,7 @@ const ExchangeRateList = () => {
                 <Container sx={{ mt: 4 }}>
                     <Card>
                         <CardHeader
-                            title="Current Exchange Rates (EUR)"
+                            title="Current Exchange Rates (RSD)"
                             sx={{ bgcolor: 'primary.main', color: 'white' }}
                         />
                         <CardContent>

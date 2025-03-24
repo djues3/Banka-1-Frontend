@@ -530,14 +530,22 @@ export const denyLoan = async (loan_id, deniedLoan) => {
 // Exchange Rate Functions
 export const fetchExchangeRates = async () => {
     try {
-        // TODO: Replace with actual API key and endpoint
-        const response = await axios.get('https://api.exchangerate-api.com/v4/latest/EUR', {
-            params: {
-                base: 'EUR',
-                symbols: ['RSD', 'CHF', 'USD', 'GBP', 'JPY', 'CAD', 'AUD'].join(',')
-            }
+        const response = await apiBanking.get('/currency/exchange-rates');
+        
+        // Transform the rates array into an object format expected by convertCurrency
+        const ratesObject = {};
+        response.data.data.rates.forEach(rate => {
+            ratesObject[rate.targetCurrency] = rate.exchangeRate;
         });
-        return response.data;
+        console.log(ratesObject);
+
+        return {
+            data: {
+                base: 'RSD',
+                rates: ratesObject,
+                date: response.data.data.rates[0].date
+            }
+        };
     } catch (error) {
         console.error('Error fetching exchange rates:', error);
         throw error;
