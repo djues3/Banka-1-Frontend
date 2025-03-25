@@ -76,8 +76,15 @@ const ExchangeRateList = () => {
             <Sidebar />
             <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - 240px)` }, ml: { sm: '240px' } }}>
                 <Toolbar />
-                <Container sx={{ mt: 4 }}>
-                    <Card>
+                <Container sx={{ 
+                    mt: 4, 
+                    display: 'flex', 
+                    justifyContent: 'flex-start',
+                    maxWidth: '800px !important',
+                    ml: 0,
+                    pl: 0
+                }}>
+                    <Card sx={{ width: '100%' }}>
                         <CardHeader
                             title="Current Exchange Rates (RSD)"
                             sx={{ bgcolor: 'primary.main', color: 'white' }}

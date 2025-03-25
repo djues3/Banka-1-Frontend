@@ -534,10 +534,19 @@ export const fetchExchangeRates = async () => {
         
         // Transform the rates array into an object format expected by convertCurrency
         const ratesObject = {};
-        response.data.data.rates.forEach(rate => {
-            ratesObject[rate.targetCurrency] = rate.exchangeRate;
+        
+        // First, find the base rates for RSD
+        const rsdRates = response.data.data.rates.filter(rate => rate.baseCurrency === 'RSD');
+        
+        // Map the rates with RSD as base
+        rsdRates.forEach(rate => {
+            if (rate.targetCurrency === 'RSD') {
+                ratesObject[rate.targetCurrency] = 1;
+            } else {
+                // Invert the rate to show how many RSD are needed for 1 unit of foreign currency
+                ratesObject[rate.targetCurrency] = 1 / rate.exchangeRate;
+            }
         });
-        console.log(ratesObject);
 
         return {
             data: {
