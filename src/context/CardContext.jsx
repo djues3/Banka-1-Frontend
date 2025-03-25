@@ -24,10 +24,11 @@ export const CardProvider = ({ children }) => {
   };
 
   // Add a new card
-  const addCard = async (accountId, cardType, cardBrand) => {
+  const addCard = async (accountId, cardType, cardBrand, authorizedPerson) => {
     setLoading(true);
     try {
-      await createCard(accountId, cardType, cardBrand);
+
+      await createCard(accountId, cardType, cardBrand, authorizedPerson);
       await fetchCards(accountId);
     } catch (error) {
       // ignore not found errors

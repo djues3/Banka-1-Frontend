@@ -9,6 +9,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import {fetchAvailableSecurities, fetchSecurities, updateSecurity} from "../../services/AxiosTrading";
 import DataTable from "../tables/DataTable";
 import BuyModal from "../createOrderComponents/BuyModal";
+import SecuritiesModal from "../common/SecuritiesModal";
 
 const SecuritiesTable = ({ role }) => {
     const [securities, setSecurities] = useState([]);
@@ -170,6 +171,20 @@ const SecuritiesTable = ({ role }) => {
     };
 
     console.log("Filtered Securities:", filteredSecurities);
+    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+    const [detailsType, setDetailsType] = useState("");
+    const [detailsTicker, setDetailsTicker] = useState("");
+    const openDetailsModal = (security) => {
+        console.log(security)
+        setDetailsType(security.type)
+        setDetailsTicker(security.ticker)
+        setIsDetailsModalOpen(true);
+    }
+    const closeDetailsModal =() => {
+        setDetailsType("")
+        setDetailsTicker("")
+        setIsDetailsModalOpen(false);
+    }
 
 
     const columns = [
@@ -184,22 +199,29 @@ const SecuritiesTable = ({ role }) => {
             type: "number",
            // valueGetter: (params) => (params.row.maintenanceMargin ? (params.row.maintenanceMargin * 1.1).toFixed(2) : "N/A")
         },
-        { field: "actions", headerName: "Action", width: 200, renderCell: (params) => (
+        { field: "actions", headerName: "Action", width: 100, renderCell: (params) => (
                 <>
                     {params.row.availableQuantity > 0 && ( /*Treba da se zove dunjin BuyModal */
                         <Button variant="outlined" onClick={() => handleBuyClick(selectedSecurity)}>Buy</Button>
                     )}
                 </>
             )}
+,{
+            field: "Details",
+            headerName: "",
+            width: 120,
+            renderCell: (params) => (
+                <Button
+                    variant="outlined"
+                    onClick={() => openDetailsModal(params.row)}
+                >
+                    Details
+                </Button>
+            ),
+        }
     ];
 
-    const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-    const openDetailsModal = () => {
-        setIsDetailsModalOpen(true);
-    }
-    const closeDetailsModal =() => {
-        setIsDetailsModalOpen(false);
-    }
+
 
 
 
@@ -318,6 +340,14 @@ const SecuritiesTable = ({ role }) => {
                     />
                 )
             }
+            <SecuritiesModal
+                isOpen={isDetailsModalOpen}
+                onClose={closeDetailsModal}
+                type={detailsType}
+                ticker={detailsTicker}
+            >
+            </SecuritiesModal>
+
         </div>
     );
 };

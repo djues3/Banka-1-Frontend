@@ -224,9 +224,9 @@ function ReceiversPortal() {
     };
 
     return (
-        <div className={styles.page}>
+        <div className="flex">
             <Sidebar/>
-            {/*<div className={styles.container}>*/}
+
             <h1 className={styles.title}>Recipients</h1>
 
 
