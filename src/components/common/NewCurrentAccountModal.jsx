@@ -34,11 +34,26 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
         email: '',
         phoneNumber: '',
         address: ''
+    })
+
+    // Creating a new company
+    const [companies, setCompanies] = useState([]);
+    const [selectedCompanyId, setSelectedCompanyId] = useState('');
+    const [isCreateCompanyModalOpen, setIsCreateCompanyModalOpen] = useState(false);
+    const [newCompany, setNewCompany] = useState({
+        name: '',
+        companyRegistrationNumber: '',
+        activityCode: '',
+        pib: '',
+        address: '',
+        ownerID: ''
     });
+
 
     // Loading customer is the same as in CustomerPortal
     useEffect(() => {
         loadCustomers();
+        //loadCompanies();
     }, []);
 
     const loadCustomers = async () => {
@@ -57,7 +72,17 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
             console.error("Failed to load customers data:", error);
         }
     };
-
+/*
+    const loadCompanies = async () => {
+        try {
+            const response = await fetchCompanies(); // NAPRAVI OVAJ SERVIS
+            const data = response?.data?.rows || [];
+            setCompanies(data);
+        } catch (err) {
+            console.error("Failed to load companies:", err);
+        }
+    };
+*/
     // Handling the Confirm button on the NewCurrentAccountModal screen
     const handleConfirm = async () => {
 
@@ -133,6 +158,18 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
             toast.error(`Failed to create customer: ${error.message}`);
         }
     };
+/*
+    const handleCreateCompany = async (companyData) => {
+        try {
+            await createCompany(companyData); // pretpostavimo da ovaj API postoji, NE POSTOJI
+            setIsCreateCompanyModalOpen(false);
+            loadCompanies(); // refresh
+            toast.success('Company created successfully!');
+        } catch (error) {
+            toast.error(`Failed to create company: ${error.message}`);
+        }
+    };
+*/
 
     const resetCustomerForm = () => {
         setNewCustomer({
@@ -160,10 +197,11 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
             // Validate we got three parts
             if (!day || !month || !year) return null;
 
-            // Construct "YYYY-MM-DD" and parse it as a number
-             // "20020302"
+            // Construct "YYYYMMDD" and parse it as a number
+            const resultString = `${year}-${month}-${day}`; // "2002-03-02"
+
             // Optionally add further checks for valid day/month/year ranges
-            return `${day}-${month}-${year}`;
+            return resultString;
 
         } catch (error) {
             console.error('Error converting date:', error);
@@ -200,13 +238,21 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={makeCard}
-                            onChange={(e) => setMakeCard(e.target.checked)}
+                            checked={accountType === "business" ? true : makeCard}
+                            onChange={(e) => {
+
+                                // Dozvoli promenu samo ako nije "business"
+                                if (accountType !== "business") {
+                                    setMakeCard(e.target.checked);
+                                }
+                            }}
+                            disabled={accountType === "business"}
                         />
                     }
                     label="Make a card"
                     sx={{ mt: 2 }}
                 />
+
 
                 <TextField
                     fullWidth
@@ -216,7 +262,6 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                     onChange={(e) => setStartingBalance(e.target.value)}
                     sx={{ mt: 2 }}
                 />
-            </DialogContent>
 
             <FormControl fullWidth sx={{ mt: 2 }}>
                 <InputLabel id="customer-label" shrink>
@@ -247,16 +292,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                 Create New Customer
             </Button>
 
-            <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button
-                    variant="contained"
-                    onClick={() => {handleConfirm()}}
-                    disabled={!selectedOwnerId || !startingBalance}
-                >
-                    Confirm
-                </Button>
-            </DialogActions>
+
 
             <EditModal
                 open={isCreateModalOpen}
@@ -269,6 +305,76 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                 onSave={handleCreateCustomer}
                 title="Create New Customer"
             />
+
+     {accountType === "business" && (
+      <>
+            <FormControl fullWidth sx={{ mt: 2 }}>
+                <InputLabel id="company-label" shrink>
+                    Choose a company
+                </InputLabel>
+                <Select
+                    labelId="company-label"
+                    value={selectedCompanyId}
+                    onChange={(e) => setSelectedCompanyId(e.target.value)}
+                    displayEmpty
+                    label="Choose a company"
+                >
+                    <MenuItem value="" disabled>Choose a company</MenuItem>
+                    {companies.map((company) => (
+                        <MenuItem key={company.id} value={company.id}>
+                            {company.name}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
+            <Button
+                variant="outlined"
+                sx={{ mt: 2, width: '100%' }}
+                onClick={() => setIsCreateCompanyModalOpen(true)}
+            >
+                Create New Company
+            </Button>
+
+            <EditModal
+                open={isCreateCompanyModalOpen}
+                onClose={() => {
+                    setIsCreateCompanyModalOpen(false);
+                    setNewCompany({
+                        name: '',
+                        companyRegistrationNumber: '',
+                        activityCode: '',
+                        pib: '',
+                        address: '',
+                        ownerID: ''
+                    });
+                }}
+                data={newCompany}
+                formFields={[
+                    { name: 'name', label: 'Name', required: true },
+                    { name: 'companyRegistrationNumber', label: 'Registration Number', required: true },
+                    { name: 'activityCode', label: 'Activity Code', required: true },
+                    { name: 'pib', label: 'PIB', required: true },
+                    { name: 'address', label: 'Address', required: true },
+                    { name: 'ownerID', label: 'Owner ID', required: true }
+                ]}
+                //onSave={handleCreateCompany}
+            />
+      </>
+    )}
+
+            <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
+                <Button onClick={onClose}>Cancel</Button>
+                <Button
+                    variant="contained"
+                    onClick={() => {handleConfirm()}}
+                    disabled={!selectedOwnerId || !startingBalance
+                || (accountType === "business" && !selectedCompanyId)}
+                >
+                    Confirm
+                </Button>
+            </DialogActions>
+            </DialogContent>
         </Dialog>
     );
 };

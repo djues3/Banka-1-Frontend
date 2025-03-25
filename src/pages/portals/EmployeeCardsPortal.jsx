@@ -42,6 +42,7 @@ const EmployeeCardsPortal = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [company, setCompany] = useState(null);
 
   const columns = [
     { field: 'cardNumber', headerName: 'Card Number', width: 150 },
@@ -157,6 +158,10 @@ const EmployeeCardsPortal = () => {
       return;
     }
     loadCards();
+    if (selectedAccount?.accountType?.toLowerCase() === 'business') {
+      loadCompanyInfo(selectedAccount.id);
+    }
+
   }, [selectedAccount]);
 
   const loadCards = async () => {
@@ -186,6 +191,23 @@ const EmployeeCardsPortal = () => {
       setLoading(false);
     }
   };
+
+  const loadCompanyInfo = async (accountId) => {
+    try {
+      // Simulirano: poziv ka API-ju, npr. await fetchCompanyByAccountId(accountId);
+      const dummyCompany = {   //PROMENI
+        name: "TechNova LLC",
+        companyRegistrationNumber: "12345678",
+        pib: "109876543",
+        address: "Innovation Street 42"
+      };
+
+      setCompany(dummyCompany);
+    } catch (err) {
+      console.error('Failed to load company info:', err);
+    }
+  };
+
 
   function maskCardNumber(cardNumber) {
     return cardNumber.replace(/^(\d{4})\d{8}(\d{4})$/, '$1********$2');
@@ -271,6 +293,48 @@ const EmployeeCardsPortal = () => {
                 </Grid>
               </Grid>
             </Paper>
+
+
+            {selectedAccount.accountType.toLowerCase() === 'business' && company && (
+                <>
+                  <Typography variant="h4" component="h1">
+                  Company information
+                </Typography>
+
+                <Paper
+                    sx={{
+                      p: 3,
+                      mb: 4,
+                      backgroundColor: 'rgba(25,25,25,0.01)',
+                      border: '1px solid #e0e0e0',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                      mt: 2,
+                    }}
+                >
+
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={3}>
+                      <Typography variant="subtitle2">Company Name</Typography>
+                      <Typography>{company.name}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <Typography variant="subtitle2">Registration Number</Typography>
+                      <Typography>{company.companyRegistrationNumber}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <Typography variant="subtitle2">PIB</Typography>
+                      <Typography>{company.pib}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <Typography variant="subtitle2">Address</Typography>
+                      <Typography>{company.address}</Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+                  </>
+            )}
+
+
 
             {/* Cards Table Section */}
             <Typography variant="h6" gutterBottom>
