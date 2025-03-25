@@ -54,7 +54,15 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
     useEffect(() => {
         loadCustomers();
         //loadCompanies();
-    }, []);
+        if (isCreateCompanyModalOpen && selectedOwnerId) {
+            setNewCompany(prev => ({
+                ...prev,
+                ownerID: selectedOwnerId
+            }));
+        } else {
+            setSelectedCompanyId('');
+        }
+    }, [isCreateCompanyModalOpen, selectedOwnerId]);
 
     const loadCustomers = async () => {
         try {
@@ -270,11 +278,20 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                 <Select
                     labelId="customer-label"
                     value={selectedOwnerId} // Using selectedOwnerId for storing the customer ID
-                    onChange={(e) => setSelectedOwnerId(e.target.value)} // Saving the customer ID here
+                    onChange={(e) => {
+                        const value = e.target.value;
+
+                        if (value === '') {
+                            setSelectedOwnerId('');
+                            setSelectedCompanyId('');
+                        } else {
+                            setSelectedOwnerId(value);
+                        }
+                    }}
                     displayEmpty
                     label="Choose a customer"
                 >
-                    <MenuItem value="" disabled>Choose a customer</MenuItem>
+                    <MenuItem value="" >Choose a customer</MenuItem>
                     {customers.map((customer) => (
                         <MenuItem key={customer.id} value={customer.id}>
                             {customer.firstName} {customer.lastName}
@@ -318,8 +335,9 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                     onChange={(e) => setSelectedCompanyId(e.target.value)}
                     displayEmpty
                     label="Choose a company"
+                    disabled={!selectedOwnerId}
                 >
-                    <MenuItem value="" disabled>Choose a company</MenuItem>
+                    <MenuItem value="" >Choose a company</MenuItem>
                     {companies.map((company) => (
                         <MenuItem key={company.id} value={company.id}>
                             {company.name}
@@ -332,6 +350,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                 variant="outlined"
                 sx={{ mt: 2, width: '100%' }}
                 onClick={() => setIsCreateCompanyModalOpen(true)}
+                disabled={!selectedOwnerId}
             >
                 Create New Company
             </Button>
@@ -356,7 +375,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                     { name: 'activityCode', label: 'Activity Code', required: true },
                     { name: 'pib', label: 'PIB', required: true },
                     { name: 'address', label: 'Address', required: true },
-                    { name: 'ownerID', label: 'Owner ID', required: true }
+                    { name: 'ownerID', label: 'Owner ID', required: true, readOnly: true }
                 ]}
                 //onSave={handleCreateCompany}
             />
@@ -368,8 +387,8 @@ const NewCurrentAccountModal = ({ open, onClose, accountType }) => {
                 <Button
                     variant="contained"
                     onClick={() => {handleConfirm()}}
-                    disabled={!selectedOwnerId || !startingBalance
-                || (accountType === "business" && !selectedCompanyId)}
+                    disabled={!selectedOwnerId || !startingBalance}
+                //|| (accountType === "business" && !selectedCompanyId)}
                 >
                     Confirm
                 </Button>

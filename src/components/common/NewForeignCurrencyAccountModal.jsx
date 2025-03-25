@@ -56,7 +56,15 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
     useEffect(() => {
         loadCustomers();
         //loadCompanies();
-    }, []);
+        if (isCreateCompanyModalOpen && selectedOwnerId) {
+            setNewCompany(prev => ({
+                ...prev,
+                ownerID: selectedOwnerId
+            }));
+        } else {
+            setSelectedCompanyId('');
+        }
+    }, [isCreateCompanyModalOpen, selectedOwnerId]);
 
     const loadCustomers = async () => {
         try {
@@ -272,11 +280,20 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
                     <Select
                         labelId="customer-label"
                         value={selectedOwnerId}
-                        onChange={(e) => setSelectedOwnerId(e.target.value)}
+                        onChange={(e) => {
+                            const value = e.target.value;
+
+                            if (value === '') {
+                                setSelectedOwnerId('');
+                                setSelectedCompanyId('');
+                            } else {
+                                setSelectedOwnerId(value);
+                            }
+                        }}
                         displayEmpty
                         label="Choose a customer"
                     >
-                        <MenuItem value="" disabled>Choose a customer</MenuItem>
+                        <MenuItem value="" >Choose a customer</MenuItem>
                         {customers.map((customer) => (
                             <MenuItem key={customer.id} value={customer.id}>
                                 {customer.firstName} {customer.lastName}
@@ -307,6 +324,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
                     onChange={(e) => setSelectedCompanyId(e.target.value)}
                     displayEmpty
                     label="Choose a company"
+                    disabled={!selectedOwnerId}
                 >
                     <MenuItem value="" disabled>Choose a company</MenuItem>
                     {companies.map((company) => (
@@ -321,6 +339,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
                 variant="outlined"
                 sx={{ mt: 2, width: '100%' }}
                 onClick={() => setIsCreateCompanyModalOpen(true)}
+                disabled={!selectedOwnerId}
             >
                 Create New Company
             </Button>
@@ -345,7 +364,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
                     { name: 'activityCode', label: 'Activity Code', required: true },
                     { name: 'pib', label: 'PIB', required: true },
                     { name: 'address', label: 'Address', required: true },
-                    { name: 'ownerID', label: 'Owner ID', required: true }
+                    { name: 'ownerID', label: 'Owner ID', required: true, readOnly: true }
                 ]}
                 //onSave={handleCreateCompany}
             />

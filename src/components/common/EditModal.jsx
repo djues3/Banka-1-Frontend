@@ -93,6 +93,7 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
                   onChange={handleChange}
                   error={!!errors[field.name]}
                   helperText={errors[field.name]}
+                  InputProps={field.readOnly ? { readOnly: true } : {}}
                 />
               )}
             </Grid>
