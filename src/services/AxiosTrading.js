@@ -177,10 +177,21 @@ export const fetchForex = async (ticker) => {
     const response = await apiTrading.get(`/forex/${ticker}`);
     return response.data;
   } catch (error) {
-    console.error("Error while fetching stock:", error);
+    console.error("Error while fetching forex:", error);
     throw error;
   }
 };
+
+export const fetchFuture = async (ticker) => {
+  try {
+    const response = await apiTrading.get(`/future/${ticker}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching future:", error);
+    throw error;
+  }
+};
+
 
 export const fetchStockPriceByMonth = async (ticker) => {
   try {
@@ -198,6 +209,16 @@ export const fetchStockPriceByDate = async (ticker, date) => {
     return response.data;
   } catch (error) {
     console.error("Error while fetching stock price by date:", error);
+    throw error;
+  }
+};
+
+export const fetchFirstStockPrice = async (ticker) => {
+  try {
+    const response = await apiTrading.get(`/stocks/${ticker}/history/first`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching the first stock price:", error);
     throw error;
   }
 };

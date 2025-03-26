@@ -7,7 +7,8 @@ import DialogContent from "@mui/material/DialogContent";
 import Dialog from "@mui/material/Dialog";
 import {createRecipientt} from "../../services/AxiosBanking";
 import {
-    fetchForex,
+    fetchFirstStockPrice,
+    fetchForex, fetchFuture,
     fetchStock, fetchStockPriceByDate,
     fetchStockPriceByMonth
 } from "../../services/AxiosTrading";
@@ -93,6 +94,43 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
 
     }
 
+    const fetchStockData = async (getDatesFunction, dateParam = null, setStockDataFunction) => {
+        const newStockData = [];
+
+        const datesList = dateParam ? getDatesFunction(dateParam) : getDatesFunction();
+
+        await Promise.all(
+            datesList.map(async (date) => {
+                let validDataFound = false;
+
+                // Try up to 3 consecutive days to find valid data
+                for (let dayOffset = 0; dayOffset < 4; dayOffset++) {
+                    const dateToCheck = new Date(date);
+                    dateToCheck.setDate(dateToCheck.getDate() + dayOffset);
+
+                    const formattedDate = `${dateToCheck.getFullYear()}-${String(dateToCheck.getMonth() + 1).padStart(2, '0')}-${String(dateToCheck.getDate()).padStart(2, '0')}`;
+                    const response = await loadPrice(formattedDate);
+
+                    if (response && response.close !== 0) {
+                        newStockData.push(response);
+                        validDataFound = true;
+                        break;
+                    }
+                }
+
+                // If no valid data is found, add a placeholder entry
+                if (!validDataFound) {
+                    newStockData.push({ date: date, close: 0 });
+                }
+            })
+        );
+
+        console.log("New stock data =", newStockData);
+        newStockData.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        setStockDataFunction(newStockData);
+    };
+
 
     const fillStockData = async () => {
         const data = await fetchStockPriceByMonth(ticker)
@@ -112,123 +150,24 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
         });
         setStockDataWeek(filteredData);
 
+        const firstPrice = await fetchFirstStockPrice(ticker);
+        const date = new Date(firstPrice.data.date);
+        const formattedFirstDate = date.toISOString().split("T")[0]; // "YYYY-MM-DD"
+
+        console.log("formattedFirstDate price = " ,formattedFirstDate);
+
         console.log("current date: ", getCurrentDate())
         console.log("last 12 months: ", getFirstDatesOfLast12Months())
         console.log("last 5 years: ", getFirstDatesOfLast5Years())
         console.log("from the start: ", getFirstDatesFromYearToCurrent("03/15/2022"))
 
-        //setovanje vrednosti za godinu dana
-        // let newStockData = [];
-        // await Promise.all(
-        //     getFirstDatesOfLast12Months().map(async (date) => {
-        //         const response = await loadPrice(date);
-        //         if(response){
-        //             newStockData.push(response);
-        //         }
-        //
-        //     })
-        // );
-        // console.log("new stock data = ", newStockData)
-        // setStockDataYear(newStockData);
+
         let newStockData = [];
 
-        // Iterate over the dates (first day of each of the last 12 months)
-        for (let i = 0; i < 12; i++) {
-            let currentDate = getFirstDatesOfLast12Months()[i];
-            let validDataFound = false;
+        fetchStockData(getFirstDatesOfLast12Months,null, setStockDataYear);
+        fetchStockData(getFirstDatesOfLast5Years,null, setStockDataFiveYears);
+        fetchStockData(getFirstDatesFromYearToCurrent,formattedFirstDate, setStockDataStart);
 
-            // Try up to 3 consecutive days to find valid data
-            for (let dayOffset = 0; dayOffset < 4; dayOffset++) {
-                const dateToCheck = new Date(currentDate);
-                dateToCheck.setDate(dateToCheck.getDate() + dayOffset);
-
-                const formattedDate = `${dateToCheck.getFullYear()}-${String(dateToCheck.getMonth() + 1).padStart(2, '0')}-${String(dateToCheck.getDate()).padStart(2, '0')}`;
-                const response = await loadPrice(formattedDate);
-
-                // If the response cost is valid, add it to the stock data and break out of the loop
-                if (response && response.close !== 0) {
-                    newStockData.push(response);
-                    validDataFound = true;
-                    break;
-                }
-            }
-
-            // If no valid data is found after checking 3 days, we can push a placeholder entry or skip
-            if (!validDataFound) {
-                newStockData.push({ date: currentDate, close: 0 });
-            }
-        }
-
-        console.log("new stock data = ", newStockData);
-        newStockData.sort((a, b) => new Date(a.date) - new Date(b.date));
-        setStockDataYear(newStockData);
-
-        //setovanje vrednosti za 5 godina
-        newStockData = [];
-
-        // Iterate over the first dates of the last 5 years
-        await Promise.all(
-            getFirstDatesOfLast5Years().map(async (date) => {
-                let validDataFound = false;
-
-                // Try up to 3 consecutive days to find valid data
-                for (let dayOffset = 0; dayOffset < 4; dayOffset++) {
-                    const dateToCheck = new Date(date);
-                    dateToCheck.setDate(dateToCheck.getDate() + dayOffset);
-
-                    const formattedDate = `${dateToCheck.getFullYear()}-${String(dateToCheck.getMonth() + 1).padStart(2, '0')}-${String(dateToCheck.getDate()).padStart(2, '0')}`;
-                    const response = await loadPrice(formattedDate);
-
-                    // If valid data found, add it to newStockData and break
-                    if (response && response.close !== 0) {
-                        newStockData.push(response);
-                        validDataFound = true;
-                        break;
-                    }
-                }
-
-                // If no valid data is found, we can choose to push a placeholder or do nothing
-                if (!validDataFound) {
-                    newStockData.push({ date, close: 0 });
-                }
-            })
-        );
-
-        console.log("new stock data = ", newStockData);
-        newStockData.sort((a, b) => new Date(a.date) - new Date(b.date));
-        setStockDataFiveYears(newStockData);
-
-        //setovanje vrednosti od pocetka poslovanja
-        newStockData = [];
-        await Promise.all(
-            getFirstDatesFromYearToCurrent("03/19/2015").map(async (date) => {
-                let validDataFound = false;
-
-                // Try up to 3 consecutive days to find valid data
-                for (let dayOffset = 0; dayOffset < 4; dayOffset++) {
-                    const dateToCheck = new Date(date);
-                    dateToCheck.setDate(dateToCheck.getDate() + dayOffset);
-
-                    const formattedDate = `${dateToCheck.getFullYear()}-${String(dateToCheck.getMonth() + 1).padStart(2, '0')}-${String(dateToCheck.getDate()).padStart(2, '0')}`;
-                    const response = await loadPrice(formattedDate);
-
-                    // If valid data found, add it to newStockData and break
-                    if (response && response.close !== 0) {
-                        newStockData.push(response);
-                        validDataFound = true;
-                        break;
-                    }
-                }
-
-                // If no valid data is found, we can choose to push a placeholder or do nothing
-                if (!validDataFound) {
-                    newStockData.push({ date, close: 0 });
-                }
-            })
-        );
-        console.log("new stock data = ", newStockData)
-        newStockData.sort((a, b) => new Date(a.date) - new Date(b.date));
-        setStockDataStart(newStockData);
 
 
 
@@ -238,21 +177,27 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
     const loadDetails =async () => {
         try {
 
-            if (type === "stock") {
+            if (type === "Stock") {
                 const data = await fetchStock(ticker);
                 console.log("Stock data = ",data.data);
                 setDetailsData(data.data);
 
                 setSecurity([
-                    "Outstanding Shares:" + data.data.details.outstanding_shares, "Dividend Yield:" + data.data.details.dividend_yield
+                    "Outstanding Shares: " + data.data.details.outstanding_shares, "Dividend Yield: " + data.data.details.dividend_yield
 
                 ])
 
-            } else if (type === "forex") {
+            } else if (type === "Forex") {
                 const data = await fetchForex(ticker);
                 setDetailsData(data.data);
                 setSecurity([
                     "Base Currency: " + data.data.details.base_currency, "Quote Currency:  " + data.data.details.quote_currency, "Exchange Rate: " + data.data.details.exchange_rate, "Liquidity: " + data.data.details.liquidity
+                ])
+            }else if (type === "Future") {
+                const data = await fetchFuture(ticker);
+                setDetailsData(data.data);
+                setSecurity([
+                    "Contract Size: " + data.data.details.contract_size, "Contract Unit:  " + data.data.details.contract_unit, "Settlement Date: " + data.data.details.settlement_date
                 ])
             }
         } catch (error) {
@@ -287,11 +232,27 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
 
 
     useEffect(() => {
-        if (!isOpen) return;
+        console.log(ticker, type)
+        console.log(stockDataStart)
+        if (!isOpen) {
+            setSecurity([]);
+            setOptions([]);
+            setCalls([]);
+            setPuts([]);
+            setDetailsData({});
+            setStockDataMonth([]);
+            setStockDataDay({});
+            setStockDataWeek({});
+            setStockDataYear({});
+            setStockDataFiveYears({});
+            setStockDataStart({});
+            setStockData({});
+            return
+        }
 
         loadDetails();
 
-        if(type === "stock"){
+        if(type === "Stock"){
             fillStockData();
             // loadOptions();
             // splitOptions();

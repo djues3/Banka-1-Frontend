@@ -27,6 +27,7 @@ apiBanking.interceptors.request.use(
       return Promise.reject(error);
     }
 );
+
 export const getUserIdFromToken = () => {
   const token = localStorage.getItem("token");
   if (!token) return null;
@@ -40,8 +41,11 @@ export const getUserIdFromToken = () => {
 };
 
 export const createAccount = async (accountData) => {
+  console.log(accountData)
   try {
     const response = await apiBanking.post("/accounts/", accountData);
+    console.log(response)
+
     return response.data;
   } catch (error) {
     console.error("Error creating account:", error);
@@ -181,7 +185,7 @@ export const createCard = async (
       cardBrand: cardBrand,
     };
     if (authorizedPerson) {
-      requestBody.ovlasceno_lice = authorizedPerson;
+      requestBody.authorizedPerson = authorizedPerson;
     }
     const response = await apiBanking.post("/cards/", requestBody);
     return response.data;
