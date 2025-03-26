@@ -131,12 +131,15 @@ const LoanRequestModal = ({ open, onClose }) => {
         <FormControl fullWidth sx={{ mb: 1 }}>
           <InputLabel>Select account</InputLabel>
           <Select value={selectedAccount} onChange={handleAccountChange}>
-            {accounts.map((acc) => (
-              <MenuItem key={acc.id} value={acc.id}>
-                {acc.accountNumber} ({acc.currencyType})
-              </MenuItem>
-            ))}
+            {accounts
+                .filter(acc => acc.status !== 'FROZEN' && acc.status !== 'BLOCKED')
+                .map(acc => (
+                    <MenuItem key={acc.id} value={acc.id}>
+                      {acc.accountNumber} ({acc.currencyType})
+                    </MenuItem>
+                ))}
           </Select>
+
         </FormControl>
 
         <TextField label="Currency" value={currencyType} fullWidth disabled sx={{ mb: 1 }} />

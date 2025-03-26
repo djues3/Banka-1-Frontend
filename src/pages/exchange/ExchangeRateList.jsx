@@ -86,10 +86,10 @@ const ExchangeRateList = () => {
                                 <Table>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Currency</TableCell>
-                                            <TableCell>Buy Rate</TableCell>
-                                            <TableCell>Middle Rate</TableCell>
-                                            <TableCell>Sell Rate</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Currency</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Buy Rate</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Middle Rate</TableCell>
+                                            <TableCell sx={{ fontWeight: 'bold' }}>Sell Rate</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>

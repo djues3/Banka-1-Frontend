@@ -1,32 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import TextField from '@mui/material/TextField';
-import {createCustomer, fetchCustomers} from '../../services/AxiosUser';
+import {
+    Dialog, DialogActions, DialogContent, DialogTitle,
+    Button, FormControl, InputLabel, Select, MenuItem,
+    Checkbox, FormControlLabel, TextField, Typography, RadioGroup, Radio
+} from '@mui/material';
+import { createCustomer, fetchCustomers } from '../../services/AxiosUser';
+import { createAccount } from '../../services/AxiosBanking';
 import EditModal from '../common/EditModal';
-import {toast} from "react-toastify";
-import {Radio, RadioGroup, Typography} from "@mui/material";
-import {createAccount} from "../../services/AxiosBanking"; // Assuming this is the create form component
+import { toast } from 'react-toastify';
 
-const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
+const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess }) => {
     const [customers, setCustomers] = useState([]);
-    const [selectedCustomer, setSelectedCustomer] = useState('');
+    const [selectedOwnerId, setSelectedOwnerId] = useState('');
     const [makeCard, setMakeCard] = useState(false);
     const [startingBalance, setStartingBalance] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [selectedOwnerId, setSelectedOwnerId] = useState(''); // Track the selected ownerId
     const [selectedCurrency, setSelectedCurrency] = useState('');
-
-
     const currencies = ['EUR', 'CHF', 'USD', 'GBP', 'JPY', 'CAD', 'AUD'];
 
     const [newCustomer, setNewCustomer] = useState({
@@ -83,13 +72,11 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
     };
 
     const handleConfirm = async () => {
-
-        // This is what is sent to the backend
         const accountData = {
             ownerID: selectedOwnerId,
             currency: selectedCurrency.toUpperCase(),
             type: 'FOREIGN_CURRENCY',
-            subtype: accountType.toLocaleUpperCase(),
+            subtype: accountType.toUpperCase(),
             dailyLimit: 0,
             monthlyLimit: 0,
             status: "ACTIVE",
@@ -97,15 +84,13 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
             createCard: makeCard
         };
 
-        console.log(accountData);
-
-
         try {
-            // Calls the POST createAccount in Axios
             await createAccount(accountData);
             onClose();
+            onSuccess?.();
         } catch (error) {
             console.error('Error creating account:', error);
+            toast.error('Failed to create account');
         }
     };
 
@@ -127,7 +112,8 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
                     dailyLimit: 0,
                     monthlyLimit: 0,
                     status: "ACTIVE",
-                    createCard: makeCard
+                    createCard: makeCard,
+                    balance: parseFloat(startingBalance),
                 }
             };
 
@@ -192,15 +178,14 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
 */
     const resetCustomerForm = () => {
         setNewCustomer({
-            firstName: "",
-            lastName: "",
-            username: "",
-            email: "",
-            phoneNumber: "",
-            address: "",
-            birthDate: "",
-            gender: "",
-            // password: ""
+            firstName: '',
+            lastName: '',
+            username: '',
+            email: '',
+            phoneNumber: '',
+            address: '',
+            birthDate: '',
+            gender: ''
         });
     };
 
@@ -223,17 +208,16 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
         { name: 'phoneNumber', label: 'Phone Number' },
         { name: 'address', label: 'Address' },
         { name: 'birthDate', label: 'Birth Date', type: 'date' },
-        { name: 'gender', label: 'Gender', type: 'select', options: [
+        {
+            name: 'gender', label: 'Gender', type: 'select', options: [
                 { value: 'MALE', label: 'Male' },
                 { value: 'FEMALE', label: 'Female' },
                 { value: 'OTHER', label: 'Other' }
-            ] }
+            ]
+        }
     ];
 
-    const createCustomerFormFields = [
-        ...customerFormFields,
-        // { name: 'password', label: 'Password', type: 'password', required: true }
-    ];
+    const createCustomerFormFields = [...customerFormFields];
 
     const companyFormFields =
         [
@@ -305,7 +289,6 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
             <DialogTitle>Creating a {accountType} foreign currency account</DialogTitle>
 
             <DialogContent sx={{ mt: 2 }}>
-
                 <Typography variant="subtitle1" sx={{ mt: 2 }}>
                     Choose Currency
                 </Typography>
@@ -378,7 +361,6 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
                             </MenuItem>
                         ))}
                     </Select>
-
                 </FormControl>
 
                 <Button
@@ -388,7 +370,6 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType }) => {
                 >
                     Create New Customer
                 </Button>
-
 
   {accountType === "business" && (
         <>

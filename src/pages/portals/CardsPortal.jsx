@@ -34,7 +34,7 @@ const CardsPage = () => {
         </div>
       </Box>
 
-      <CreateCardModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <CreateCardModal open={modalOpen} onClose={() => setModalOpen(false) } />
     </Box>
   );
 };
