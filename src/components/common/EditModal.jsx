@@ -33,6 +33,7 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
   // Handle save button click
   const handleSave = () => {
     // Basic validation
+    console.log("Clicked Save in EditModal");
     const newErrors = {};
     formFields.forEach(field => {
       if (field.required && !formData[field.name]) {
@@ -47,6 +48,10 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
 
     onSave(formData);
   };
+
+  const isFormValid = formFields.every(field => {
+    return !field.required || (formData[field.name]?.toString().trim() !== '');
+  });
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -102,7 +107,13 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained">Save</Button>
+        <Button
+            onClick={handleSave}
+            variant="contained"
+            disabled={!isFormValid}
+        >
+          Save
+        </Button>
       </DialogActions>
     </Dialog>
   );
