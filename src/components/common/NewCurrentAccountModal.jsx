@@ -24,6 +24,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
         gender: '',
         email: '',
         phoneNumber: '',
+        companyID: null,
         address: ''
     })
 
@@ -119,6 +120,11 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
             }
 
             setSelectedOwnerId(createdCustomerId);
+
+            // always set companyID, default null
+            const companyID = response?.customer?.companyID || response?.data?.customer?.companyID || null;
+            setSelectedCompanyId(companyID);
+
             setNewCompany({
                 name: '',
                 companyRegistrationNumber: '',
@@ -133,7 +139,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
             if (accountType === 'business') {
                 setIsCreateCompanyModalOpen(true);  // samo ako je business
             } else {
-                onClose(); // zatvori sve ako nije business
+                onClose(); // if it is not business
             }
 
             toast.success('Customer created successfully');
@@ -148,6 +154,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
        const handleCreateCompany = async (companyData) => {
      try {
        const formattedCompanyData = {
+         companyID: companyData.companyID,
          name: companyData.name,
          companyNumber: companyData.companyRegistrationNumber,
          vatNumber: companyData.pib,
@@ -378,6 +385,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
                 onClose={() => {
                     setIsCreateCompanyModalOpen(false);
                     setNewCompany({
+                        companyID: '',
                         name: '',
                         companyRegistrationNumber: '',
                         activityCode: '',

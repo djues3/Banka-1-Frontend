@@ -8,6 +8,7 @@ import { createCustomer, fetchCustomers } from '../../services/AxiosUser';
 import { createAccount } from '../../services/AxiosBanking';
 import EditModal from '../common/EditModal';
 import { toast } from 'react-toastify';
+import { fetchCompaniesFromUser } from '../../services/AxiosBanking';
 
 const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess }) => {
     const [customers, setCustomers] = useState([]);
@@ -26,6 +27,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
         gender: '',
         email: '',
         phoneNumber: '',
+        companyID: null,
         address: ''
     });
 
@@ -54,6 +56,22 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
         }
     }, [isCreateCompanyModalOpen, selectedOwnerId]);
 
+    useEffect(() => {
+        const fetchCompaniesByOwner = async () => {
+            if (accountType === "business" && selectedOwnerId) {
+                try {
+                    const data = await fetchCompaniesFromUser(selectedOwnerId);
+                    setCompanies(Array.isArray(data.companies) ? data.companies : [data.companies]);
+                } catch (error) {
+                    console.error('Failed to fetch companies:', error);
+                }
+            }
+        };
+
+        fetchCompaniesByOwner();
+    }, [selectedOwnerId, accountType]);
+
+
     const loadCustomers = async () => {
         try {
             const data = await fetchCustomers();
@@ -80,6 +98,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
             dailyLimit: 0,
             monthlyLimit: 0,
             status: "ACTIVE",
+            companyID: null,
             balance: parseFloat(startingBalance),
             createCard: makeCard
         };
@@ -117,7 +136,6 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                 }
             };
 
-
             const response = await createCustomer(customerPayload);
             const createdCustomerId = response?.customer?.id || response?.data?.customer?.id;
 
@@ -128,6 +146,11 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
             }
 
             setSelectedOwnerId(createdCustomerId);
+
+            // always set companyID, default null
+            const companyID = response?.customer?.companyID || response?.data?.customer?.companyID || null;
+            setSelectedCompanyId(companyID);
+
             setNewCompany({
                 name: '',
                 companyRegistrationNumber: '',
@@ -140,9 +163,9 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
             setIsCreateModalOpen(false);
 
             if (accountType === 'business') {
-                setIsCreateCompanyModalOpen(true);  // only if it is business
+                setIsCreateCompanyModalOpen(true);
             } else {
-                onClose(); // close everything if it is not business
+                onClose(); // if it is not business
             }
 
             toast.success('Customer created successfully');
@@ -150,32 +173,34 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
             toast.error(`Failed to create customer: ${error.message}`);
         }
     };
-/*
-    const handleCreateCompany = async (companyData) => {
-  try {
-    const formattedCompanyData = {
-      name: companyData.name,
-      companyNumber: companyData.companyRegistrationNumber,
-      vatNumber: companyData.pib,
-      address: companyData.address,
-      bas: parseFloat(companyData.activityCode),
-      ownerId: companyData.ownerID
+
+    /*
+        const handleCreateCompany = async (companyData) => {
+      try {
+        const formattedCompanyData = {
+        companyID: companyData.companyID,
+          name: companyData.name,
+          companyNumber: companyData.companyRegistrationNumber,
+          vatNumber: companyData.pib,
+          address: companyData.address,
+          bas: parseFloat(companyData.activityCode),
+          ownerId: companyData.ownerID
+        };
+
+        console.log('Sending company data:', formattedCompanyData);
+
+        await createCompany(formattedCompanyData);
+
+        toast.success('Company created successfully!');
+        setIsCreateCompanyModalOpen(false);
+        onClose(); // zatvara ceo modal
+        navigate('/employee-bank-accounts-portal'); // preusmeri
+      } catch (error) {
+        console.error('Error creating company:', error);
+        toast.error(`Failed to create company: ${error.message}`);
+      }
     };
-
-    console.log('Sending company data:', formattedCompanyData);
-
-    await createCompany(formattedCompanyData);
-
-    toast.success('Company created successfully!');
-    setIsCreateCompanyModalOpen(false);
-    onClose(); // zatvara ceo modal
-    navigate('/employee-bank-accounts-portal'); // preusmeri
-  } catch (error) {
-    console.error('Error creating company:', error);
-    toast.error(`Failed to create company: ${error.message}`);
-  }
-};
-*/
+    */
     const resetCustomerForm = () => {
         setNewCustomer({
             firstName: '',
@@ -185,7 +210,8 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
             phoneNumber: '',
             address: '',
             birthDate: '',
-            gender: ''
+            gender: '',
+            companyID: null,
         });
     };
 
@@ -363,6 +389,29 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                     </Select>
                 </FormControl>
 
+                {accountType === "business" && selectedOwnerId && companies.length > 0 && (
+                    <FormControl fullWidth sx={{ mt: 2 }}>
+                        <InputLabel id="company-label" shrink>
+                            Choose a company
+                        </InputLabel>
+                        <Select
+                            labelId="company-label"
+                            value={selectedCompanyId}
+                            onChange={(e) => setSelectedCompanyId(e.target.value)}
+                            displayEmpty
+                            label="Choose a company"
+                        >
+                            <MenuItem value="">Choose a company</MenuItem>
+                            {companies.map((company, index) => (
+                                <MenuItem key={index} value={company.companyNumber}>
+                                    {company.name} (#{company.companyNumber})
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                )}
+
+
                 <Button
                     variant="outlined"
                     sx={{ mt: 2, width: '100%' }}
@@ -388,6 +437,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                 onClose={() => {
                     setIsCreateCompanyModalOpen(false);
                     setNewCompany({
+                        companyID:'',
                         name: '',
                         companyRegistrationNumber: '',
                         activityCode: '',
@@ -427,6 +477,23 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                 onSave={handleCreateCustomer}
                 title="Create New Customer"
             />
+
+                {accountType === "business" && selectedOwnerId && (
+                    <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
+                        <Button
+                            variant="contained"
+                            onClick={handleConfirm}
+                            disabled={!selectedCompanyId || !startingBalance}
+                        >
+                            Confirm
+                        </Button>
+                    </DialogActions>
+                )}
+
+                <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
+                    <Button onClick={onClose}>Cancel</Button>
+                </DialogActions>
+
             </DialogContent>
         </Dialog>
     );
