@@ -111,6 +111,7 @@ const EmployeeCardsPortal = () => {
     }
     loadCards();
     if (selectedAccount?.accountType?.toLowerCase() === 'business') {
+
       if (selectedAccount.companyID) {
         loadCompanyInfo(selectedAccount.companyID);
       }
@@ -121,12 +122,12 @@ const EmployeeCardsPortal = () => {
     try {
       const response = await fetchCompany(companyId);
       setCompany(response.company);
+
     } catch (err) {
       console.error('Failed to load company info:', err);
       toast.error('Failed to load company info');
     }
   };
-
 
   function maskCardNumber(cardNumber) {
     return cardNumber.replace(/^(\d{4})\d{8}(\d{4})$/, '$1********$2');
@@ -147,21 +148,21 @@ const EmployeeCardsPortal = () => {
   };
 
   return (
-      <div>
-        <Sidebar />
-        <div style={{ padding: '20px', marginTop: '64px' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <Button
-                startIcon={<ArrowBackIcon />}
-                onClick={handleBack}
-                sx={{ mr: 2 }}
-            >
-              Back to Accounts
-            </Button>
-          </Box>
-          <Typography variant="h4" component="h1">
-            Account information
-          </Typography>
+    <div>
+      <Sidebar />
+      <div style={{ padding: '20px', marginTop: '64px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={handleBack}
+            sx={{ mr: 2 }}
+          >
+            Back to Accounts
+          </Button>
+        </Box>
+        <Typography variant="h4" component="h1">
+          Account information
+        </Typography>
 
           {selectedAccount ? (
               <>
@@ -275,7 +276,9 @@ const EmployeeCardsPortal = () => {
               </Paper>
           )}
         </div>
+
       </div>
+    </div>
   );
 };
 
