@@ -697,6 +697,16 @@ export const changingAccountStatus = async (accountId, status) => {
   }
 }
 
+export const createCompany = async (companyData) => {
+  try {
+    const response = await api.post('/companies', companyData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating company:', error);
+    throw error;
+  }
+};
+
 export const fetchExchangeRatesForCurrency = async (currency) => {
   try {
     const response = await apiBanking.get(`/currency/exchange-rates/${currency}`);
@@ -716,4 +726,5 @@ export const fetchExchangeRatesForCurrency = async (currency) => {
         throw error;
       }
     };
+    
 export default apiBanking;

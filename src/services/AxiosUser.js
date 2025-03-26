@@ -152,7 +152,13 @@ export const createEmployee = async (employeeData) => {
 };
 
 export const createCustomer = async (customerData) => {
-  return await apiUser.post("/api/customer", customerData);
+  try{
+    const response = await apiUser.post("/api/customer", customerData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating customer :", error);
+    throw error;
+  }
 };
 
 //token za korisnika

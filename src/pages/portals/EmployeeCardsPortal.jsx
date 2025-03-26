@@ -27,6 +27,7 @@ const EmployeeCardsPortal = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [company, setCompany] = useState(null);
 
   const handleBlock = async (row) => {
     try {
@@ -72,7 +73,20 @@ const EmployeeCardsPortal = () => {
     }
   };
 
-  const loadCards = useCallback(async () => {
+  useEffect(() => {
+    if (!selectedAccount) {
+      setError('No account selected. Please select an account from the accounts list.');
+      setLoading(false);
+      return;
+    }
+    loadCards();
+    if (selectedAccount?.accountType?.toLowerCase() === 'business') {
+      loadCompanyInfo(selectedAccount.id);
+    }
+
+  }, [selectedAccount]);
+
+  const loadCards = async () => {
     try {
       setLoading(true);
       const data = await fetchCardsByAccountId(selectedAccount.id);
@@ -107,6 +121,23 @@ const EmployeeCardsPortal = () => {
     }
     loadCards();
   }, [selectedAccount, loadCards]);
+
+  const loadCompanyInfo = async (accountId) => {
+    try {
+      // Simulirano: poziv ka API-ju, npr. await fetchCompanyByAccountId(accountId);
+      const dummyCompany = {   //PROMENI
+        name: "TechNova LLC",
+        companyRegistrationNumber: "12345678",
+        pib: "109876543",
+        address: "Innovation Street 42"
+      };
+
+      setCompany(dummyCompany);
+    } catch (err) {
+      console.error('Failed to load company info:', err);
+    }
+  };
+
 
   function maskCardNumber(cardNumber) {
     return cardNumber.replace(/^(\d{4})\d{8}(\d{4})$/, '$1********$2');
@@ -205,18 +236,103 @@ const EmployeeCardsPortal = () => {
                       </Grid>
                   ))}
                 </Grid>
-              </>
-          ) : (
-              <Paper sx={{ p: 3, textAlign: 'center' }}>
-                <Typography variant="h6" color="error" gutterBottom>
-                  No Account Selected
+                <Grid item xs={12} md={2}>
+                  <Typography variant="subtitle2" color="text.secondary">Owner First Name</Typography>
+                  <Typography variant="body1" color="text.primary">{selectedAccount.firstName}</Typography>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <Typography variant="subtitle2" color="text.secondary">Owner Last Name</Typography>
+                  <Typography variant="body1" color="text.primary">{selectedAccount.lastName}</Typography>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <Typography variant="subtitle2" color="text.secondary">Account Type</Typography>
+                  <Typography variant="body1" color="text.primary">{selectedAccount.accountType}</Typography>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <Typography variant="subtitle2" color="text.secondary">Currency Type</Typography>
+                  <Typography variant="body1" color="text.primary">{selectedAccount.currencyType}</Typography>
+                </Grid>
+                <Grid item xs={12} md={2}>
+                  <Typography variant="subtitle2" color="text.secondary">Status</Typography>
+                  <Select
+                      value={selectedAccount.status}
+                      onChange={(event) => handleStatusChange(event.target.value)}
+                  >
+                    <MenuItem value="ACTIVE">ACTIVE</MenuItem>
+                    <MenuItem value="BLOCKED">BLOCKED</MenuItem>
+                    <MenuItem value="CLOSED">CLOSED</MenuItem>
+                    <MenuItem value="FROZEN">FROZEN</MenuItem>
+                  </Select>
+                </Grid>
+              </Grid>
+            </Paper>
+
+
+            {selectedAccount.accountType.toLowerCase() === 'business' && company && (
+                <>
+                  <Typography variant="h4" component="h1">
+                  Company information
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
-                  Please select an account from the accounts list to view its cards.
-                </Typography>
-              </Paper>
-          )}
-        </div>
+
+                <Paper
+                    sx={{
+                      p: 3,
+                      mb: 4,
+                      backgroundColor: 'rgba(25,25,25,0.01)',
+                      border: '1px solid #e0e0e0',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                      mt: 2,
+                    }}
+                >
+
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} md={3}>
+                      <Typography variant="subtitle2">Company Name</Typography>
+                      <Typography>{company.name}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <Typography variant="subtitle2">Registration Number</Typography>
+                      <Typography>{company.companyRegistrationNumber}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <Typography variant="subtitle2">PIB</Typography>
+                      <Typography>{company.pib}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <Typography variant="subtitle2">Address</Typography>
+                      <Typography>{company.address}</Typography>
+                    </Grid>
+                  </Grid>
+                </Paper>
+                  </>
+            )}
+
+
+
+            {/* Cards Table Section */}
+            <Typography variant="h6" gutterBottom>
+              Cards for Account
+            </Typography>
+            <DataTable
+              rows={cards}
+              columns={columns}
+              checkboxSelection={false}
+              hideSearch={true}
+              hideActionButton={true}
+              loading={loading}
+              error={error}
+            />
+          </>
+        ) : (
+          <Paper sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="h6" color="error" gutterBottom>
+              No Account Selected
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Please select an account from the accounts list to view its cards.
+            </Typography>
+          </Paper>
+        )}
       </div>
   );
 };

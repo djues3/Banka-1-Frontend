@@ -13,15 +13,32 @@ import Typography from '@mui/material/Typography';
 const NewAccountModal = ({ open, onClose, onContinue }) => {
     const [account, setAccount] = useState('');
     const [accountType, setAccountType] = useState('');
-    const [balance, setBalance] = useState('');
-    const [isFocused, setIsFocused] = useState(false);
-    const [isTypeFocused, setIsTypeFocused] = useState(false);
+
+    // Possible values
+    const accountTypeOptions = {
+        current: [
+            { value: 'standard', label: 'Standard' },
+            { value: 'savings', label: 'Savings' },
+            { value: 'pension', label: 'Pension' },
+            { value: 'student', label: 'Student' },
+            { value: 'youth', label: 'Youth' },
+            { value: 'personal', label: 'Personal' },
+            { value: 'business', label: 'Business' },
+        ],
+        foreign: [
+            { value: 'personal', label: 'Personal' },
+            { value: 'business', label: 'Business' },
+        ],
+    };
+
+    const handleAccountChange = (e) => {
+        setAccount(e.target.value);
+        setAccountType(''); // reset account type when changing account
+    };
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>
-                Creating a new account
-            </DialogTitle>
+            <DialogTitle>Creating a new account</DialogTitle>
 
             <DialogContent sx={{ mt: 2 }}>
                 <Typography variant="subtitle1" sx={{ fontStyle: 'italic' }}>
@@ -29,23 +46,16 @@ const NewAccountModal = ({ open, onClose, onContinue }) => {
                 </Typography>
 
                 <FormControl fullWidth sx={{ mt: 2 }}>
-                    <InputLabel
-                        id="account-label"
-                        shrink
-                    >
-                        Account
-                    </InputLabel>
+                    <InputLabel id="account-label">Account</InputLabel>
                     <Select
                         labelId="account-label"
+                        id="account"
                         value={account}
-                        onChange={(e) => setAccount(e.target.value)}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
-                        displayEmpty
+                        onChange={handleAccountChange}
                         label="Account"
                     >
-                        <MenuItem value="" disabled>
-                            Choose account
+                        <MenuItem value="">
+                            <em>Choose account</em>
                         </MenuItem>
                         <MenuItem value="current">Current</MenuItem>
                         <MenuItem value="foreign">Foreign Currency</MenuItem>
@@ -58,31 +68,31 @@ const NewAccountModal = ({ open, onClose, onContinue }) => {
                     Choose the type of account you want to create
                 </Typography>
 
-                <FormControl fullWidth sx={{ mt: 2 }}>
+                <FormControl fullWidth sx={{ mt: 2 }} disabled={!account}>
                     <InputLabel
                         id="account-type-label"
-                        shrink
+                        shrink={!!accountType || account !== ''}
                     >
                         Account type
                     </InputLabel>
                     <Select
                         labelId="account-type-label"
+                        id="account-type"
                         value={accountType}
                         onChange={(e) => setAccountType(e.target.value)}
-                        onFocus={() => setIsTypeFocused(true)}
-                        onBlur={() => setIsTypeFocused(false)}
-                        displayEmpty
                         label="Account type"
+                        notched={!!accountType}
                     >
-                        <MenuItem value="" disabled>
-                            Choose account type
+                        <MenuItem value="">
+                            <em>Choose account type</em>
                         </MenuItem>
-                        <MenuItem value="standard">Standard</MenuItem>
-                        <MenuItem value="savings">Savings</MenuItem>
-                        <MenuItem value="pension">Pension</MenuItem>
-                        <MenuItem value="student">Student</MenuItem>
-                        <MenuItem value="youth">Youth</MenuItem>
-                        <MenuItem value="personal">Personal</MenuItem>
+
+                        {account &&
+                            accountTypeOptions[account].map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
                     </Select>
                 </FormControl>
             </DialogContent>
@@ -102,7 +112,6 @@ const NewAccountModal = ({ open, onClose, onContinue }) => {
                 >
                     Continue
                 </Button>
-
             </DialogActions>
         </Dialog>
     );
