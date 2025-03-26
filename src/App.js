@@ -32,9 +32,8 @@ import PortfolioPage from "./pages/portals/PortfolioPage";
 import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ActuarySecuritiesBuyingPortal";
 import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
 import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
-/*
 import CompaniesPortal from "./pages/portals/CompaniesPortal";
- */
+
 
 function App() {
   return (
@@ -100,8 +99,9 @@ function App() {
                               "ADMIN",
                           ]}
                       >
-                          {/* <CompaniesPortal /> */}
+                          <CompaniesPortal/>
                       </AuthGuard>
+
                   }
               />
             <Route

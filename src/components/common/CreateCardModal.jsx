@@ -2,6 +2,8 @@ import React, {useEffect, useState} from "react";
 import {Box, Button, FormControl, InputLabel, MenuItem, Modal, Select, Typography} from "@mui/material";
 import {useCards} from "../../context/CardContext";
 import {fetchAccountsId1, getUserIdFromToken} from "../../services/AxiosBanking";
+import SecuritiesModal from "./SecuritiesModal";
+import AuthorizedPersonModal from "./AuthorizedPersonModal";
 
 const CreateCardModal = ({open, onClose, accountId}) => {
     const {addCard} = useCards();
@@ -10,6 +12,9 @@ const CreateCardModal = ({open, onClose, accountId}) => {
     const [selectedBrand, setSelectedBrand] = useState("");
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const [showSecuritiesModal, setShowSecuritiesModal] = useState(false);
+    const [authorizedPerson, setAuthorizedPerson] = useState({});
 
     // Fetch available accounts when modal opens
     useEffect(() => {
@@ -37,7 +42,8 @@ const CreateCardModal = ({open, onClose, accountId}) => {
         if (!selectedAccount) return;
 
         try {
-            await addCard(selectedAccount, selectedType, selectedBrand);
+
+            await addCard(selectedAccount, selectedType, selectedBrand,authorizedPerson);
             onClose();
 
             //neka stoji privremeno
@@ -47,56 +53,78 @@ const CreateCardModal = ({open, onClose, accountId}) => {
         }
     };
 
+    const isBusinessAccount = () =>{
+        if(selectedAccount === "") return false;
+
+        const selectedAcc = accounts.find(account => account.id ===selectedAccount)
+
+        return selectedAcc.subtype === "BUSINESS";
+
+    }
+
+    const handleOpenAuthorizedPersonModal = () => {
+        setShowSecuritiesModal(true);
+    };
+    const handleCloseAuthorizedPersonModal = () => {
+        setShowSecuritiesModal(false);
+    };
+
+    const handleSaveAuthorizedPerson = (authorizedPerson) => {
+        setAuthorizedPerson(authorizedPerson)
+    }
+
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box
-                sx={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    width: 400,
-                    bgcolor: "#1c1f2b",
-                    color: "white",
-                    p: 4,
-                    borderRadius: 2,
-                    boxShadow: 24,
-                }}
-            >
-                <Typography variant="h6" sx={{mb: 2, textAlign: "center", fontWeight: "bold"}}>
-                    Create new card
-                </Typography>
+        <>
+            <Modal open={open} onClose={onClose}>
+                <Box
+                    sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                        width: 400,
+                        bgcolor: "#1c1f2b",
+                        color: "white",
+                        p: 4,
+                        borderRadius: 2,
+                        boxShadow: 24,
+                    }}
+                >
+                    <Typography variant="h6" sx={{mb: 2, textAlign: "center", fontWeight: "bold"}}>
+                        Create new card
+                    </Typography>
 
-                <FormControl fullWidth disabled={loading || accounts.length === 0}>
-                    <InputLabel>Select account</InputLabel>
-                    <Select
-                        value={selectedAccount}
-                        onChange={(e) => setSelectedAccount(e.target.value)}
-                        displayEmpty
-                     variant="outlined">
-                        {accounts.length > 0 ? (
-                            accounts.map((acc) => (
-                                <MenuItem key={acc.id} value={acc.id}>
-                                    {acc.accountNumber}
-                                </MenuItem>
-                            ))
-                        ) : (
-                            <MenuItem disabled>No accounts available</MenuItem>
-                        )}
-                    </Select>
-                </FormControl>
-                <FormControl fullWidth sx={{my: 2}} disabled={loading || accounts.length === 0}>
-                    <InputLabel>Choose card type</InputLabel>
-                    <Select
-                        value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                        displayEmpty
-                        variant="outlined">
-                        <MenuItem key="DEBIT" value="DEBIT">Debit</MenuItem>
-                    </Select>
+                    <FormControl fullWidth disabled={loading || accounts.length === 0}>
+                        <InputLabel>Select account</InputLabel>
+                        <Select
+                            value={selectedAccount}
+                            onChange={(e) => setSelectedAccount(e.target.value)}
+                            displayEmpty
+                         variant="outlined">
+                            {accounts.length > 0 ? (
+                                accounts.map((acc) => (
+                                    <MenuItem key={acc.id} value={acc.id}>
+                                        {acc.accountNumber}
+                                    </MenuItem>
+                                ))
+                            ) : (
+                                <MenuItem disabled>No accounts available</MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth sx={{my: 2}} disabled={loading || accounts.length === 0}>
+                        <InputLabel>Choose card type</InputLabel>
+                        <Select
+                            value={selectedType}
+                            onChange={(e) => setSelectedType(e.target.value)}
+                            displayEmpty
+                            variant="outlined">
+                            <MenuItem key="DEBIT" value="DEBIT">Debit</MenuItem>
+                        </Select>
 
-                </FormControl>
-                <FormControl fullWidth disabled={loading || accounts.length === 0}>
+                    </FormControl>
+
+                    <FormControl fullWidth  disabled={loading || accounts.length === 0}>
                     <InputLabel>Choose card brand</InputLabel>
                     <Select
                         value={selectedBrand}
@@ -106,17 +134,34 @@ const CreateCardModal = ({open, onClose, accountId}) => {
                         <MenuItem key="VISA" value="VISA">Visa</MenuItem>
                         <MenuItem key="MASTERCARD" value="MASTERCARD">Mastercard</MenuItem>
                     </Select>
-                </FormControl>
-                <Box sx={{display: "flex", justifyContent: "space-between", mt: 2}}>
-                    <Button variant="contained" color="error" onClick={onClose}>
-                        Cancel
-                    </Button>
-                    <Button variant="contained" color="primary" onClick={handleCreateCard} disabled={!selectedAccount}>
-                        Confirm
-                    </Button>
+                    </FormControl>
+
+                    <FormControl fullWidth sx={{my: 2}} disabled={selectedAccount === "" && isBusinessAccount()}>
+                        {(selectedAccount !== "" && isBusinessAccount()) && (
+                            <Button onClick={handleOpenAuthorizedPersonModal} >Authorized person</Button>
+                        )}
+
+                    </FormControl>
+
+
+
+
+                    <Box sx={{display: "flex", justifyContent: "space-between", mt: 2}}>
+                        <Button variant="contained" color="error" onClick={onClose}>
+                            Cancel
+                        </Button>
+                        <Button variant="contained" color="primary" onClick={handleCreateCard} disabled={!selectedAccount}>
+                            Confirm
+                        </Button>
+                    </Box>
                 </Box>
-            </Box>
-        </Modal>
+
+
+            </Modal>
+            <AuthorizedPersonModal open={showSecuritiesModal} onClose={handleCloseAuthorizedPersonModal} onSave={handleSaveAuthorizedPerson} />
+        </>
+
+
     );
 };
 

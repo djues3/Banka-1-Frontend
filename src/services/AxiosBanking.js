@@ -27,6 +27,7 @@ apiBanking.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 export const getUserIdFromToken = () => {
   const token = localStorage.getItem("token");
   if (!token) return null;
@@ -40,8 +41,11 @@ export const getUserIdFromToken = () => {
 };
 
 export const createAccount = async (accountData) => {
+  console.log(accountData);
   try {
     const response = await apiBanking.post("/accounts/", accountData);
+    console.log(response);
+
     return response.data;
   } catch (error) {
     console.error("Error creating account:", error);
@@ -181,7 +185,7 @@ export const createCard = async (
       cardBrand: cardBrand,
     };
     if (authorizedPerson) {
-      requestBody.ovlasceno_lice = authorizedPerson;
+      requestBody.authorizedPerson = authorizedPerson;
     }
     const response = await apiBanking.post("/cards/", requestBody);
     return response.data;
@@ -193,7 +197,7 @@ export const createCard = async (
 
 // Change card name
 export const changeCardName = async (cardId, newName) => {
-  try { 
+  try {
     const response = await apiBanking.post(`/cards/${cardId}/name`, {
       name: newName,
     });
@@ -388,7 +392,6 @@ export const fetchRecipientsForFast = async (accountId) => {
   }
 };
 
-
 export const fetchUserLoans = async () => {
   try {
     console.log("Fetching loans for the authenticated user");
@@ -487,7 +490,6 @@ export const fetchRemainingInstallments = async (loanId) => {
   }
 };
 
-
 export const fetchAllPendingLoans = async () => {
   try {
     const response = await apiBanking.get("/loans/pending");
@@ -497,7 +499,6 @@ export const fetchAllPendingLoans = async () => {
     throw error;
   }
 };
-
 
 export const approveLoan = async (loan_id, approvedLoan) => {
   try {
@@ -524,8 +525,6 @@ export const denyLoan = async (loan_id, deniedLoan) => {
     throw error;
   }
 };
-
-
 
 // Exchange Rate Functions
 export const fetchExchangeRates = async () => {
@@ -562,31 +561,29 @@ export const fetchExchangeRates = async () => {
 };
 
 
-
-  // Submit loan request - podnosenje zahteva za kredit
-  export const submitLoanRequest = async (loanData) => {
-    try {
-      console.log("Submitting loan request:", loanData);
-      const response = await apiBanking.post("/loans/", {
-        loanPurpose: loanData.loanPurpose,
-        loanType: loanData.loanType,
-        numberOfInstallments: loanData.numberOfInstallments,
-        interestType: loanData.interestType,
-        loanAmount: loanData.loanAmount,
-        salaryAmount: loanData.salaryAmount,
-        employmentStatus: loanData.employmentStatus,
-        employmentDuration: loanData.employmentDuration,
-        phoneNumber: loanData.phoneNumber,
-        currencyType: loanData.currencyType,
-        accountId: loanData.accountId
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error submitting loan request:", error);
-      throw error;
-    }
-  };
-  
+// Submit loan request - podnosenje zahteva za kredit
+export const submitLoanRequest = async (loanData) => {
+  try {
+    console.log("Submitting loan request:", loanData);
+    const response = await apiBanking.post("/loans/", {
+      loanPurpose: loanData.loanPurpose,
+      loanType: loanData.loanType,
+      numberOfInstallments: loanData.numberOfInstallments,
+      interestType: loanData.interestType,
+      loanAmount: loanData.loanAmount,
+      salaryAmount: loanData.salaryAmount,
+      employmentStatus: loanData.employmentStatus,
+      employmentDuration: loanData.employmentDuration,
+      phoneNumber: loanData.phoneNumber,
+      currencyType: loanData.currencyType,
+      accountId: loanData.accountId,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error submitting loan request:", error);
+    throw error;
+  }
+};
 
 export const getPaymentCodes = async () => {
   try {
@@ -604,12 +601,12 @@ export const getPaymentCodes = async () => {
 // Block card
 export const blockCard = async (cardId, status) => {
   try {
-    const response = await apiBanking.patch(`/cards/${cardId}`, {
+    const response = await apiBanking.post(`/cards/${cardId}`, {
       status: status,
     });
     return response.data;
   } catch (error) {
-    console.error(`Error blocking card ${cardId}:`, error);
+    console.error(`Error blocking/unblocking card ${cardId}:`, error);
     throw error;
   }
 };
@@ -617,12 +614,12 @@ export const blockCard = async (cardId, status) => {
 // Deactive card
 export const deactivateCard = async (cardId, status) => {
   try {
-    const response = await apiBanking.patch(`/cards/admin/${cardId}`, {
+    const response = await apiBanking.post(`/cards/admin/${cardId}`, {
       status: status,
     });
     return response.data;
   } catch (error) {
-    console.error(`Error deactivating card ${cardId}:`, error);
+    console.error(`Error deactivating/activating card ${cardId}:`, error);
     throw error;
   }
 };
@@ -637,7 +634,60 @@ export const changingAccountStatus = async (accountId, status) => {
     console.error(`Error changing status for account ${accountId}:`, error);
     throw error;
   }
-}
+};
+
+export const createCompany = async (companyData) => {
+  try {
+    const response = await apiBanking.post('/companies', companyData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating company:", error);
+    throw error;
+  }
+};
+
+export const fetchExchangeRatesForCurrency = async (currency) => {
+  try {
+    const response = await apiBanking.get(
+      `/currency/exchange-rates/${currency}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching exchange rates:", error);
+    throw error;
+  }
+};
+
+export const getCompanies = async () => {
+  try {
+    const response = await apiBanking.get("/companies");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching companies:", error);
+    throw error;
+  }
+};
+
+
+export const fetchCompaniesFromUser = async (userID) => {
+  try {
+    const response = await apiBanking.get(`/companies/${userID}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching companies:', error);
+    throw error;
+  }
+};
+
+export const fetchCompany = async (companyID) => {
+  try {
+    const response = await apiBanking.get(`/companies/${companyID}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching companies:', error);
+    throw error;
+  }
+};
 
 export const previewExchangeTransfer = async (fromCurrency, toCurrency, amount) => {
     try {

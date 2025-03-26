@@ -1,39 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Typography,
   Paper,
   Grid,
   Button,
-  Box, Select
+  Box,
+  Select,
+  MenuItem
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/mainComponents/Sidebar';
-import DataTable from '../../components/tables/DataTable';
-import {blockCard, changingAccountStatus, deactivateCard, fetchCardsByAccountId} from '../../services/AxiosBanking';
+import {
+  blockCard,
+  changingAccountStatus,
+  deactivateCard,
+  fetchCardsByAccountId
+} from '../../services/AxiosBanking';
 import { toast } from 'react-toastify';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {styled} from "@mui/material/styles";
-import Switch from "@mui/material/Switch";
-import MenuItem from "@mui/material/MenuItem";
-import {updateCustomer} from "../../services/AxiosUser";
+import CreditCardDisplay from "../../components/common/CreditCardDisplay";
+import { fetchCompany } from '../../services/AxiosBanking';
 
-const StatusSwitch = styled(Switch)(({ theme }) => ({
-  '& .MuiSwitch-switchBase.Mui-checked': {
-    color: '#4caf50',
-    '&:hover': {
-      backgroundColor: '#4caf5014',
-    },
-  },
-  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-    backgroundColor: '#4caf50',
-  },
-  '& .MuiSwitch-switchBase': {
-    color: '#f44336',
-  },
-  '& .MuiSwitch-track': {
-    backgroundColor: '#f44336',
-  },
-}));
 
 const EmployeeCardsPortal = () => {
   const location = useLocation();
@@ -42,113 +29,79 @@ const EmployeeCardsPortal = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const columns = [
-    { field: 'cardNumber', headerName: 'Card Number', width: 150 },
-    { field: 'firstName', headerName: 'Owner First Name', width: 150 },
-    { field: 'lastName', headerName: 'Owner Last Name', width: 150 },
-    { field: 'cardLimit', headerName: 'Card Limit', width: 100 },
-    {
-      field: 'active',
-      headerName: 'Active',
-      width: 120,
-      renderCell: (params) => (
-          <StatusSwitch
-              checked={params.value}
-              onChange={(event) => {
-                event.stopPropagation();
-                handleActive(params.row);
-              }}
-              onClick={(event) => event.stopPropagation()}
-          />
-      ),
-    },
-    {
-      field: 'blocked',
-      headerName: 'Blocked',
-      width: 120,
-      renderCell: (params) => (
-          <StatusSwitch
-              checked={params.value}
-              onChange={(event) => {
-                event.stopPropagation();
-                handleBlock(params.row);
-              }}
-              onClick={(event) => event.stopPropagation()}
-          />
-      ),
-    },
-  ];
+  const [company, setCompany] = useState(null);
 
   const handleBlock = async (row) => {
+    try {
+      const employeeData = {
+        ...row.originalData,
+        blocked: !row.blocked
+      };
 
-      try {
-        // Ensure we have all the original data from the row
-        console.log("Original row data:", row);
-
-
-        // Create a clean employee object with all required fields
-        const employeeData = {
-          ...row.originalData,
-          blocked: !row.blocked // Toggle the current status
-        };
-
-        console.log("ACTIVATE SWITCH " + employeeData.blocked);
-
-        await blockCard(row.id, employeeData.blocked);
-
-        // Update local state after successful API call
-        setCards(prevRows =>
-            prevRows.map(r =>
-                r.id === row.id
-                    ? {...r, blocked: !r.blocked}
-                    : r
-            )
-        );
-
-        toast.success(`Blocked successfully`);
-      } catch (error) {
-        console.error("Error updating employee status:", error);
-        toast.error(`Failed to update employee status: ${error.message}`);
-      }
+      await blockCard(row.id, employeeData.blocked);
+      setCards(prevRows =>
+          prevRows.map(r =>
+              r.id === row.id ? { ...r, blocked: !r.blocked } : r
+          )
+      );
+      toast.success(`Blocked successfully`);
+    } catch (error) {
+      console.error("Error updating employee status:", error);
+      toast.error(`Failed to update employee status: ${error.message}`);
+    }
   };
 
   const handleActive = async (row) => {
+    if (!row.active) {
+      toast.error("This card is permanently deactivated and cannot be reactivated.");
+      return;
+    }
 
-    if(row.active) {
-      try {
-        // Ensure we have all the original data from the row
-        console.log("Original row data:", row);
+    try {
+      const newStatus = !row.active;
 
+      await deactivateCard(row.id, newStatus);
 
-        // Create a clean employee object with all required fields
-        const employeeData = {
-          ...row.originalData,
-          active: !row.active // Toggle the current status
-        };
+      setCards((prev) =>
+          prev.map((r) =>
+              r.id === row.id ? { ...r, active: newStatus } : r
+          )
+      );
 
-        console.log("ACTIVATE SWITCH " + employeeData.active);
-
-        await deactivateCard(row.id, employeeData.active);
-
-        // Update local state after successful API call
-        setCards(prevRows =>
-            prevRows.map(r =>
-                r.id === row.id
-                    ? {...r, active: !r.active}
-                    : r
-            )
-        );
-
-        toast.success(`Unactivated successfully`);
-      } catch (error) {
-        console.error("Error updating employee status:", error);
-        toast.error(`Failed to update employee status: ${error.message}`);
-      }
-    } else {
-      toast.error("Can't active a deactivated account.");
+      toast.success("Card deactivated successfully");
+    } catch (error) {
+      console.error("Error updating card status:", error);
+      toast.error(`Failed to update card status: ${error.response?.data?.error || error.message}`);
     }
   };
+
+  const loadCards = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await fetchCardsByAccountId(selectedAccount.id);
+      const rowData = data.data.cards;
+
+      const formattedRows = rowData.map((row) => ({
+        id: row.id,
+        cardNumber: maskCardNumber(row.cardNumber),
+        firstName: selectedAccount.firstName,
+        lastName: selectedAccount.lastName,
+        active: row.active,
+        cardLimit: row.cardLimit,
+        blocked: row.blocked,
+        companyID: selectedAccount.companyID ?? null,
+        originalData: row
+      }));
+
+      setCards(formattedRows);
+    } catch (err) {
+      console.error('Error loading cards:', err);
+      setError('Failed to load cards data');
+      toast.error('Failed to load cards data');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedAccount]);
 
   useEffect(() => {
     if (!selectedAccount) {
@@ -157,33 +110,22 @@ const EmployeeCardsPortal = () => {
       return;
     }
     loadCards();
-  }, [selectedAccount]);
+    if (selectedAccount?.accountType?.toLowerCase() === 'business') {
 
-  const loadCards = async () => {
+      if (selectedAccount.companyID) {
+        loadCompanyInfo(selectedAccount.companyID);
+      }
+    }
+  }, [selectedAccount, loadCards]);
+
+  const loadCompanyInfo = async (companyId) => {
     try {
-      setLoading(true);
-      const data = await fetchCardsByAccountId(selectedAccount.id);
-
-      const rowData = data.data.cards;
-
-      const formattedRows = rowData.map((row) => ({
-            id: row.id,
-            cardNumber: maskCardNumber(row.cardNumber),
-            firstName: selectedAccount.firstName,
-            lastName: selectedAccount.lastName,
-            active: row.active,
-            cardLimit: row.cardLimit,
-            blocked: row.blocked
-          }));
-
-      setCards(formattedRows);
+      const response = await fetchCompany(companyId);
+      setCompany(response.company);
 
     } catch (err) {
-      console.error('Error loading cards:', err);
-      setError('Failed to load cards data');
-      toast.error('Failed to load cards data');
-    } finally {
-      setLoading(false);
+      console.error('Failed to load company info:', err);
+      toast.error('Failed to load company info');
     }
   };
 
@@ -196,14 +138,14 @@ const EmployeeCardsPortal = () => {
   };
 
   const handleStatusChange = async (status) => {
-    try{
+    try {
       await changingAccountStatus(selectedAccount.id, status);
       toast.success('Account status updated successfully.');
-      navigate('/employee-bank-accounts-portal')
+      navigate('/employee-bank-accounts-portal');
     } catch {
       toast.error('Account status failed.');
     }
-  }
+  };
 
   return (
     <div>
@@ -217,85 +159,124 @@ const EmployeeCardsPortal = () => {
           >
             Back to Accounts
           </Button>
-
         </Box>
         <Typography variant="h4" component="h1">
           Account information
         </Typography>
 
-        {selectedAccount ? (
-          <>
-            {/* Account Information Section */}
-            <Paper
-              sx={{
-                p: 3,
-                mb: 4,
-                backgroundColor: 'rgba(25,25,25,0.01)',
-                border: '1px solid #e0e0e0',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                mt: 2,
-              }}
-            >
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} md={2}>
-                  <Typography variant="subtitle2" color="text.secondary">Account Number</Typography>
-                  <Typography variant="body1" color="text.primary">{selectedAccount.accountNumber}</Typography>
-                </Grid>
-                <Grid item xs={12} md={2}>
-                  <Typography variant="subtitle2" color="text.secondary">Owner First Name</Typography>
-                  <Typography variant="body1" color="text.primary">{selectedAccount.firstName}</Typography>
-                </Grid>
-                <Grid item xs={12} md={2}>
-                  <Typography variant="subtitle2" color="text.secondary">Owner Last Name</Typography>
-                  <Typography variant="body1" color="text.primary">{selectedAccount.lastName}</Typography>
-                </Grid>
-                <Grid item xs={12} md={2}>
-                  <Typography variant="subtitle2" color="text.secondary">Account Type</Typography>
-                  <Typography variant="body1" color="text.primary">{selectedAccount.accountType}</Typography>
-                </Grid>
-                <Grid item xs={12} md={2}>
-                  <Typography variant="subtitle2" color="text.secondary">Currency Type</Typography>
-                  <Typography variant="body1" color="text.primary">{selectedAccount.currencyType}</Typography>
-                </Grid>
-                <Grid item xs={12} md={2}>
-                  <Typography variant="subtitle2" color="text.secondary">Status</Typography>
-                  <Select
-                      value={selectedAccount.status}
-                      onChange={(event) => handleStatusChange(event.target.value)}
-                  >
-                    <MenuItem value="ACTIVE">ACTIVE</MenuItem>
-                    <MenuItem value="BLOCKED">BLOCKED</MenuItem>
-                    <MenuItem value="CLOSED">CLOSED</MenuItem>
-                    <MenuItem value="FROZEN">FROZEN</MenuItem>
-                  </Select>
-                </Grid>
-              </Grid>
-            </Paper>
+          {selectedAccount ? (
+              <>
+                <Paper
+                    sx={{
+                      p: 3,
+                      mb: 4,
+                      backgroundColor: 'rgba(25,25,25,0.01)',
+                      border: '1px solid #e0e0e0',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                      mt: 2,
+                    }}
+                >
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} md={2}>
+                      <Typography variant="subtitle2" color="text.secondary">Account Number</Typography>
+                      <Typography variant="body1" color="text.primary">{selectedAccount.accountNumber}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                      <Typography variant="subtitle2" color="text.secondary">Owner First Name</Typography>
+                      <Typography variant="body1" color="text.primary">{selectedAccount.firstName}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                      <Typography variant="subtitle2" color="text.secondary">Owner Last Name</Typography>
+                      <Typography variant="body1" color="text.primary">{selectedAccount.lastName}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                      <Typography variant="subtitle2" color="text.secondary">Account Type</Typography>
+                      <Typography variant="body1" color="text.primary">{selectedAccount.accountType}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                      <Typography variant="subtitle2" color="text.secondary">Currency Type</Typography>
+                      <Typography variant="body1" color="text.primary">{selectedAccount.currencyType}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={2}>
+                      <Typography variant="subtitle2" color="text.secondary">Status</Typography>
+                      <Select
+                          value={selectedAccount.status}
+                          onChange={(event) => handleStatusChange(event.target.value)}
+                      >
+                        <MenuItem value="ACTIVE">ACTIVE</MenuItem>
+                        <MenuItem value="BLOCKED">BLOCKED</MenuItem>
+                        <MenuItem value="CLOSED">CLOSED</MenuItem>
+                        <MenuItem value="FROZEN">FROZEN</MenuItem>
+                      </Select>
+                    </Grid>
+                  </Grid>
+                </Paper>
 
-            {/* Cards Table Section */}
-            <Typography variant="h6" gutterBottom>
-              Cards for Account
-            </Typography>
-            <DataTable
-              rows={cards}
-              columns={columns}
-              checkboxSelection={false}
-              hideSearch={true}
-              hideActionButton={true}
-              loading={loading}
-              error={error}
-            />
-          </>
-        ) : (
-          <Paper sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="h6" color="error" gutterBottom>
-              No Account Selected
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              Please select an account from the accounts list to view its cards.
-            </Typography>
-          </Paper>
-        )}
+                {selectedAccount.accountType.toLowerCase() === 'business' && company && (
+                    <>
+                      <Typography variant="h4" component="h1">
+                        Company information
+                      </Typography>
+
+                      <Paper
+                          sx={{
+                            p: 3,
+                            mb: 4,
+                            backgroundColor: 'rgba(25,25,25,0.01)',
+                            border: '1px solid #e0e0e0',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                            mt: 2,
+                          }}
+                      >
+                        <Grid container spacing={2}>
+                          <Grid item xs={12} md={3}>
+                            <Typography variant="subtitle2">Company Name</Typography>
+                            <Typography>{company.name}</Typography>
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <Typography variant="subtitle2">Registration Number</Typography>
+                            <Typography>{company.companyRegistrationNumber}</Typography>
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <Typography variant="subtitle2">PIB</Typography>
+                            <Typography>{company.pib}</Typography>
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <Typography variant="subtitle2">Address</Typography>
+                            <Typography>{company.address}</Typography>
+                          </Grid>
+                        </Grid>
+                      </Paper>
+                    </>
+                )}
+
+                <Typography variant="h6" gutterBottom>
+                  Cards for Account
+                </Typography>
+                <Grid container spacing={2} justifyContent="center">
+                  {cards.map((card) => (
+                      <Grid item key={card.id}>
+                        <CreditCardDisplay
+                            card={card}
+                            onBlockToggle={handleBlock}
+                            onActiveToggle={handleActive}
+                        />
+                      </Grid>
+                  ))}
+                </Grid>
+              </>
+          ) : (
+              <Paper sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h6" color="error" gutterBottom>
+                  No Account Selected
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Please select an account from the accounts list to view its cards.
+                </Typography>
+              </Paper>
+          )}
+        </div>
+
       </div>
     </div>
   );
