@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button, MenuItem } from '@mui/material';
 import { createInternalTransfer, verifyOTP, fetchAccountsForUser, fetchExchangeRatesForCurrency } from "../../services/AxiosBanking";
 import { useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 const InternalTransferForm = () => {
     const [accounts, setAccounts] = useState([]);
@@ -95,21 +96,25 @@ const InternalTransferForm = () => {
                     otpCode: verificationCode
                 });
             if (response.status === 200) {
-                alert("Transaction successfully verified!");
+                toast.success("Transaction successfully verified!", { autoClose: 3000 });
                 setShowModal(false);
                 navigate('/home');
             } else {
-                alert("Invalid OTP.");
+                toast.error("Invalid OTP.", { autoClose: 3000 });
             }
         } catch (error) {
-            alert("Error verifying OTP.");
+            toast.error("Error verifying OTP.", { autoClose: 3000 });
         }
     };
+    const onClose = () => {
+        setShowModal(false);
+        setVerificationCode("");
+    };
+
 
     return (
         <div style={{padding: '20px', marginTop: '64px'}}>
             <h1>New Internal Transfer</h1>
-
             <Box
                 component="form"
                 sx={{
@@ -175,7 +180,7 @@ const InternalTransferForm = () => {
                     color="primary"
                     onClick={handleContinue}
                     disabled={!outflowAccount || !inflowAccount || !amount} // Disable ako forma nije popunjena
-                    sx={{width: '25ch'}}
+                    sx={{width: '30ch'}}
                 >
                     Continue
                 </Button>
@@ -205,7 +210,7 @@ const InternalTransferForm = () => {
                             {!conversion && <Typography><strong>Transfer fee:</strong> 0.00 {currency}</Typography>}
                             {conversion && <Typography><strong>Transfer fee:</strong> {amount * 0.01} {currency}</Typography>}
                             <Box sx={{display: 'flex', justifyContent: 'space-between', mt: 2}}>
-                                <Button variant="outlined" onClick={() => setShowModal(false)}>Cancel</Button>
+                                <Button variant="outlined" onClick={onClose}>Cancel</Button>
                                 <Button variant="contained" onClick={handleConfirmTransfer}>Continue</Button>
                             </Box>
                         </>
@@ -215,7 +220,7 @@ const InternalTransferForm = () => {
                             <TextField label="Verification Code" value={verificationCode}
                                        onChange={(e) => setVerificationCode(e.target.value)} fullWidth/>
                             <Box sx={{display: 'flex', justifyContent: 'space-between', mt: 2}}>
-                                <Button variant="outlined" onClick={() => setShowModal(false)}>Cancel</Button>
+                                <Button variant="outlined" onClick={onClose}>Cancel</Button>
                                 <Button variant="contained" onClick={handleConfirmVerification}
                                         disabled={!verificationCode}>Confirm</Button>
                             </Box>
@@ -223,6 +228,7 @@ const InternalTransferForm = () => {
                     )}
                 </Box>
             </Modal>
+            <ToastContainer position="bottom-right" />
         </div>
     );
 };
