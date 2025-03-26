@@ -73,20 +73,7 @@ const EmployeeCardsPortal = () => {
     }
   };
 
-  useEffect(() => {
-    if (!selectedAccount) {
-      setError('No account selected. Please select an account from the accounts list.');
-      setLoading(false);
-      return;
-    }
-    loadCards();
-    if (selectedAccount?.accountType?.toLowerCase() === 'business') {
-      loadCompanyInfo(selectedAccount.id);
-    }
-
-  }, [selectedAccount]);
-
-  const loadCards = async () => {
+  const loadCards = useCallback(async () => {
     try {
       setLoading(true);
       const data = await fetchCardsByAccountId(selectedAccount.id);
@@ -120,12 +107,15 @@ const EmployeeCardsPortal = () => {
       return;
     }
     loadCards();
+    if (selectedAccount?.accountType?.toLowerCase() === 'business') {
+      loadCompanyInfo(selectedAccount.id);
+    }
   }, [selectedAccount, loadCards]);
 
   const loadCompanyInfo = async (accountId) => {
     try {
-      // Simulirano: poziv ka API-ju, npr. await fetchCompanyByAccountId(accountId);
-      const dummyCompany = {   //PROMENI
+      // Simulated: API call, e.g., await fetchCompanyByAccountId(accountId);
+      const dummyCompany = {
         name: "TechNova LLC",
         companyRegistrationNumber: "12345678",
         pib: "109876543",
@@ -137,7 +127,6 @@ const EmployeeCardsPortal = () => {
       console.error('Failed to load company info:', err);
     }
   };
-
 
   function maskCardNumber(cardNumber) {
     return cardNumber.replace(/^(\d{4})\d{8}(\d{4})$/, '$1********$2');
@@ -158,83 +147,38 @@ const EmployeeCardsPortal = () => {
   };
 
   return (
-      <div>
-        <Sidebar />
-        <div style={{ padding: '20px', marginTop: '64px' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <Button
-                startIcon={<ArrowBackIcon />}
-                onClick={handleBack}
-                sx={{ mr: 2 }}
+    <div>
+      <Sidebar />
+      <div style={{ padding: '20px', marginTop: '64px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <Button
+            startIcon={<ArrowBackIcon />}
+            onClick={handleBack}
+            sx={{ mr: 2 }}
+          >
+            Back to Accounts
+          </Button>
+        </Box>
+        <Typography variant="h4" component="h1">
+          Account information
+        </Typography>
+
+        {selectedAccount ? (
+          <>
+            <Paper
+              sx={{
+                p: 3,
+                mb: 4,
+                backgroundColor: 'rgba(25,25,25,0.01)',
+                border: '1px solid #e0e0e0',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                mt: 2,
+              }}
             >
-              Back to Accounts
-            </Button>
-          </Box>
-          <Typography variant="h4" component="h1">
-            Account information
-          </Typography>
-
-          {selectedAccount ? (
-              <>
-                <Paper
-                    sx={{
-                      p: 3,
-                      mb: 4,
-                      backgroundColor: 'rgba(25,25,25,0.01)',
-                      border: '1px solid #e0e0e0',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                      mt: 2,
-                    }}
-                >
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12} md={2}>
-                      <Typography variant="subtitle2" color="text.secondary">Account Number</Typography>
-                      <Typography variant="body1" color="text.primary">{selectedAccount.accountNumber}</Typography>
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                      <Typography variant="subtitle2" color="text.secondary">Owner First Name</Typography>
-                      <Typography variant="body1" color="text.primary">{selectedAccount.firstName}</Typography>
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                      <Typography variant="subtitle2" color="text.secondary">Owner Last Name</Typography>
-                      <Typography variant="body1" color="text.primary">{selectedAccount.lastName}</Typography>
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                      <Typography variant="subtitle2" color="text.secondary">Account Type</Typography>
-                      <Typography variant="body1" color="text.primary">{selectedAccount.accountType}</Typography>
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                      <Typography variant="subtitle2" color="text.secondary">Currency Type</Typography>
-                      <Typography variant="body1" color="text.primary">{selectedAccount.currencyType}</Typography>
-                    </Grid>
-                    <Grid item xs={12} md={2}>
-                      <Typography variant="subtitle2" color="text.secondary">Status</Typography>
-                      <Select
-                          value={selectedAccount.status}
-                          onChange={(event) => handleStatusChange(event.target.value)}
-                      >
-                        <MenuItem value="ACTIVE">ACTIVE</MenuItem>
-                        <MenuItem value="BLOCKED">BLOCKED</MenuItem>
-                        <MenuItem value="CLOSED">CLOSED</MenuItem>
-                        <MenuItem value="FROZEN">FROZEN</MenuItem>
-                      </Select>
-                    </Grid>
-                  </Grid>
-                </Paper>
-
-                <Typography variant="h6" gutterBottom>
-                  Cards for Account
-                </Typography>
-                <Grid container spacing={2} justifyContent="center">
-                  {cards.map((card) => (
-                      <Grid item key={card.id}>
-                        <CreditCardDisplay
-                            card={card}
-                            onBlockToggle={handleBlock}
-                            onActiveToggle={handleActive}
-                        />
-                      </Grid>
-                  ))}
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} md={2}>
+                  <Typography variant="subtitle2" color="text.secondary">Account Number</Typography>
+                  <Typography variant="body1" color="text.primary">{selectedAccount.accountNumber}</Typography>
                 </Grid>
                 <Grid item xs={12} md={2}>
                   <Typography variant="subtitle2" color="text.secondary">Owner First Name</Typography>
@@ -255,8 +199,8 @@ const EmployeeCardsPortal = () => {
                 <Grid item xs={12} md={2}>
                   <Typography variant="subtitle2" color="text.secondary">Status</Typography>
                   <Select
-                      value={selectedAccount.status}
-                      onChange={(event) => handleStatusChange(event.target.value)}
+                    value={selectedAccount.status}
+                    onChange={(event) => handleStatusChange(event.target.value)}
                   >
                     <MenuItem value="ACTIVE">ACTIVE</MenuItem>
                     <MenuItem value="BLOCKED">BLOCKED</MenuItem>
@@ -267,24 +211,22 @@ const EmployeeCardsPortal = () => {
               </Grid>
             </Paper>
 
-
             {selectedAccount.accountType.toLowerCase() === 'business' && company && (
-                <>
-                  <Typography variant="h4" component="h1">
+              <>
+                <Typography variant="h4" component="h1">
                   Company information
                 </Typography>
 
                 <Paper
-                    sx={{
-                      p: 3,
-                      mb: 4,
-                      backgroundColor: 'rgba(25,25,25,0.01)',
-                      border: '1px solid #e0e0e0',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                      mt: 2,
-                    }}
+                  sx={{
+                    p: 3,
+                    mb: 4,
+                    backgroundColor: 'rgba(25,25,25,0.01)',
+                    border: '1px solid #e0e0e0',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                    mt: 2,
+                  }}
                 >
-
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={3}>
                       <Typography variant="subtitle2">Company Name</Typography>
@@ -304,24 +246,23 @@ const EmployeeCardsPortal = () => {
                     </Grid>
                   </Grid>
                 </Paper>
-                  </>
+              </>
             )}
 
-
-
-            {/* Cards Table Section */}
             <Typography variant="h6" gutterBottom>
               Cards for Account
             </Typography>
-            <DataTable
-              rows={cards}
-              columns={columns}
-              checkboxSelection={false}
-              hideSearch={true}
-              hideActionButton={true}
-              loading={loading}
-              error={error}
-            />
+            <Grid container spacing={2} justifyContent="center">
+              {cards.map((card) => (
+                <Grid item key={card.id}>
+                  <CreditCardDisplay
+                    card={card}
+                    onBlockToggle={handleBlock}
+                    onActiveToggle={handleActive}
+                  />
+                </Grid>
+              ))}
+            </Grid>
           </>
         ) : (
           <Paper sx={{ p: 3, textAlign: 'center' }}>
@@ -334,6 +275,7 @@ const EmployeeCardsPortal = () => {
           </Paper>
         )}
       </div>
+    </div>
   );
 };
 
