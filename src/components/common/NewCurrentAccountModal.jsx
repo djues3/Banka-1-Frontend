@@ -400,7 +400,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
             />
       </>
     )}
-                {/*
+                
             <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
                 <Button onClick={onClose}>Cancel</Button>
                 <Button
@@ -412,11 +412,12 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
                     Confirm
                 </Button>
             </DialogActions>
-                */}
+            
+            {/*
                 <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
                         <Button onClick={onClose}>Cancel</Button>
                 </DialogActions>
-
+            */}
             </DialogContent>
         </Dialog>
     );

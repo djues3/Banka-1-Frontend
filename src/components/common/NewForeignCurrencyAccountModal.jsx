@@ -453,7 +453,6 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
         </>
   )}
 
-                {/*
             <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
                 <Button onClick={onClose}>Cancel</Button>
                 <Button
@@ -465,7 +464,6 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                     Confirm
                 </Button>
             </DialogActions>
-        */}
             <EditModal
                 open={isCreateModalOpen}
                 onClose={() => {
@@ -490,9 +488,11 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                     </DialogActions>
                 )}
 
+                {/* 
                 <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
                     <Button onClick={onClose}>Cancel</Button>
                 </DialogActions>
+                */}
 
             </DialogContent>
         </Dialog>
