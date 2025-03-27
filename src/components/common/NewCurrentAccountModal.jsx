@@ -412,9 +412,10 @@ const handleCreateCompany = async (companyData) => {
                     Confirm
                 </Button>
             </DialogActions>
-                {/* <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
+                
+                <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
                         <Button onClick={onClose}>Cancel</Button>
-                </DialogActions> */}
+                </DialogActions>
 
             </DialogContent>
         </Dialog>
