@@ -278,7 +278,6 @@ const EmployeeCardsPortal = () => {
         </div>
 
       </div>
-    </div>
   );
 };
 

@@ -17,6 +17,8 @@ const AccountTransactionsList = ({ accountId }) => {
     { field: "date", headerName: "Date", width: 150 },
     { field: "amount", headerName: "Amount", width: 130 },
     { field: "description", headerName: "Description", width: 250 },
+    { field: "finalAmount", headerName: "Final Amount", width: 150 },
+    { field: "fee", headerName: "Fee", width: 100 }
   ];
 
   // Format the date in the log to YYYY-MM-DD
@@ -51,6 +53,8 @@ const AccountTransactionsList = ({ accountId }) => {
           /*date: formatLogDate(transaction.date), /*mozda treba ova da se iskoristi*/
           amount: transaction.amount,
           description: transaction.description,
+          finalAmount: transaction.finalAmount,
+          fee: transaction.fee
         }));
 
         setTransactions(formattedTransactions);
