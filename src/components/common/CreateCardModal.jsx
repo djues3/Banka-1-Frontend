@@ -8,7 +8,7 @@ import AuthorizedPersonModal from "./AuthorizedPersonModal";
 const CreateCardModal = ({open, onClose, accountId}) => {
     const {addCard} = useCards();
     const [selectedAccount, setSelectedAccount] = useState("");
-    const [selectedType, setSelectedType] = useState("");
+    const [selectedType, setSelectedType] = useState("DEBIT");
     const [selectedBrand, setSelectedBrand] = useState("");
     const [accounts, setAccounts] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -113,12 +113,16 @@ const CreateCardModal = ({open, onClose, accountId}) => {
                         </Select>
                     </FormControl>
                     <FormControl fullWidth sx={{my: 2}} disabled={loading || accounts.length === 0}>
-                        <InputLabel>Choose card type</InputLabel>
+
                         <Select
                             value={selectedType}
                             onChange={(e) => setSelectedType(e.target.value)}
                             displayEmpty
-                            variant="outlined">
+                            disabled={true}
+                            variant="outlined"
+                            IconComponent={() => null}
+                        >
+
                             <MenuItem key="DEBIT" value="DEBIT">Debit</MenuItem>
                         </Select>
 
