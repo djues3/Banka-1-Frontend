@@ -308,6 +308,15 @@ export const createInternalTransfer = async (transferData) => {
     throw error;
   }
 };
+export const createExchangeTransfer = async (transferData) => {
+  try {
+    const response = await apiBanking.post("/exchange-transfer", transferData);
+    return response.data;
+  } catch (error) {
+    console.error("API Error during exchange transfer: ", error);
+    throw error;
+  }
+};
 
 export const deleteRecipient = async (id) => {
   try {
