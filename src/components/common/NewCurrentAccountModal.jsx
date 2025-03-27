@@ -7,7 +7,8 @@ import {
 import { createCustomer, fetchCustomers } from '../../services/AxiosUser';
 import EditModal from '../common/EditModal';
 import { toast } from "react-toastify";
-import { createAccount } from "../../services/AxiosBanking";
+import { createAccount, createCompany } from "../../services/AxiosBanking";
+import { useNavigate } from 'react-router-dom';
 
 const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
     const [customers, setCustomers] = useState([]);
@@ -15,6 +16,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
     const [startingBalance, setStartingBalance] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [selectedOwnerId, setSelectedOwnerId] = useState('');
+    const navigate = useNavigate();
 
     const [newCustomer, setNewCustomer] = useState({
         firstName: '',
@@ -127,9 +129,9 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
 
             setNewCompany({
                 name: '',
-                companyRegistrationNumber: '',
-                activityCode: '',
-                pib: '',
+                companyNumber: '',
+                bas: '',
+                vatNumber: '',
                 address: '',
                 ownerID: createdCustomerId
             });
@@ -150,8 +152,7 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
 
     };
 
-    /*
-       const handleCreateCompany = async (companyData) => {
+const handleCreateCompany = async (companyData) => {
      try {
        const formattedCompanyData = {
          companyID: companyData.companyID,
@@ -177,7 +178,6 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
        toast.error(`Failed to create company: ${error.message}`);
      }
    };
-   */
 
     const resetCustomerForm = () => {
         setNewCustomer({
@@ -396,11 +396,11 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
                 }}
                 data={newCompany}
                 formFields={createCompanyFormFields}
-                //onSave={handleCreateCompany}
+                onSave={handleCreateCompany}
             />
       </>
     )}
-                {/*
+                
             <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
                 <Button onClick={onClose}>Cancel</Button>
                 <Button
@@ -412,10 +412,9 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
                     Confirm
                 </Button>
             </DialogActions>
-                */}
-                <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
+                {/* <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
                         <Button onClick={onClose}>Cancel</Button>
-                </DialogActions>
+                </DialogActions> */}
 
             </DialogContent>
         </Dialog>
