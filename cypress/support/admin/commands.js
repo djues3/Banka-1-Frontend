@@ -148,22 +148,7 @@ Cypress.Commands.add('CreateAccount', () => {
 
   cy.contains('Make a card').should('be.visible').click();
   cy.get('input[type="number"]').first().should('be.visible').clear().type('99999');
-  cy.contains('Create New Customer').should('be.visible').click();
-  // Popuni formu za korisnika
-  const randomString = () => Math.random().toString(36).substring(2, 8);
-  const email = `${randomString()}@mail.com`;
-  cy.get('input[name="firstName"]').type('Test');
-  cy.get('input[name="lastName"]').type('Korisnik');
-  cy.get('input[name="username"]').type(randomString());
-  cy.get('input[name="email"]').type(email);
-  cy.get('input[name="phoneNumber"]').type('0612345678');
-  cy.get('input[name="address"]').type('Test ulica 123');
-  cy.get('input[name="birthDate"]').type('1995-01-01');
-  cy.get('input[name="gender"]').parent().click(); // otvori dropdown
-  cy.get('[role="option"]').contains('Male').click(); // izaberi opciju
-  
-
-  cy.contains('Save').should('not.be.disabled').click();
+  cy.contains('Confirm').should('be.visible').click();
 });
 
 Cypress.Commands.add('denyLoan', () => {

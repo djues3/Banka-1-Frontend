@@ -1,6 +1,6 @@
 module.exports = {
   e2e: {
-    baseUrl: "http://localhost:4200",
+    baseUrl: "https://localhost",
     specPattern: "cypress/e2e/**/*.cy.js",
     supportFile: false,  // Enabling support file
     
