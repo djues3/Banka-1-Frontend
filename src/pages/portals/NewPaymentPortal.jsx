@@ -263,7 +263,7 @@ const NewPaymentPortal = () => {
                             <option value="" disabled>Select an account</option>
                             {accounts.map((account) => (
                                 <option key={account.id} value={account.id}>
-                                    {account.accountNumber}
+                                    {account.accountNumber} ({account.currencyType})
                                 </option>
                             ))}
                         </select>
@@ -359,6 +359,9 @@ const NewPaymentPortal = () => {
                                     onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
                                     required
                                 />
+                                <span className="currency-display">
+                                    {selectedAccount?.currencyType || ''}
+                                </span>
                                 <span title={`Daily Limit: ${dailyLimit ?? "N/A"}`} style={{ cursor: "pointer" }}>ℹ️</span>
                             </div>
                         </div>

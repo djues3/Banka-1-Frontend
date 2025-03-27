@@ -13,7 +13,7 @@ import {
     Box,
     Toolbar
 } from '@mui/material';
-import { convertCurrency } from '../../services/AxiosBanking';
+import { previewExchangeTransfer, previewForeignExchangeTransfer } from '../../services/AxiosBanking';
 import Sidebar from '../../components/mainComponents/Sidebar';
 
 const CheckEquivalency = () => {
@@ -39,12 +39,44 @@ const CheckEquivalency = () => {
         setError(null);
 
         try {
-            const conversionResult = await convertCurrency(numericAmount, fromCurrency, toCurrency);
-            setResult({
-                originalAmount: conversionResult.originalAmount,
-                convertedAmount: conversionResult.convertedAmount.toFixed(2),
-                commission: conversionResult.commission.toFixed(2)
-            });
+            let conversionResult;
+            if (fromCurrency === toCurrency) {
+                conversionResult = {
+                    convertedAmount: numericAmount,
+                    provision: 0,
+                    finalAmount: numericAmount,
+                    fee: 0,
+                    exchangeRate: 1
+                };
+            } else if (fromCurrency === "RSD" || toCurrency === "RSD") {
+                conversionResult = await previewExchangeTransfer(fromCurrency, toCurrency, numericAmount);
+            } else {
+                conversionResult = await previewForeignExchangeTransfer(fromCurrency, toCurrency, numericAmount);
+            }
+
+            // Handle different response formats
+            if (fromCurrency === toCurrency || fromCurrency === "RSD" || toCurrency === "RSD") {
+                setResult({
+                    originalAmount: numericAmount,
+                    convertedAmount: conversionResult.convertedAmount.toFixed(2),
+                    commission: conversionResult.provision.toFixed(2),
+                    finalAmount: conversionResult.finalAmount.toFixed(2),
+                    exchangeRate: conversionResult.exchangeRate.toFixed(6),
+                    fromCurrency: fromCurrency,
+                    toCurrency: toCurrency
+                });
+            } else {
+                // Handle foreign exchange response
+                setResult({
+                    originalAmount: numericAmount,
+                    firstExchangeRate: conversionResult.firstExchangeRate.toFixed(6),
+                    secondExchangeRate: conversionResult.secondExchangeRate.toFixed(6),
+                    provision: conversionResult.provision.toFixed(2),
+                    finalAmount: conversionResult.finalAmount.toFixed(2),
+                    fromCurrency: fromCurrency,
+                    toCurrency: toCurrency
+                });
+            }
         } catch (err) {
             setError('Failed to convert currency. Please try again later.');
             console.error('Error converting currency:', err);
@@ -140,19 +172,58 @@ const CheckEquivalency = () => {
                                 <Grid container spacing={2}>
                                     <Grid item xs={12}>
                                         <Alert severity="info">
-                                            Original Amount: {result.originalAmount} {fromCurrency}
+                                            Original Amount: {result.originalAmount} {result.fromCurrency}
                                         </Alert>
                                     </Grid>
-                                    <Grid item xs={12}>
-                                        <Alert severity="success">
-                                            Converted Amount: {result.convertedAmount} {toCurrency}
-                                        </Alert>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Alert severity="warning">
-                                            Commission (1%): {result.commission} {toCurrency}
-                                        </Alert>
-                                    </Grid>
+                                    {result.convertedAmount !== undefined ? (
+                                        // Regular exchange response
+                                        <>
+                                            <Grid item xs={12}>
+                                                <Alert severity="success">
+                                                    Converted Amount: {result.convertedAmount} {result.toCurrency}
+                                                </Alert>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Alert severity="warning">
+                                                    Commission: {result.commission} {result.toCurrency}
+                                                </Alert>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Alert severity="info">
+                                                    Final Amount: {result.finalAmount} {result.toCurrency}
+                                                </Alert>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Alert severity="info">
+                                                    Exchange Rate: {result.exchangeRate}
+                                                </Alert>
+                                            </Grid>
+                                        </>
+                                    ) : (
+                                        // Foreign exchange response
+                                        <>
+                                            <Grid item xs={12}>
+                                                <Alert severity="info">
+                                                    First Exchange Rate: {result.firstExchangeRate}
+                                                </Alert>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Alert severity="info">
+                                                    Second Exchange Rate: {result.secondExchangeRate}
+                                                </Alert>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Alert severity="warning">
+                                                    Commission: {result.provision} {result.toCurrency}
+                                                </Alert>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <Alert severity="success">
+                                                    Final Amount: {result.finalAmount} {result.toCurrency}
+                                                </Alert>
+                                            </Grid>
+                                        </>
+                                    )}
                                 </Grid>
                             </CardContent>
                         </Card>
@@ -165,7 +236,7 @@ const CheckEquivalency = () => {
     return (
         <>
             <Sidebar />
-            <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - 240px)` }, ml: { sm: '240px' } }}>
+            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <Toolbar /> {/* This creates space for the AppBar */}
                 {renderContent()}
             </Box>
