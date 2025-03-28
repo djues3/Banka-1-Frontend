@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { Card, CardContent, Typography, Paper } from "@mui/material";
+import { Card, CardContent, Typography, Paper, Chip } from "@mui/material";
 import DataTable from "../tables/DataTable";
 import TransactionDetailsModal from "./TransactionDetailsModal";
 import {fetchAccountsTransactions} from "../../services/transactionService";
@@ -10,6 +10,25 @@ import {fetchAccountsTransactions} from "../../services/transactionService";
 
 //kolone za tabelu
 const columns = [
+    {
+        field: "direction",
+        headerName: "Type",
+        flex: 0.6,
+        renderCell: (params) => {
+          const isIncoming = params.value === "incoming";
+          return (
+            <Chip
+              label={isIncoming ? "Incoming" : "Outgoing"}
+              size="small"
+              sx={{
+                backgroundColor: isIncoming ? "#2e7d32" : "#c62828",
+                color: "white",
+                fontWeight: "bold",
+              }}
+            />
+          );
+        },
+      },
     { field: "receiverAccount", headerName: "Transaction", flex: 1 },
     { field: "amount", headerName: "Amount", flex: 1 },
     { field: "currency", headerName: "Currency", flex: 0.5 },
@@ -35,10 +54,23 @@ const RecentTransactions = ({ accountId }) => {
             try {
                 const data = await fetchAccountsTransactions(accountId);
                 if (data && Array.isArray(data)) {
-                    setTransactions(data);
-                } else {
-                    setTransactions([]);  // Ako podaci nisu u ispravnom formatu, postavi praznu listu
-                }
+                    const enriched = data.map((tx) => {
+                        const isIncoming = tx.receiverId === accountId;
+                        const direction = isIncoming ? "incoming" : "outgoing";
+              
+                        console.log(
+                          `Transaction ID: ${tx.id}, toAccountId.id: ${tx.receiver}, current accountId: ${accountId.number}, Direction: ${direction}`
+                        );
+            
+                      return {
+                        ...tx,
+                        direction,
+                      };
+                    });
+                    setTransactions(enriched);
+                  } else {
+                    setTransactions([]); // If format is unexpected
+                  }
             } catch (error) {
                 console.error("Error fetching transactions:", error);
                 setTransactions([]);  // Ako dođe do greške, postavi praznu listu
