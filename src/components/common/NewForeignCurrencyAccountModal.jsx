@@ -5,10 +5,11 @@ import {
     Checkbox, FormControlLabel, TextField, Typography, RadioGroup, Radio
 } from '@mui/material';
 import { createCustomer, fetchCustomers } from '../../services/AxiosUser';
-import { createAccount } from '../../services/AxiosBanking';
+import {createAccount, createCompany} from '../../services/AxiosBanking';
 import EditModal from '../common/EditModal';
 import { toast } from 'react-toastify';
 import { fetchCompaniesFromUser } from '../../services/AxiosBanking';
+import {useNavigate} from "react-router-dom";
 
 const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess }) => {
     const [customers, setCustomers] = useState([]);
@@ -18,6 +19,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState('');
     const currencies = ['EUR', 'CHF', 'USD', 'GBP', 'JPY', 'CAD', 'AUD'];
+    const navigate = useNavigate();
 
     const [newCustomer, setNewCustomer] = useState({
         firstName: '',
