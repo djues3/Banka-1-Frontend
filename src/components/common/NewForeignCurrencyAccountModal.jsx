@@ -174,8 +174,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
         }
     };
 
-    /*
-        const handleCreateCompany = async (companyData) => {
+const handleCreateCompany = async (companyData) => {
       try {
         const formattedCompanyData = {
         companyID: companyData.companyID,
@@ -200,7 +199,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
         toast.error(`Failed to create company: ${error.message}`);
       }
     };
-    */
+    
     const resetCustomerForm = () => {
         setNewCustomer({
             firstName: '',
@@ -448,11 +447,12 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                 }}
                 data={newCompany}
                 formFields={createCompanyFormFields}
-                //onSave={handleCreateCompany}
+                onSave={handleCreateCompany}
             />
         </>
   )}
 
+                
             <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
                 <Button onClick={onClose}>Cancel</Button>
                 <Button
@@ -464,6 +464,7 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                     Confirm
                 </Button>
             </DialogActions>
+       
             <EditModal
                 open={isCreateModalOpen}
                 onClose={() => {
@@ -488,11 +489,9 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                     </DialogActions>
                 )}
 
-                {/* 
-                <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
+                {/* <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
                     <Button onClick={onClose}>Cancel</Button>
-                </DialogActions>
-                */}
+                </DialogActions> */}
 
             </DialogContent>
         </Dialog>

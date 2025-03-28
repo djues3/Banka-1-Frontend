@@ -647,7 +647,7 @@ export const changingAccountStatus = async (accountId, status) => {
 
 export const createCompany = async (companyData) => {
   try {
-    const response = await apiBanking.post('/companies', companyData);
+    const response = await apiBanking.post("/companies/", companyData);
     return response.data;
   } catch (error) {
     console.error("Error creating company:", error);
@@ -669,7 +669,7 @@ export const fetchExchangeRatesForCurrency = async (currency) => {
 
 export const getCompanies = async () => {
   try {
-    const response = await apiBanking.get("/companies");
+    const response = await apiBanking.get("/companies/");
     return response.data;
   } catch (error) {
     console.error("Error fetching companies:", error);
@@ -677,13 +677,12 @@ export const getCompanies = async () => {
   }
 };
 
-
 export const fetchCompaniesFromUser = async (userID) => {
   try {
     const response = await apiBanking.get(`/companies/${userID}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching companies:', error);
+    console.error("Error fetching companies:", error);
     throw error;
   }
 };
@@ -693,7 +692,7 @@ export const fetchCompany = async (companyID) => {
     const response = await apiBanking.get(`/companies/${companyID}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching companies:', error);
+    console.error("Error fetching companies:", error);
     throw error;
   }
 };
