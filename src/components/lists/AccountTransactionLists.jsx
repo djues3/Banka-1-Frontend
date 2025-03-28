@@ -51,10 +51,10 @@ const AccountTransactionsList = ({ accountId }) => {
           id: transaction.id,
           date: new Date(transaction.transfer.createdAt).toLocaleDateString(),
           /*date: formatLogDate(transaction.date), /*mozda treba ova da se iskoristi*/
-          amount: transaction.amount,
+          amount: transaction.amount.toFixed(2) + " " + transaction.transfer.fromCurrency.code,
           description: transaction.description,
-          finalAmount: transaction.finalAmount,
-          fee: transaction.fee
+          finalAmount: transaction.finalAmount.toFixed(2) + " " + transaction.transfer.toCurrency.code,
+          fee: transaction.fee.toFixed(2) + " " + transaction.transfer.toCurrency.code
         }));
 
         setTransactions(formattedTransactions);

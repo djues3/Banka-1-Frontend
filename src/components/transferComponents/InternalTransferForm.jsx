@@ -108,7 +108,7 @@ const InternalTransferForm = () => {
             if (response.status === 200) {
                 toast.success("Transaction successfully verified!", { autoClose: 3000 });
                 setShowModal(false);
-                navigate('/home');
+                navigate('/customer-home');
             } else {
                 toast.error("Invalid OTP.", { autoClose: 3000 });
             }

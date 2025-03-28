@@ -11,6 +11,7 @@ import {
   Select
 } from "@mui/material";
 import { fetchAccountsForUser, submitLoanRequest } from "../../services/AxiosBanking";
+import {toast, ToastContainer} from "react-toastify";
 
 const LoanRequestModal = ({ open, onClose }) => {
   const [loanType, setLoanType] = useState("");
@@ -60,7 +61,7 @@ const LoanRequestModal = ({ open, onClose }) => {
 
   const handleSubmit = async () => {
     if (!selectedAccount || !loanType || !loanAmount || !currencyType || !loanPurpose || !salaryAmount || !employmentStatus || !employmentDuration || !phoneNumber || !numberOfInstallments) {
-      alert("Please fill in all required fields.");
+      toast("Please fill in all required fields.");
       return;
     }
 
@@ -83,13 +84,12 @@ const LoanRequestModal = ({ open, onClose }) => {
     try {
       setLoading(true);
       await submitLoanRequest(requestData);
-      alert("Loan request submitted successfully!");
+      toast.success("Loan request submitted successfully!");
       resetForm();
       onClose();
-      window.location.reload();
     } catch (error) {
       console.error("Error submitting loan request:", error);
-      alert("Failed to submit loan request. Please try again.");
+      toast.error("Failed to submit loan request. Please try again.");
     }
     setLoading(false);
   };
@@ -109,6 +109,7 @@ const LoanRequestModal = ({ open, onClose }) => {
   };
 
   return (
+      <div>
     <Modal open={open} onClose={() => { resetForm(); onClose(); }}>
       <Box
         sx={{
@@ -204,6 +205,8 @@ const LoanRequestModal = ({ open, onClose }) => {
         </Box>
       </Box>
     </Modal>
+  <ToastContainer position="bottom-right" />
+  </div>
   );
 };
 
