@@ -33,20 +33,19 @@ const LogoutButton = () => {
       }}
     >
       <AlertDialog.Root>
-        <AlertDialog.Trigger
-          data-color="red"
-          style={{
-            padding: '8px 16px',
-            borderRadius: 8,
-            backgroundColor: theme.palette.error.main,
-            color: theme.palette.error.contrastText,
-            border: 'none',
-            cursor: 'pointer',
-            fontWeight: 600,
-          }}
-        >
-          Logout
-        </AlertDialog.Trigger>
+          <AlertDialog.Trigger
+              style={{
+                  padding: '8px 16px',
+                  borderRadius: 8,
+                  backgroundColor: '#f44336', // red
+                  color: '#fff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+              }}
+          >
+              Logout
+          </AlertDialog.Trigger>
 
         <AlertDialog.Portal>
           <AlertDialog.Backdrop
@@ -139,22 +138,21 @@ const LogoutButton = () => {
               >
                 Cancel
               </AlertDialog.Close>
-              <AlertDialog.Close
-                data-color="red"
-                onClick={handleLogout}
-                style={{
-                  flex: 1,
-                  padding: '8px 16px',
-                  borderRadius: 8,
-                  backgroundColor: theme.palette.error.main,
-                  color: theme.palette.error.contrastText,
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                }}
-              >
-                Continue
-              </AlertDialog.Close>
+                <AlertDialog.Close
+                    onClick={handleLogout}
+                    style={{
+                        flex: 1,
+                        padding: '8px 16px',
+                        borderRadius: 8,
+                        backgroundColor: '#f44336', // red
+                        color: '#fff',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                    }}
+                >
+                    Continue
+                </AlertDialog.Close>
             </div>
           </AlertDialog.Popup>
         </AlertDialog.Portal>
