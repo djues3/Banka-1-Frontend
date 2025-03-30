@@ -1,31 +1,22 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography'; 
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
+import styles from '../../styles/Login.module.css';
 import { useNavigate } from 'react-router-dom';
-import AuthCard from '../../components/loginComponents/AuthCard';
+import { useTheme } from '@mui/material/styles';
 
 const PasswordReset = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
+    const theme = useTheme();
+    const isDarkMode = theme.palette.mode === 'dark';
 
-    // Handle form submission to request password reset email
     const handleSubmit = async (event) => {
         event.preventDefault();
         setError('');
-
         try {
-            const response = await axios.put('/api/users/reset-password/', {
-                email: email
-            });
+            const response = await axios.put('/api/users/reset-password/', { email });
             console.log('Password reset request successful:', response.data);
             setSubmitted(true);
         } catch (err) {
@@ -35,81 +26,78 @@ const PasswordReset = () => {
     };
 
     return (
-        <Container component="main" maxWidth="xs">
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
-            >
-                <AuthCard 
-                    title="Reset Password" 
-                    icon={<MailOutlineIcon />}
-                >
+        <div className={styles.wrapper}>
+            <div className={`${styles.left} ${isDarkMode ? styles.dark : styles.light}`}>
+                <div>
+                    <img src="/logo-removebg-preview.png" alt="1Bank Logo" />
+                    <h1 className={styles.brandTitle}>Welcome to 1Bank</h1>
+                    <p className={styles.brandSubtitle}>Reliable. Agile. Forward-thinking.</p>
+                </div>
+            </div>
+
+            <div className={`${styles.right} ${isDarkMode ? styles.dark : ''}`}>
+                <div className={`${styles.card} ${isDarkMode ? styles.dark : ''}`}>
+                    <h2 className={styles.title}>Reset Password</h2>
+
                     {!submitted ? (
-                        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
-                            <TextField
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="email"
-                                label="Email Address"
-                                name="email"
-                                autoComplete="email"
-                                autoFocus
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+                        <form onSubmit={handleSubmit}>
+                            <label htmlFor="email" className={`${styles.label} ${isDarkMode ? styles.dark : ''}`}>
+                                Email Address
+                            </label>
+                            <div className={styles.inputWrapper}>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    className={`${styles.input} ${isDarkMode ? styles.dark : ''}`}
+                                />
+                            </div>
+
                             {error && (
-                                <Typography color="error" variant="body2">
+                                <p style={{ color: 'red', fontSize: '14px', marginBottom: '10px' }}>
                                     {error}
-                                </Typography>
+                                </p>
                             )}
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                                disabled={!email}
-                            >
-                                Reset Password
-                            </Button>
-                            <Grid container justifyContent="flex-end">
-                                <Grid item>
-                                    <Link 
-                                        onClick={() => navigate('/login')} 
-                                        variant="body2"
-                                        sx={{ cursor: 'pointer' }}
-                                    >
-                                        Back to login
-                                    </Link>
-                                </Grid>
-                            </Grid>
-                        </Box>
+
+                            <div className={styles.buttonRow}>
+                                <button
+                                    type="submit"
+                                    className={styles.loginButton}
+                                    disabled={!email}
+                                >
+                                    Reset Password
+                                </button>
+                            </div>
+
+                            <div>
+                                <span
+                                    className={styles.signupLink}
+                                    onClick={() => navigate('/login')}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    Back to login
+                                </span>
+                            </div>
+                        </form>
                     ) : (
-                        <Box sx={{ mt: 1, width: '100%', textAlign: 'center' }}>
-                            <Box sx={{ mb: 3 }}>
-                                <MailOutlineIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
-                                <Typography variant="h6">Check Your Email</Typography>
-                                <Typography variant="body2" color="textSecondary">
-                                    If an account exists with {email}, we've sent password reset instructions.
-                                </Typography>
-                            </Box>
-                            <Button
-                                fullWidth
-                                variant="outlined"
+                        <div style={{ textAlign: 'center' }}>
+                            <p style={{ fontSize: '16px', marginBottom: '10px' }}>
+                                If an account exists with <b>{email}</b>, we’ve sent password reset instructions.
+                            </p>
+                            <button
+                                className={styles.loginButton}
                                 onClick={() => navigate('/login')}
-                                sx={{ mt: 2 }}
                             >
                                 Return to Login
-                            </Button>
-                        </Box>
+                            </button>
+                        </div>
                     )}
-                </AuthCard>
-            </Box>
-        </Container>
+                </div>
+            </div>
+        </div>
     );
 };
 

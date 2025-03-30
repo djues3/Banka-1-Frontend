@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Container from '@mui/material/Container';
 import { useNavigate, useLocation } from 'react-router-dom';
-import AuthCard from '../../components/loginComponents/AuthCard';
-import PasswordField from '../../components/loginComponents/Password';
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
 import { setupPassword } from '../../services/AxiosUser';
+import { Alert, CircularProgress } from '@mui/material';
+import styles from '../../styles/Login.module.css';
 
 const PasswordSetConfirmation = () => {
     const navigate = useNavigate();
@@ -22,7 +15,6 @@ const PasswordSetConfirmation = () => {
     const [token, setToken] = useState('');
 
     useEffect(() => {
-        // Extract token from URL query parameters
         const queryParams = new URLSearchParams(location.search);
         const tokenParam = queryParams.get('token');
         if (tokenParam) {
@@ -33,36 +25,21 @@ const PasswordSetConfirmation = () => {
     const validatePassword = (password) => {
         const hasNumber = /[0-9]/.test(password);
         const hasUpperCase = /[A-Z]/.test(password);
-        
-        if (!hasNumber) {
-            return "Password must contain at least 1 number";
-        }
-        
-        if (!hasUpperCase) {
-            return "Password must contain at least 1 uppercase letter";
-        }
-        
-        if (password.length < 8) {
-            return "Password must be at least 8 characters long";
-        }
-        
-        return null; // No validation errors
+        if (!hasNumber) return "Password must contain at least 1 number";
+        if (!hasUpperCase) return "Password must contain at least 1 uppercase letter";
+        if (password.length < 8) return "Password must be at least 8 characters long";
+        return null;
     };
 
-    // Handle form submission to set the password
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        
-        // Clear previous errors
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         setError('');
-        
-        // Validate passwords match
+
         if (password !== confirmPassword) {
             setError('Passwords do not match');
             return;
         }
 
-        // Validate password complexity
         const passwordError = validatePassword(password);
         if (passwordError) {
             setError(passwordError);
@@ -70,132 +47,110 @@ const PasswordSetConfirmation = () => {
         }
 
         setIsSubmitting(true);
-
         try {
-            // Use the setupPassword function from AxiosUser.js
             await setupPassword(token, password);
             setSuccess(true);
         } catch (err) {
-            console.error('Error setting password:', err);
-            setError(
-                err.response?.data?.message || 
-                'Failed to set password. The link may have expired.'
-            );
+            setError(err.response?.data?.message || 'Failed to set password. The link may have expired.');
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // If no token is provided in the URL
     if (!token) {
         return (
-            <Container component="main" maxWidth="xs">
-                <Box sx={{ mt: 8 }}>
-                    <AuthCard title="Invalid Set Link" icon={<LockOutlinedIcon />}>
-                        <Alert severity="error" sx={{ mb: 2, mt: 2 }}>
-                            The password seset link is invalid or expired.
+            <div className={styles.wrapper}>
+                <div className={`${styles.left} ${styles.dark}`}>
+                    <div>
+                        <img src="/logo-removebg-preview.png" alt="1Bank Logo" />
+                        <h1 className={styles.brandTitle}>Welcome to 1Bank</h1>
+                        <p className={styles.brandSubtitle}>Reliable. Agile. Forward-thinking.</p>
+                    </div>
+                </div>
+                <div className={`${styles.right} ${styles.dark}`}>
+                    <div className={`${styles.card} ${styles.dark}`}>
+                        <h2 className={styles.title}>Invalid Link</h2>
+                        <Alert severity="error" sx={{ marginBottom: '16px' }}>
+                            The password set link is invalid or has expired.
                         </Alert>
-                        <Button 
-                            fullWidth 
-                            variant="contained"
-                            onClick={() => navigate('/reset-password-email')}
-                            sx={{ mt: 2 }}
-                        >
-                            Request New Set Link
-                        </Button>
-                        <Button 
-                            fullWidth 
-                            variant="text"
-                            onClick={() => navigate('/login')}
-                            sx={{ mt: 1 }}
-                        >
-                            Back to Login
-                        </Button>
-                    </AuthCard>
-                </Box>
-            </Container>
+                        <button onClick={() => navigate('/reset-password-email')} className={styles.loginButton}>
+                            Request New Link
+                        </button>
+                    </div>
+                </div>
+            </div>
         );
     }
 
     return (
-        <Container component="main" maxWidth="xs">
-            <Box sx={{ mt: 8 }}>
-                <AuthCard 
-                    title="Set Your Password" 
-                    icon={<LockOutlinedIcon />}
-                >
+        <div className={styles.wrapper}>
+            <div className={`${styles.left} ${styles.dark}`}>
+                <div>
+                    <img src="/logo-removebg-preview.png" alt="1Bank Logo" />
+                    <h1 className={styles.brandTitle}>Welcome to 1Bank</h1>
+                    <p className={styles.brandSubtitle}>Reliable. Agile. Forward-thinking.</p>
+                </div>
+            </div>
+            <div className={`${styles.right} ${styles.dark}`}>
+                <div className={`${styles.card} ${styles.dark}`}>
+                    <h2 className={styles.title}>Set Your Password</h2>
                     {success ? (
-                        <Box sx={{ mt: 2, width: '100%', textAlign: 'center' }}>
-                            <Alert severity="success" sx={{ mb: 2 }}>
+                        <>
+                            <Alert severity="success" sx={{ marginBottom: '16px' }}>
                                 Your password has been successfully set!
                             </Alert>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                onClick={() => navigate('/login')}
-                                sx={{ mt: 2 }}
-                            >
+                            <button onClick={() => navigate('/login')} className={styles.loginButton}>
                                 Go to Login
-                            </Button>
-                        </Box>
+                            </button>
+                        </>
                     ) : (
-                        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+                        <form onSubmit={handleSubmit}>
+                            <p className={styles.label}>Password must be at least 8 characters, 1 uppercase, 1 number.</p>
                             {error && (
-                                <Alert severity="error" sx={{ mb: 2, mt: 2 }}>
+                                <Alert severity="error" sx={{ marginBottom: '16px' }}>
                                     {error}
                                 </Alert>
                             )}
-                            
-                            <Typography variant="body2" sx={{ mb: 2 }}>
-                                Your password must be at least 8 characters long and contain at least 
-                                1 number and 1 uppercase letter.
-                            </Typography>
-                            
-                            <PasswordField
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                label="New Password"
-                                autoFocus
-                                disabled={isSubmitting}
-                            />
-                            
-                            <PasswordField
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                label="Confirm New Password"
-                                disabled={isSubmitting}
-                            />
-                            
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                disabled={!password || !confirmPassword || isSubmitting}
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <CircularProgress size={24} sx={{ mr: 1 }} />
-                                        Setting Password...
-                                    </>
-                                ) : (
-                                    'Set New Password'
-                                )}
-                            </Button>
-                            
-                            <Button
-                                fullWidth
-                                variant="text"
-                                onClick={() => navigate('/login')}
-                                sx={{ mt: 1 }}
-                            >
+                            <div className={styles.inputWrapper}>
+                                <input
+                                    type="password"
+                                    placeholder="New Password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    className={styles.input}
+                                />
+                            </div>
+                            <div className={styles.inputWrapper}>
+                                <input
+                                    type="password"
+                                    placeholder="Confirm Password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                    className={styles.input}
+                                />
+                            </div>
+                            <div className={styles.buttonRow}>
+                                <button type="submit" className={styles.loginButton} disabled={isSubmitting}>
+                                    {isSubmitting ? (
+                                        <>
+                                            <CircularProgress size={20} style={{ marginRight: 8 }} />
+                                            Submitting...
+                                        </>
+                                    ) : (
+                                        'Set Password'
+                                    )}
+                                </button>
+                            </div>
+                            <button type="button" onClick={() => navigate('/login')} className={styles.signupLink}>
                                 Cancel
-                            </Button>
-                        </Box>
+                            </button>
+                        </form>
                     )}
-                </AuthCard>
-            </Box>
-        </Container>
+                </div>
+            </div>
+        </div>
     );
 };
 

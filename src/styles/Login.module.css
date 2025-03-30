@@ -1,0 +1,190 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* ===== Left Section ===== */
+
+.left {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    padding: 40px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.left.light {
+    background: linear-gradient(135deg, #595992, #C2C1FF);
+}
+
+.left.dark {
+    background: linear-gradient(135deg, #1a1a1a, #414178);
+}
+
+.left h1 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.left p {
+    font-size: 20px;
+    opacity: 0.85;
+}
+
+/* ===== Right Side ===== */
+
+.right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+    background-color: #FCF8FF;
+}
+
+.right.dark {
+    background-color: #131318;
+}
+
+/* ===== Card ===== */
+
+.card {
+    width: 100%;
+    max-width: 520px;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    background-color: #FFFFFF;
+    color: #000;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card.dark {
+    background-color: #1e1e1e;
+    color: #E4E1E9;
+}
+
+.title {
+    font-size: 48px;
+    font-weight: 600;
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+.label {
+    font-size: 20px;
+    margin-bottom: 6px;
+    display: block;
+    color: #444;
+}
+
+.label.dark {
+    color: #C8C5D0;
+}
+
+/* ===== Input Fields ===== */
+
+.inputWrapper {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 20px;
+    border-radius: 8px;
+    border: 1px solid #C8C5D0;
+    background-color: #FFFFFF;
+    color: #000;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.input.dark {
+    background-color: #2a2a2a;
+    border-color: #47464F;
+    color: #E4E1E9;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #595992;
+    box-shadow: 0 0 0 2px rgba(89, 89, 146, 0.2);
+}
+
+.input.dark:focus {
+    border-color: #C2C1FF;
+    box-shadow: 0 0 0 2px rgba(194, 193, 255, 0.2);
+}
+
+/* ===== Buttons & Links ===== */
+
+.buttonRow {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.loginButton {
+    background-color: #595992;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.loginButton:hover {
+    background-color: #414178;
+}
+
+.signupLink {
+    display: block;
+    margin-top: 20px;
+    font-size: 20px;
+    text-align: center;
+    text-decoration: none;
+    color: #595992;
+    transition: color 0.3s ease;
+}
+
+.signupLink:hover {
+    color: #414178;
+}
+
+/* ===== Responsive Layout ===== */
+
+@media (max-width: 768px) {
+    .wrapper {
+        flex-direction: column;
+    }
+
+    .left {
+        padding: 20px;
+    }
+
+    .left h1 {
+        font-size: 36px;
+    }
+
+    .left p {
+        font-size: 16px;
+    }
+
+    .card {
+        padding: 28px;
+        max-width: 90%;
+    }
+}
