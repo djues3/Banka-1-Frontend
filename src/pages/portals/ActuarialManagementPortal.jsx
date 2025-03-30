@@ -14,15 +14,15 @@ const ActuarialManagementPortal = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedActuar, setSelectedActuar] = useState(null);
 
-    useEffect(() => {
-        loadActuaries();
+    useEffect (() => {
+         loadActuaries();
     }, []);
 
     const loadActuaries = async () => {
         try {
             setLoading(true);
             const data = await getActuaries();
-            setActuaries(data);
+            setActuaries(data.data);
         } catch (err) {
             console.error(err);
             setError("Failed to load actuaries data");

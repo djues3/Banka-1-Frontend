@@ -103,7 +103,7 @@ Cypress.Commands.add('changeCustomerDetails', () => {
   cy.get('button[aria-label="open drawer"]').should('be.visible').click();
   cy.contains('Customers').should('be.visible').click();
 
-  cy.get('[data-rowindex="3"]').should('be.visible').click();
+  cy.get('[data-rowindex="3"]').should('be.visible').dblclick();
   cy.get('input[name="firstName"]').should('be.visible').clear().type('Joca');
   cy.contains('Save').should('be.visible').click();
 });
@@ -164,6 +164,6 @@ Cypress.Commands.add('denyLoan', () => {
 Cypress.Commands.add('blockCard', () => {
   cy.get('button[aria-label="open drawer"]').should('be.visible').click();
   cy.contains('Employee Bank Accounts').should('be.visible').click();
-  cy.get('.MuiDataGrid-row--firstVisible > [data-field="accountNumber"]').click();
+  cy.get('.MuiDataGrid-row--firstVisible > [data-field="accountNumber"]').dblclick();
   cy.get(':nth-child(1) > .MuiSwitch-root > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
   });
