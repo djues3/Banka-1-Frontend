@@ -1,117 +1,169 @@
-import React from 'react';
-import { Box, Typography, Button, Container, Paper, useTheme } from '@mui/material';
+import React, { useRef } from 'react';
+import { Box, Typography, Button, Container, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
+
+const MotionButton = motion(Button);
+const MotionBox = motion(Box);
 
 const Landing = () => {
-  const navigate = useNavigate();
-  const theme = useTheme();
+    const navigate = useNavigate();
+    const theme = useTheme();
+    const scrollTargetRef = useRef(null);
+    const bgControls = useAnimation();
 
-  //Animations for container
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.3
-      }
-    }
-  };
-  //Animations for individual elements
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 10
-      }
-    }
-  };
+    const bounceAnimation = {
+        y: [10, -18, 10],
+        transition: {
+            duration: 1.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+        },
+    };
 
-  // Choose logo based on theme mode
-  const logoSrc = theme.palette.mode === 'dark' 
-    ? "/logo-removebg-preview.png" 
-    : "/logo-removebg-invert.png";
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                when: 'beforeChildren',
+                staggerChildren: 0.3,
+            },
+        },
+    };
 
-  return (
-    <Container maxWidth="sm">
-      <Box
-        component={motion.div}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        sx={{
-          mt: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          minHeight: '70vh',
-          justifyContent: 'center'
-        }}
-      >
-        {/* Logo - now conditional based on theme */}
-        <Box
-          component={motion.div}
-          variants={itemVariants}
-          sx={{
-            mb: 4,
-            width: '80%',
-            maxWidth: 300,
-          }}
-        >
-          <img 
-            src={logoSrc}
-            alt="Banka Logo" 
-            style={{ width: '100%', height: 'auto' }} 
-          />
-        </Box>
+    const itemVariants = {
+        hidden: { y: 30, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: {
+                type: 'spring',
+                stiffness: 100,
+                damping: 12,
+            },
+        },
+    };
 
-        {/* Welcome text inside a Paper container*/}
-        <Paper 
-          component={motion.div}
-          variants={itemVariants}
-          elevation={3} 
-          sx={{
-            p: 4,
-            mb: 4,
-            borderRadius: 2,
-            backgroundColor: theme.palette.mode === 'dark' ? 'rgba(66, 66, 66, 0.7)' : 'rgba(255, 255, 255, 0.8)',
-            backdropFilter: 'blur(10px)',
-            width: '100%'
-          }}
-        >
-          <Typography variant="h5" component="h1" gutterBottom align="center" fontWeight="500">
-            Welcome to 1Bank
-          </Typography>
-          <Typography variant="body1" align="center" paragraph>
-          Reliable. Agile. Forward-thinking.
-          </Typography>
-        </Paper>
+    const logoSrc = theme.palette.mode === 'dark'
+        ? '/logo-removebg-preview.png'
+        : '/logo-removebg-invert.png';
 
-        {/* Login button */}
-        <Button
-          component={motion.button}
-          variants={itemVariants}
-          variant="contained" 
-          color="primary"
-          size="large"
-          onClick={() => navigate('/login')} //Navigate to login page
-          sx={{
-            py: 1.5,
-            px: 4,
-            fontSize: '1.1rem',
-            borderRadius: 2,
-          }}
-        >
-          Login to Dashboard
-        </Button>
-      </Box>
-    </Container>
-  );
+    const handleLoginScroll = async () => {
+        await bgControls.start({
+            backgroundColor: [
+                theme.palette.background.default,
+                theme.palette.mode === 'dark' ? '#1a1a1a' : '#f2f2f2',
+                '#595992'
+            ],
+            transition: {
+                duration: 1.5,
+                ease: 'easeInOut'
+            }
+        });
+
+        scrollTargetRef.current?.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => navigate('/login'), 1200);
+    };
+
+    return (
+        <>
+            <MotionBox
+                animate={bgControls}
+                transition={{ duration: 1 }}
+                sx={{
+                    minHeight: '100vh',
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: theme.palette.background.default,
+                }}
+            >
+                <Container maxWidth="md">
+                    <Box
+                        component={motion.div}
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Box
+                            component={motion.div}
+                            variants={itemVariants}
+                            sx={{
+                                mb: 10,
+                                width: '100%',
+                                maxWidth: 500,
+                            }}
+                        >
+                            <img
+                                src={logoSrc}
+                                alt="1Bank Logo"
+                                style={{ width: '100%', height: 'auto' }}
+                            />
+                        </Box>
+
+                        <Box
+                            component={motion.div}
+                            variants={itemVariants}
+                            sx={{ textAlign: 'center', mb: 8 }}
+                        >
+                            <Typography variant="h1" fontWeight="bold" gutterBottom>
+                                Welcome to 1Bank
+                            </Typography>
+                            <Typography variant="h4" color="text.secondary">
+                                Reliable. Agile. Forward-thinking.
+                            </Typography>
+                        </Box>
+
+                        <MotionButton
+                            animate={bounceAnimation}
+                            whileHover={{ scale: 1.08 }}
+                            whileTap={{ scale: 0.95 }}
+                            variants={itemVariants}
+                            variant="contained"
+                            color="primary"
+                            size="large"
+                            onClick={handleLoginScroll}
+                            sx={{
+                                py: 2.5,
+                                px: 7,
+                                fontSize: '1.5rem',
+                                fontWeight: 700,
+                                borderRadius: '40px',
+                                textTransform: 'none',
+                                backgroundColor: theme.palette.primary.main,
+                                color: theme.palette.getContrastText(theme.palette.primary.main),
+                                transition: 'all 0.3s ease',
+                                '&:hover': {
+                                    backgroundColor:
+                                        theme.palette.mode === 'dark'
+                                            ? theme.palette.primary.light
+                                            : theme.palette.primary.dark,
+                                    color: theme.palette.getContrastText(
+                                        theme.palette.mode === 'dark'
+                                            ? theme.palette.primary.light
+                                            : theme.palette.primary.dark
+                                    ),
+                                    boxShadow: '0 6px 24px rgba(0, 0, 0, 0.2)',
+                                },
+                            }}
+                        >
+                            Login to Dashboard
+                        </MotionButton>
+                    </Box>
+                </Container>
+            </MotionBox>
+
+            <Box ref={scrollTargetRef} sx={{ height: '100vh' }} />
+        </>
+    );
 };
 
 export default Landing;
