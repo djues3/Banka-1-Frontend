@@ -69,8 +69,6 @@ Cypress.Commands.add('createCard', () => {
     //Select data
     cy.get('div[role="combobox"]').eq(0).should('be.visible').click();
     cy.get('ul[role="listbox"] li').first().click();
-    cy.get('div[role="combobox"]').eq(1).should('be.visible').click();
-    cy.get('ul[role="listbox"] li').first().click();
     cy.get('div[role="combobox"]').eq(2).should('be.visible').click();
     cy.get('ul[role="listbox"] li').first().click();
 
