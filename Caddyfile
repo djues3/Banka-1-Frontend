@@ -15,6 +15,11 @@ localhost {
 	  reverse_proxy host.docker.internal:3000
 	}
 
+  @websockets {
+    header Connection *Upgrade*
+    header Upgrade websocket
+  }
+	reverse_proxy @websockets host.docker.internal:4200
 	handle {
 		# Frontend
 		reverse_proxy host.docker.internal:4200
