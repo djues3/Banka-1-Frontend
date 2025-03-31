@@ -1,201 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Container from '@mui/material/Container';
-import { useNavigate, useLocation } from 'react-router-dom';
-import AuthCard from '../../components/loginComponents/AuthCard';
-import PasswordField from '../../components/loginComponents/Password';
-import Alert from '@mui/material/Alert';
-import CircularProgress from '@mui/material/CircularProgress';
-import { resetPassword } from '../../services/AxiosUser';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import styles from '../../styles/Login.module.css';
+import { useTheme } from '@mui/material/styles';
 
-const PasswordResetConfirmation = () => {
+const PasswordReset = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [email, setEmail] = useState('');
+    const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState(false);
-    const [token, setToken] = useState('');
+    const theme = useTheme();
+    const isDarkMode = theme.palette.mode === 'dark';
 
-    // Extract token from URL query parameters
-    useEffect(() => {
-        const queryParams = new URLSearchParams(location.search);
-        const tokenParam = queryParams.get('token');
-        if (tokenParam) {
-            setToken(tokenParam);
-        }
-    }, [location]);
-    // Validate password complexity
-    const validatePassword = (password) => {
-        const hasNumber = /[0-9]/.test(password);
-        const hasUpperCase = /[A-Z]/.test(password);
-        
-        if (!hasNumber) {
-            return "Password must contain at least 1 number";
-        }
-        
-        if (!hasUpperCase) {
-            return "Password must contain at least 1 uppercase letter";
-        }
-        
-        if (password.length < 8) {
-            return "Password must be at least 8 characters long";
-        }
-        
-        return null; // No validation errors
-    };
-    // Handle form submission to reset password
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
-        // Clear previous errors
         setError('');
-        
-        // Validate passwords match
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
-            return;
-        }
-
-        // Validate password complexity
-        const passwordError = validatePassword(password);
-        if (passwordError) {
-            setError(passwordError);
-            return;
-        }
-
-        setIsSubmitting(true);
 
         try {
-            // Use the resetPassword function from AxiosUser.js
-            await resetPassword(token, password);
-            setSuccess(true);
+            await axios.put('/api/users/reset-password/', { email });
+            setSubmitted(true);
         } catch (err) {
-            console.error('Error resetting password:', err);
-            setError(
-                err.response?.data?.message || 
-                'Failed to reset password. The link may have expired.'
-            );
-        } finally {
-            setIsSubmitting(false);
+            console.error('Error requesting password reset:', err);
+            setError('Failed to request password reset. Please try again.');
         }
     };
 
-    // If no token is provided in the URL
-    if (!token) {
-        return (
-            <Container component="main" maxWidth="xs">
-                <Box sx={{ mt: 8 }}>
-                    <AuthCard title="Invalid Reset Link" icon={<LockOutlinedIcon />}>
-                        <Alert severity="error" sx={{ mb: 2, mt: 2 }}>
-                            The password reset link is invalid or expired.
-                        </Alert>
-                        <Button 
-                            fullWidth 
-                            variant="contained"
-                            onClick={() => navigate('/reset-password-email')}
-                            sx={{ mt: 2 }}
-                        >
-                            Request New Reset Link
-                        </Button>
-                        <Button 
-                            fullWidth 
-                            variant="text"
-                            onClick={() => navigate('/login')}
-                            sx={{ mt: 1 }}
-                        >
-                            Back to Login
-                        </Button>
-                    </AuthCard>
-                </Box>
-            </Container>
-        );
-    }
-
     return (
-        <Container component="main" maxWidth="xs">
-            <Box sx={{ mt: 8 }}>
-                <AuthCard 
-                    title="Reset Your Password" 
-                    icon={<LockOutlinedIcon />}
-                >
-                    {success ? (
-                        <Box sx={{ mt: 2, width: '100%', textAlign: 'center' }}>
-                            <Alert severity="success" sx={{ mb: 2 }}>
-                                Your password has been successfully reset!
-                            </Alert>
-                            <Button
-                                fullWidth
-                                variant="contained"
-                                onClick={() => navigate('/login')}
-                                sx={{ mt: 2 }}
-                            >
-                                Go to Login
-                            </Button>
-                        </Box>
-                    ) : (
-                        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: '100%' }}>
+        <div className={styles.wrapper}>
+            <div className={`${styles.left} ${isDarkMode ? styles.dark : styles.light}`}>
+                <div>
+                    <img src="/logo-removebg-preview.png" alt="1Bank Logo" />
+                    <h1 className={styles.brandTitle}>Welcome to 1Bank</h1>
+                    <p className={styles.brandSubtitle}>Reliable. Agile. Forward-thinking.</p>
+                </div>
+            </div>
+
+            <div className={`${styles.right} ${isDarkMode ? styles.dark : ''}`}>
+                <div className={`${styles.card} ${isDarkMode ? styles.dark : ''}`}>
+                    <h2 className={styles.title}>Reset Password</h2>
+
+                    {!submitted ? (
+                        <form onSubmit={handleSubmit}>
+                            <label htmlFor="email" className={`${styles.label} ${isDarkMode ? styles.dark : ''}`}>
+                                Enter your email address
+                            </label>
+                            <div className={styles.inputWrapper}>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    className={`${styles.input} ${isDarkMode ? styles.dark : ''}`}
+                                />
+                            </div>
+
                             {error && (
-                                <Alert severity="error" sx={{ mb: 2, mt: 2 }}>
-                                    {error}
-                                </Alert>
+                                <p style={{ color: 'red', fontSize: '14px', marginTop: '-12px' }}>{error}</p>
                             )}
-                            
-                            <Typography variant="body2" sx={{ mb: 2 }}>
-                                Your password must be at least 8 characters long and contain at least 
-                                1 number and 1 uppercase letter.
-                            </Typography>
-                            
-                            <PasswordField
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                label="New Password"
-                                autoFocus
-                                disabled={isSubmitting}
-                            />
-                            
-                            <PasswordField
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                label="Confirm New Password"
-                                disabled={isSubmitting}
-                            />
-                            
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                disabled={!password || !confirmPassword || isSubmitting}
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <CircularProgress size={24} sx={{ mr: 1 }} />
-                                        Resetting Password...
-                                    </>
-                                ) : (
-                                    'Set New Password'
-                                )}
-                            </Button>
-                            
-                            <Button
-                                fullWidth
-                                variant="text"
-                                onClick={() => navigate('/login')}
-                                sx={{ mt: 1 }}
-                            >
-                                Cancel
-                            </Button>
-                        </Box>
+
+                            <div className={styles.buttonRow}>
+                                <button
+                                    type="submit"
+                                    className={styles.loginButton}
+                                    disabled={!email}
+                                >
+                                    Send Reset Link
+                                </button>
+                            </div>
+
+                            <div className={styles.signupLink} onClick={() => navigate('/login')}>
+                                Back to Login
+                            </div>
+                        </form>
+                    ) : (
+                        <div style={{ textAlign: 'center' }}>
+                            <h3>Check your email</h3>
+                            <p>
+                                If an account exists with <strong>{email}</strong>, we’ve sent password reset instructions.
+                            </p>
+                            <div className={styles.buttonRow}>
+                                <button
+                                    type="button"
+                                    className={styles.loginButton}
+                                    onClick={() => navigate('/login')}
+                                >
+                                    Return to Login
+                                </button>
+                            </div>
+                        </div>
                     )}
-                </AuthCard>
-            </Box>
-        </Container>
+                </div>
+            </div>
+        </div>
     );
 };
 
-export default PasswordResetConfirmation;
+export default PasswordReset;

@@ -88,7 +88,8 @@ const TransactionsPage = () => {
                     time: new Date().toLocaleTimeString(),
                     paymentCode: "N/A",
                     referenceNumber: "N/A",
-                    loanId: null
+                    loanId: null,
+                    type: "EXCHANGE"
                 };
 
                 let allTransactions = formattedTransactions;
@@ -111,14 +112,18 @@ const TransactionsPage = () => {
     }, [selectedAccount]);
 
     const filteredTransactions = transactions.filter(transaction => {
-        if (selectedTab === 1) return false;
-
-        const transactionDate = transaction.date;
-        return (
-            (!dateFilter || transactionDate === dateFilter) &&
-            (!amountFilter || transaction.amount.toString().includes(amountFilter)) &&
-            (!statusFilter || transaction.status === statusFilter)
-        );
+        if (selectedTab === 0) {
+            return transaction.type !== "EXCHANGE" &&
+                (!dateFilter || transaction.date === dateFilter) &&
+                (!amountFilter || transaction.amount.toString().includes(amountFilter)) &&
+                (!statusFilter || transaction.status === statusFilter);
+        } else if (selectedTab === 1) {
+            return transaction.type === "EXCHANGE" &&
+                (!dateFilter || transaction.date === dateFilter) &&
+                (!amountFilter || transaction.amount.toString().includes(amountFilter)) &&
+                (!statusFilter || transaction.status === statusFilter);
+        }
+        return false;
     });
 
     const resetFilters = () => {
@@ -189,7 +194,6 @@ const TransactionsPage = () => {
                 >
                     <Tab label="Domestic Payments" />
                     <Tab label="Exchange Transactions" />
-
                 </Tabs>
 
                 <Collapse in={filtersVisible}>

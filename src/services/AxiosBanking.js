@@ -308,6 +308,15 @@ export const createInternalTransfer = async (transferData) => {
     throw error;
   }
 };
+export const createExchangeTransfer = async (transferData) => {
+  try {
+    const response = await apiBanking.post("/exchange-transfer", transferData);
+    return response.data;
+  } catch (error) {
+    console.error("API Error during exchange transfer: ", error);
+    throw error;
+  }
+};
 
 export const deleteRecipient = async (id) => {
   try {
@@ -528,95 +537,38 @@ export const denyLoan = async (loan_id, deniedLoan) => {
 
 // Exchange Rate Functions
 export const fetchExchangeRates = async () => {
-  try {
-    // TODO: Replace with actual API key and endpoint
-    const response = await axios.get(
-      "https://api.exchangerate-api.com/v4/latest/EUR",
-      {
-        params: {
-          base: "EUR",
-          symbols: ["RSD", "CHF", "USD", "GBP", "JPY", "CAD", "AUD"].join(","),
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching exchange rates:", error);
-    throw error;
-  }
+    try {
+        const response = await apiBanking.get('/currency/exchange-rates');
+        
+        // Transform the rates array into an object format expected by convertCurrency
+        const ratesObject = {};
+        
+        // First, find the base rates for RSD
+        const rsdRates = response.data.data.rates.filter(rate => rate.baseCurrency === 'RSD');
+        
+        // Map the rates with RSD as base
+        rsdRates.forEach(rate => {
+            if (rate.targetCurrency === 'RSD') {
+                ratesObject[rate.targetCurrency] = 1;
+            } else {
+                // Invert the rate to show how many RSD are needed for 1 unit of foreign currency
+                ratesObject[rate.targetCurrency] = 1 / rate.exchangeRate;
+            }
+        });
+
+        return {
+            data: {
+                base: 'RSD',
+                rates: ratesObject,
+                date: response.data.data.rates[0].date
+            }
+        };
+    } catch (error) {
+        console.error('Error fetching exchange rates:', error);
+        throw error;
+    }
 };
 
-export const convertCurrency = async (amount, fromCurrency, toCurrency) => {
-  try {
-    const { rates } = await fetchExchangeRates();
-    const COMMISSION_RATE = 0.01; // 1% commission
-
-    // Calculate buy and sell rates for all currencies
-    const getRates = (currency) => {
-      const middleRate = rates[currency];
-      return {
-        // buyRate: middleRate * 0.99,  // Bank buys at 1% less
-        // sellRate: middleRate * 1.01   // Bank sells at 1% more
-        buyRate: middleRate,
-        sellRate: middleRate,
-      };
-    };
-
-    let convertedAmount;
-
-    if (fromCurrency === toCurrency) {
-      // Same currency, no conversion needed
-      convertedAmount = amount;
-    } else if (fromCurrency === "RSD") {
-      // Converting FROM RSD TO foreign currency
-      // Use SELL rate because bank is selling foreign currency
-      const { sellRate } = getRates(fromCurrency);
-      convertedAmount = amount / sellRate;
-
-      console.log(rates);
-    } else if (toCurrency === "RSD") {
-      // Converting FROM foreign currency TO RSD
-      // Use BUY rate because bank is buying foreign currency
-      const { buyRate } = getRates(toCurrency);
-      convertedAmount = amount * buyRate;
-    } else {
-      // Converting between two foreign currencies
-      // First convert to RSD using BUY rate (bank buys fromCurrency)
-      // Then convert to target using SELL rate (bank sells toCurrency)
-      const { buyRate: fromBuyRate } = getRates(toCurrency);
-      const { sellRate: toSellRate } = getRates(fromCurrency);
-
-      // First get amount in RSD
-      const amountInRSD = amount * fromBuyRate;
-      // Then convert RSD to target currency
-      convertedAmount = amountInRSD / toSellRate;
-    }
-
-    // Calculate commission
-    let finalAmount;
-    let commission;
-    if (fromCurrency === toCurrency) {
-      finalAmount = amount;
-      commission = 0;
-    } else {
-      finalAmount = convertedAmount * (1 - COMMISSION_RATE); // Subtract commission
-      commission = convertedAmount * COMMISSION_RATE;
-    }
-
-    return {
-      originalAmount: amount,
-      convertedAmount: finalAmount,
-      commission: commission,
-      commissionRate: COMMISSION_RATE * 100,
-      rate: rates[toCurrency],
-      fromCurrency,
-      toCurrency,
-    };
-  } catch (error) {
-    console.error("Error converting currency:", error);
-    throw error;
-  }
-};
 
 // Submit loan request - podnosenje zahteva za kredit
 export const submitLoanRequest = async (loanData) => {
@@ -695,7 +647,7 @@ export const changingAccountStatus = async (accountId, status) => {
 
 export const createCompany = async (companyData) => {
   try {
-    const response = await apiBanking.post("/companies", companyData);
+    const response = await apiBanking.post("/companies/", companyData);
     return response.data;
   } catch (error) {
     console.error("Error creating company:", error);
@@ -717,12 +669,60 @@ export const fetchExchangeRatesForCurrency = async (currency) => {
 
 export const getCompanies = async () => {
   try {
-    const response = await apiBanking.get("/companies");
+    const response = await apiBanking.get("/companies/");
     return response.data;
   } catch (error) {
     console.error("Error fetching companies:", error);
     throw error;
   }
+};
+
+export const fetchCompaniesFromUser = async (userID) => {
+  try {
+    const response = await apiBanking.get(`/companies/${userID}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching companies:", error);
+    throw error;
+  }
+};
+
+export const fetchCompany = async (companyID) => {
+  try {
+    const response = await apiBanking.get(`/companies/${companyID}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching companies:", error);
+    throw error;
+  }
+};
+
+export const previewExchangeTransfer = async (fromCurrency, toCurrency, amount) => {
+    try {
+        const response = await apiBanking.post('/exchange-transfer/preview', {
+            fromCurrency,
+            toCurrency,
+            amount
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error previewing exchange transfer:', error);
+        throw error;
+    }
+};
+
+export const previewForeignExchangeTransfer = async (fromCurrency, toCurrency, amount) => {
+    try {
+        const response = await apiBanking.post('/exchange-transfer/preview-foreign', {
+            fromCurrency,
+            toCurrency,
+            amount
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error previewing foreign exchange transfer:', error);
+        throw error;
+    }
 };
 
 export default apiBanking;

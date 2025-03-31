@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button, MenuItem } from '@mui/material';
-import { createInternalTransfer, verifyOTP, fetchAccountsForUser, fetchExchangeRatesForCurrency } from "../../services/AxiosBanking";
+import { createInternalTransfer, createExchangeTransfer, verifyOTP, fetchAccountsForUser, fetchExchangeRatesForCurrency } from "../../services/AxiosBanking";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -74,13 +74,23 @@ const InternalTransferForm = () => {
         }
     };
 
+
     const handleConfirmTransfer = async () => {
-        const transferData = {
-            fromAccountId: outflowAccount,
-            toAccountId: inflowAccount,
-            amount: parseFloat(amount) };
         try {
-            const response = await createInternalTransfer(transferData);
+            let response;
+            if (conversion) {
+                response = await createExchangeTransfer({
+                    accountFrom: outflowAccount,
+                    accountTo: inflowAccount,
+                    amount: parseFloat(amount)
+                });
+            } else {
+                response = await createInternalTransfer({
+                    fromAccountId: outflowAccount,
+                    toAccountId: inflowAccount,
+                    amount: parseFloat(amount)
+                });
+            }
             setTransactionId(response.data.transferId);
             setModalStep('verification');
         } catch (error) {
@@ -98,7 +108,7 @@ const InternalTransferForm = () => {
             if (response.status === 200) {
                 toast.success("Transaction successfully verified!", { autoClose: 3000 });
                 setShowModal(false);
-                navigate('/home');
+                navigate('/customer-home');
             } else {
                 toast.error("Invalid OTP.", { autoClose: 3000 });
             }

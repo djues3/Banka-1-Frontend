@@ -16,6 +16,7 @@
     "jspdf": "^3.0.0",
     "jspdf-autotable": "^5.0.2",
     "jwt-decode": "^4.0.0",
+    "paper": "^0.12.18",
     "pdfmake": "^0.2.18",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
