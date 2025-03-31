@@ -14,7 +14,7 @@ const DataTable = ({columns, rows, checkboxSelection = false, onRowClick}) => {
         pageSizeOptions={[5, 10]}
         checkboxSelection={checkboxSelection}
         sx={{ border: 0 }}
-        onRowClick={(params) => onRowClick && onRowClick(params.row)}
+        onRowDoubleClick={(params) => onRowClick && onRowClick(params.row)}
       />
     </Paper>
   );
