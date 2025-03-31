@@ -239,7 +239,7 @@ const NewPaymentPortal = () => {
             setIsSuccess(false);
             setPaymentMessage(error.response?.data?.reason || error.response?.data?.message || "Unexpected error occurred. Please try again later.");
         }
-        
+
 
         setShowModal(true);
         // setOpenModal(true);
@@ -395,8 +395,10 @@ const NewPaymentPortal = () => {
                                 !selectedAccount ||
                                 !newPayment.recipientAccount ||
                                 !newPayment.amount ||
-                                !newPayment.recipientName
+                                !newPayment.recipientName ||
+                                !newPayment.paymentPurpose
                             }
+
                             sx={{ width: '25ch' }}
                         >
                             Continue

@@ -187,7 +187,78 @@ const EmployeePortal = () => {
         }
     };
 
+    const validatePhoneNumber = (phoneNumber) => {
+        if (!phoneNumber.startsWith("+381")) {
+            toast.error("Phone number must start with +381.");
+            return false;
+        }
+
+        const digitsAfterPrefix = phoneNumber.slice(4).trim(); // Uklanja "+381" i ostavlja ostatak broja
+
+        if (digitsAfterPrefix.length !== 8 || isNaN(digitsAfterPrefix)) {
+            toast.error("Phone number must contain exactly 8 digits after +381.");
+            return false;
+        }
+
+        return true;
+    };
+
+    const validateAddress = (address) => {
+        if (!address) {
+            toast.error("Address cannot be empty.");
+            return false;
+        }
+
+        // Proverava da li postoji bar jedan broj u stringu
+        const hasNumber = address.split("").some(char => !isNaN(char) && char !== " ");
+
+        if (!hasNumber) {
+            toast.error("Address must contain at least one number.");
+            return false;
+        }
+
+        return true;
+    };
+
+
+    const validateEmail = (email) => {
+        email = email.trim();
+        console.log("Validating email:", email); // Provera
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            toast.error("Invalid email format.");
+            return false;
+        }
+
+        return true;
+    };
+
+    const validateBirthDate = (birthDate) => {
+        if (!birthDate) {
+            toast.error("Birth date is required.");
+            return false;
+        }
+
+        return true;
+    };
+
+
     const handleCreateEmployee = async (employeeData) => {
+        if (!validatePhoneNumber(employeeData.phoneNumber) ) {
+            return;
+        }
+
+        if (!validateEmail(employeeData.email)) {
+            return;
+        }
+
+        if (!validateAddress(employeeData.address)) {
+            return;
+        }
+        if (!validateBirthDate(employeeData.birthDate)) {
+            return;
+        }
+
         try {
             const employeePayload = {
                 firstName: employeeData.firstName,
@@ -269,6 +340,19 @@ const EmployeePortal = () => {
     };
     
     const handleSaveEmployee = async (updatedEmployeeData) => {
+        if (!validatePhoneNumber(updatedEmployeeData.phoneNumber)) {
+            return;
+        }
+
+        if(!validateEmail(updatedEmployeeData.email)){
+            return;
+        }
+        if (!validateAddress(updatedEmployeeData.address)) {
+            return;
+        }
+        if (!validateBirthDate(updatedEmployeeData.birthDate)) {
+            return;
+        }
         try {
             // Make sure we have an ID before making the request
             if (!updatedEmployeeData.id) {
