@@ -7,7 +7,8 @@ const AuthorizedPersonModal = ({ open, onClose, onSave }) => {
         firstName: "",
         lastName: "",
         email: "",
-        phoneNumber: ""
+        phoneNumber: "",
+        birthDate: ""
     });
 
     const handleChange = (e) => {
@@ -52,7 +53,7 @@ const AuthorizedPersonModal = ({ open, onClose, onSave }) => {
                         />
                     </Grid>
 
-                    {/* Birth Date */}
+                    {/* Email  */}
                     <Grid item xs={6}>
                         <TextField
                             fullWidth
@@ -72,6 +73,19 @@ const AuthorizedPersonModal = ({ open, onClose, onSave }) => {
                             name="phoneNumber"
                             type="tel"
                             value={formData.phoneNumber}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+
+                    {/* Birth Date */}
+                    <Grid item xs={6}>
+                        <TextField
+                            fullWidth
+                            label="Birth Date"
+                            name="birthDate"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            value={formData.birthDate}
                             onChange={handleChange}
                         />
                     </Grid>
