@@ -223,4 +223,24 @@ export const fetchFirstStockPrice = async (ticker) => {
   }
 };
 
+export const fetchTaxData = async () => {
+  try {
+    const response = await apiTrading.get(`/tax`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tax data:", error);
+    throw error;
+  }
+};
+
+export const runTax = async () => {
+  try {
+    const response = await apiTrading.post("/tax/run");
+    console.log("Tax calculation started:", response.data);
+  } catch (error) {
+    console.error("Error running tax calculation:", error);
+    throw error;
+  }
+};
+
 export default apiTrading;
