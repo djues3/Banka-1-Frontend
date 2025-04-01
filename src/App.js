@@ -33,6 +33,7 @@ import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPorta
 import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
 import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 import CompaniesPortal from "./pages/portals/CompaniesPortal";
+//import TaxTrackingPortal from "./pages/portals/TaxTrackingPortal";
 
 
 function App() {
@@ -180,14 +181,7 @@ function App() {
             />
 
             {/* Special Employee Routes (Supervisor, Agent) */}
-            <Route
-              path="/portfolio-page"
-              element={
-                <AuthGuard allowedPositions={["SUPERVISOR", "AGENT"]}>
-                  <PortfolioPage />
-                </AuthGuard>
-              }
-            />
+
             <Route
               path="/actuary-buying-portal"
               element={
@@ -213,6 +207,15 @@ function App() {
                 </AuthGuard>
               }
             />
+
+              <Route
+                  path="/tax-tracking-portal"
+                  element={
+                      <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                          {/*<TaxTrackingPortal />*/}
+                      </AuthGuard>
+                  }
+              />
 
             <Route
               path="/portfolio-page"

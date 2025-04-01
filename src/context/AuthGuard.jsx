@@ -12,7 +12,8 @@ const AuthGuard = ({ allowedPositions, children }) => {
     try {
         const decodedToken = jwtDecode(token);
         const isAdmin = decodedToken.isAdmin || false; // Boolean
-        const userDepartment = decodedToken.department || null; // "SUPERVISOR", "AGENT"
+        const rawDepartment = decodedToken.department || null;
+        const userDepartment = (rawDepartment === "AGENT" || rawDepartment === "SUPERVISOR") ? rawDepartment : null; // "SUPERVISOR", "AGENT"
         const userPosition = decodedToken.position || null; // "WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN", "NONE"
 
         // Determine if the user is employee based on department or position
@@ -34,7 +35,6 @@ const AuthGuard = ({ allowedPositions, children }) => {
         // If the user is Employee, check department first
         if (isEmployed) {
 
-
             //  If user has a department, check department-level permissions
             if (userDepartment && allowedPositions.includes(userDepartment)) {
                 return children;
@@ -51,7 +51,7 @@ const AuthGuard = ({ allowedPositions, children }) => {
             }
 
             // If the employee tries to access customer-only page
-            if (allowedPositions.includes("NONE")) {
+            if (allowedPositions.includes("NONE") && allowedPositions.length === 1) {
                 return <Navigate to="/employee-home" replace />;
             }
             // if (isAdmin) {
@@ -64,7 +64,12 @@ const AuthGuard = ({ allowedPositions, children }) => {
         if (isCustomer) {
 
             // If trying to access Employee-only page, deny access
+            {/*
             if (allowedPositions.some(pos => ["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"].includes(pos))) {
+                return <Navigate to="/customer-home" replace />;
+            }
+            */}
+            if(!allowedPositions.includes("NONE")){
                 return <Navigate to="/customer-home" replace />;
             }
 
