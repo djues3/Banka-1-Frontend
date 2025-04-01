@@ -83,7 +83,13 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
             status: "ACTIVE",
             createCard: makeCard,
             balance: parseFloat(startingBalance),
+            companyID: accountType === "business" && selectedCompanyId ? selectedCompanyId : null,
         };
+
+        if (accountType === 'business' && !selectedCompanyId) {
+            toast.error("You must select or create a company first.");
+            return;
+        }
 
         try {
             await createAccount(accountData);
@@ -99,39 +105,25 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
         try {
             const customerPayload = {
                 ...customerData,
-                birthDate: transformDateForApi(customerData.birthDate),
-                accountInfo: {
-                    currency: "RSD",
-                    type: "CURRENT",
-                    subtype: accountType.toUpperCase(),
-                    dailyLimit: 0,
-                    monthlyLimit: 0,
-                    status: "ACTIVE",
-                    createCard: makeCard,
-                    balance: parseFloat(startingBalance),
-                }
+                birthDate: transformDateForApi(customerData.birthDate)
             };
 
             const response = await createCustomer(customerPayload);
             const createdCustomerId = response?.customer?.id || response?.data?.customer?.id;
 
             if (!createdCustomerId) {
-                console.error("Customer ID nije pronađen u odgovoru:", response);
                 toast.error("Customer was created, but ID was not returned.");
                 return;
             }
 
             setSelectedOwnerId(createdCustomerId);
-
-            // always set companyID, default null
-            const companyID = response?.customer?.companyID || response?.data?.customer?.companyID || null;
-            setSelectedCompanyId(companyID);
+            setSelectedCompanyId(null);
 
             setNewCompany({
                 name: '',
-                companyNumber: '',
-                bas: '',
-                vatNumber: '',
+                companyRegistrationNumber: '',
+                activityCode: '',
+                pib: '',
                 address: '',
                 ownerID: createdCustomerId
             });
@@ -139,45 +131,82 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
             setIsCreateModalOpen(false);
 
             if (accountType === 'business') {
-                setIsCreateCompanyModalOpen(true);  // samo ako je business
+                setIsCreateCompanyModalOpen(true);
             } else {
-                onClose(); // if it is not business
+
+                await createAccount({
+                    ownerID: createdCustomerId,
+                    currency: "RSD",
+                    type: 'CURRENT',
+                    subtype: accountType.toUpperCase(),
+                    dailyLimit: 0,
+                    monthlyLimit: 0,
+                    status: "ACTIVE",
+                    createCard: makeCard,
+                    balance: parseFloat(startingBalance),
+                    companyID: null,
+                });
+
+                toast.success("Customer and account created successfully");
+                onClose();
+                onSuccess?.();
             }
 
             toast.success('Customer created successfully');
-        }catch (error) {
-            console.error("Full error creating customer:", error);
+        } catch (error) {
             toast.error(`Failed to create customer: ${error.response?.data?.message || error.message}`);
         }
-
     };
 
-const handleCreateCompany = async (companyData) => {
-     try {
-       const formattedCompanyData = {
-         companyID: companyData.companyID,
-         name: companyData.name,
-         companyNumber: companyData.companyRegistrationNumber,
-         vatNumber: companyData.pib,
-         address: companyData.address,
-         bas: parseFloat(companyData.activityCode),
-         ownerId: companyData.ownerID
-       };
 
-       console.log('Sending company data:', formattedCompanyData);
+    const handleCreateCompany = async (companyData) => {
+        try {
+            const formattedCompanyData = {
+                name: companyData.name,
+                address: companyData.address,
+                vatNumber: companyData.pib,
+                companyNumber: companyData.companyRegistrationNumber,
+                bas: companyData.activityCode.toString(),
+                ownerId: companyData.ownerID
+            };
 
-       await createCompany(formattedCompanyData);
+            const response = await createCompany(formattedCompanyData);
+            const createdCompanyId = response?.data?.id;
 
-       toast.success('Company created successfully!');
-       setIsCreateCompanyModalOpen(false);
-       onClose(); // zatvara ceo modal
-       navigate('/employee-bank-accounts-portal'); // preusmeri
+            if (!createdCompanyId) {
+                toast.error("Company created but ID not returned.");
+                return;
+            }
 
-     } catch (error) {
-       console.error('Error creating company:', error);
-       toast.error(`Failed to create company: ${error.message}`);
-     }
-   };
+            setSelectedCompanyId(createdCompanyId);
+
+            // odmah kreiraj račun
+            const accountData = {
+                ownerID: selectedOwnerId,
+                currency: "RSD",
+                type: 'CURRENT',
+                subtype: accountType.toUpperCase(),
+                dailyLimit: 0,
+                monthlyLimit: 0,
+                status: "ACTIVE",
+                createCard: makeCard,
+                balance: parseFloat(startingBalance),
+                companyID: createdCompanyId,
+            };
+
+            await createAccount(accountData);
+
+            toast.success('Company and account created successfully!');
+            setIsCreateCompanyModalOpen(false);
+            onClose();
+            navigate('/employee-bank-accounts-portal');
+
+        } catch (error) {
+            console.error('Error creating company or account:', error);
+            toast.error(`Failed: ${error.response?.data?.message || error.message}`);
+        }
+    };
+
 
     const resetCustomerForm = () => {
         setNewCustomer({
@@ -189,6 +218,17 @@ const handleCreateCompany = async (companyData) => {
             address: "",
             birthDate: "",
             gender: ""
+        });
+    };
+
+    const resetCompanyForm = () => {
+        setNewCustomer({
+            name: '',
+            companyRegistrationNumber: '',
+            activityCode: '',
+            pib: '',
+            address: '',
+            ownerID: ''
         });
     };
 
@@ -219,7 +259,6 @@ const handleCreateCompany = async (companyData) => {
             ]
         }
     ];
-
 
     const companyFormFields = [
         { name: 'name', label: 'Name', required: true },
@@ -297,7 +336,6 @@ const handleCreateCompany = async (companyData) => {
                             checked={accountType === "business" ? true : makeCard}
                             onChange={(e) => {
 
-                                // Dozvoli promenu samo ako nije "business"
                                 if (accountType !== "business") {
                                     setMakeCard(e.target.checked);
                                 }
@@ -370,7 +408,6 @@ const handleCreateCompany = async (companyData) => {
 
      {accountType === "business" && (
       <>
-
             <Button
                 variant="outlined"
                 sx={{ mt: 2, width: '100%' }}
@@ -384,38 +421,40 @@ const handleCreateCompany = async (companyData) => {
                 open={isCreateCompanyModalOpen}
                 onClose={() => {
                     setIsCreateCompanyModalOpen(false);
-                    setNewCompany({
-                        companyID: '',
-                        name: '',
-                        companyRegistrationNumber: '',
-                        activityCode: '',
-                        pib: '',
-                        address: '',
-                        ownerID: ''
-                    });
+                    resetCompanyForm();
                 }}
                 data={newCompany}
                 formFields={createCompanyFormFields}
                 onSave={handleCreateCompany}
+                title="Create New Company"
             />
       </>
     )}
                 
             <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
-                <Button onClick={onClose}>Cancel</Button>
+                <Button onClick={() => {
+                    resetCustomerForm();
+                    resetCompanyForm();
+
+                    setSelectedOwnerId('');
+                    setSelectedCompanyId('');
+                    setStartingBalance('');
+                    setIsCreateModalOpen(false);
+                    setIsCreateCompanyModalOpen(false);
+
+                    onClose();
+                }}>
+                    Cancel
+                </Button>
                 <Button
                     variant="contained"
-                    onClick={() => {handleConfirm()}}
+                    onClick={handleConfirm}
                     disabled={!selectedOwnerId || !startingBalance}
-                //|| (accountType === "business" && !selectedCompanyId)}
                 >
                     Confirm
                 </Button>
+
             </DialogActions>
-                
-                <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
-                        <Button onClick={onClose}>Cancel</Button>
-                </DialogActions>
 
             </DialogContent>
         </Dialog>
