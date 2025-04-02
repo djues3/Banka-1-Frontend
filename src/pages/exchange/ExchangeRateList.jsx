@@ -58,31 +58,44 @@ const ExchangeRateList = () => {
         <Card
             sx={{
                 width: '100%',
-                maxWidth: '1200px',
-                borderRadius: 4,
-                boxShadow: '0 6px 24px rgba(0,0,0,0.1)',
-                p: 3,
+                maxWidth: { xs: '100%', sm: '800px', md: '1100px' },
+                borderRadius: 3,
+                boxShadow: 3,
+                p: { xs: 2.5, sm: 4 },
                 backgroundColor: theme.palette.background.paper,
             }}
         >
             <CardHeader
-                title="Exchange Rates (Base: RSD)"
-                sx={{
-                    px: 0,
-                    pb: 2,
-                    fontWeight: 700,
-                    typography: 'h4',
-                }}
+                title={
+                    <Box>
+                        <Typography variant="h5" fontWeight={700}>
+                            Exchange Rates
+                        </Typography>
+                        <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+                            <Typography variant="body2" color="text.secondary" fontSize="0.95rem">
+                                All values are expressed in RSD
+                            </Typography>
+                            <img
+                                src="https://flagcdn.com/24x18/rs.png"
+                                alt="RSD flag"
+                                width="24"
+                                height="18"
+                                style={{ borderRadius: 2 }}
+                            />
+                        </Box>
+                    </Box>
+                }
+                sx={{ px: 0, pb: 2 }}
             />
             <CardContent sx={{ px: 0 }}>
                 <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
-                    <Table>
+                    <Table size="medium">
                         <TableHead>
                             <TableRow sx={{ backgroundColor: theme.palette.action.hover }}>
-                                <TableCell sx={{ fontSize: '1.2rem', fontWeight: 600 }}>Currency</TableCell>
-                                <TableCell sx={{ fontSize: '1.2rem', fontWeight: 600 }}>Buy</TableCell>
-                                <TableCell sx={{ fontSize: '1.2rem', fontWeight: 600 }}>Middle</TableCell>
-                                <TableCell sx={{ fontSize: '1.2rem', fontWeight: 600 }}>Sell</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Currency</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Buy</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Middle</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Sell</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -96,19 +109,26 @@ const ExchangeRateList = () => {
 
                                 return (
                                     <TableRow key={currency} hover>
-                                        <TableCell sx={{ fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <TableCell
+                                            sx={{
+                                                fontSize: '1rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 1.2
+                                            }}
+                                        >
                                             <img
-                                                src={`https://flagcdn.com/32x24/${flagCode}.png`}
+                                                src={`https://flagcdn.com/24x18/${flagCode}.png`}
                                                 alt={`${currency} flag`}
-                                                width="32"
-                                                height="24"
-                                                style={{ borderRadius: 4 }}
+                                                width="24"
+                                                height="18"
+                                                style={{ borderRadius: 3 }}
                                             />
                                             {currency}
                                         </TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{buy.toFixed(4)}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{rate.toFixed(4)}</TableCell>
-                                        <TableCell sx={{ fontSize: '1.1rem' }}>{sell.toFixed(4)}</TableCell>
+                                        <TableCell sx={{ fontSize: '1rem' }}>{buy.toFixed(4)}</TableCell>
+                                        <TableCell sx={{ fontSize: '1rem' }}>{rate.toFixed(4)}</TableCell>
+                                        <TableCell sx={{ fontSize: '1rem' }}>{sell.toFixed(4)}</TableCell>
                                     </TableRow>
                                 );
                             })}
@@ -122,13 +142,13 @@ const ExchangeRateList = () => {
     return (
         <>
             <Sidebar />
-            <Box component="main" sx={{ flexGrow: 1, p: 4 }}>
+            <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, sm: 3 } }}>
                 <Toolbar />
                 <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'center' }}>
                     {loading ? (
                         <CircularProgress />
                     ) : error ? (
-                        <Alert severity="error" sx={{ fontSize: '1.2rem' }}>
+                        <Alert severity="error" sx={{ fontSize: '1rem' }}>
                             {error}
                         </Alert>
                     ) : (
