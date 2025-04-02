@@ -87,8 +87,8 @@ const CardsPage = () => {
                     width: "100%",
                     display: "flex",
                     justifyContent: "center",
-                    paddingTop: "100px",
-                    paddingBottom: "40px"
+                    paddingTop: "76px",
+                    paddingBottom: "16px"
                 }}
             >
                 <Box
@@ -97,18 +97,18 @@ const CardsPage = () => {
                         flexDirection: "column",
                         alignItems: "center",
                         width: "100%",
-                        maxWidth: "900px",
-                        px: 2,
-                        gap: 3,
+                        maxWidth: "800px",
+                        px: 1,
+                        gap: 1.3,
                     }}
                 >
-                    <Typography variant="h2" align="center" fontWeight="bold">
+                    <Typography variant="h4" align="center" fontWeight="bold">
                         Cards
                     </Typography>
 
                     <Box
                         sx={{
-                            height: "920px",
+                            height: "500px",
                             width: "100%",
                             display: "flex",
                             justifyContent: "center",
@@ -124,13 +124,12 @@ const CardsPage = () => {
                             <Typography>No cards found.</Typography>
                         ) : (
                             <>
-                                {/* Left blurred card */}
                                 {cards.length > 1 && (
                                     <Box
                                         sx={{
                                             position: "absolute",
-                                            left: "-420px",
-                                            transform: "scale(0.75) rotateY(10deg)",
+                                            left: "-220px",
+                                            transform: "scale(0.65) rotateY(10deg)",
                                             opacity: 0.2,
                                             filter: "grayscale(1) blur(2px)",
                                             pointerEvents: "none",
@@ -146,7 +145,6 @@ const CardsPage = () => {
                                     </Box>
                                 )}
 
-                                {/* Center animated card */}
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={cards[currentIndex]?.id}
@@ -154,7 +152,7 @@ const CardsPage = () => {
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -150 }}
                                         transition={{ duration: 0.5 }}
-                                        style={{ zIndex: 2, cursor: "pointer" }}
+                                        style={{ zIndex: 2, cursor: "pointer", transform: "scale(0.85)" }}
                                         onClick={() => setDetailsModalOpen(true)}
                                     >
                                         <CreditCardDisplay
@@ -166,13 +164,12 @@ const CardsPage = () => {
                                     </motion.div>
                                 </AnimatePresence>
 
-                                {/* Right blurred card */}
                                 {cards.length > 1 && (
                                     <Box
                                         sx={{
                                             position: "absolute",
-                                            right: "-420px",
-                                            transform: "scale(0.75) rotateY(-10deg)",
+                                            right: "-220px",
+                                            transform: "scale(0.65) rotateY(-10deg)",
                                             opacity: 0.2,
                                             filter: "grayscale(1) blur(2px)",
                                             pointerEvents: "none",
@@ -188,17 +185,16 @@ const CardsPage = () => {
                                     </Box>
                                 )}
 
-                                {/* Arrows */}
                                 <IconButton
                                     onClick={handlePrev}
-                                    sx={{ position: "absolute", left: -60, zIndex: 3 }}
+                                    sx={{ position: "absolute", left: -40, zIndex: 3 }}
                                 >
                                     <ArrowBackIosIcon />
                                 </IconButton>
 
                                 <IconButton
                                     onClick={handleNext}
-                                    sx={{ position: "absolute", right: -60, zIndex: 3 }}
+                                    sx={{ position: "absolute", right: -40, zIndex: 3 }}
                                 >
                                     <ArrowForwardIosIcon />
                                 </IconButton>
@@ -206,17 +202,16 @@ const CardsPage = () => {
                         )}
                     </Box>
 
-                    {/* Add card button */}
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
                         onClick={() => setModalOpen(true)}
                         sx={{
                             width: "100%",
-                            maxWidth: "720px",
-                            py: 1.5,
-                            borderRadius: 3,
-                            fontSize: "1.05rem",
+                            maxWidth: "680px",
+                            py: 1.2,
+                            borderRadius: 2,
+                            fontSize: "1rem",
                             fontWeight: 600,
                             background: "linear-gradient(135deg, rgba(26, 26, 26, 0.2), #333360, #1a1a1a)",
                             color: "#fff",
@@ -231,7 +226,6 @@ const CardsPage = () => {
 
             <CreateCardModal open={modalOpen} onClose={() => setModalOpen(false)} />
 
-            {/* Details Modal */}
             <CardDetailsModal
                 open={detailsModalOpen}
                 onClose={() => setDetailsModalOpen(false)}
