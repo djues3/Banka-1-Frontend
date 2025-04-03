@@ -176,7 +176,8 @@ export const createCard = async (
   accountId,
   cardType,
   cardBrand = "VISA",
-  authorizedPerson = null
+  authorizedPerson = null,
+  company = null
 ) => {
   try {
     const requestBody = {
@@ -184,9 +185,9 @@ export const createCard = async (
       cardType: cardType,
       cardBrand: cardBrand,
     };
-    if (authorizedPerson) {
-      requestBody.authorizedPerson = authorizedPerson;
-    }
+    requestBody.authorizedPerson = authorizedPerson;
+    requestBody.company = company;
+    console.log("card info == ",requestBody)
     const response = await apiBanking.post("/cards/", requestBody);
     return response.data;
   } catch (error) {

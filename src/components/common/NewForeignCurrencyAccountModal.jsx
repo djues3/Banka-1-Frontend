@@ -100,10 +100,15 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
             dailyLimit: 0,
             monthlyLimit: 0,
             status: "ACTIVE",
-            companyID: null,
+            companyID: accountType === "business" && selectedCompanyId ? selectedCompanyId : null,
             balance: parseFloat(startingBalance),
             createCard: makeCard
         };
+
+        if (accountType === 'business' && !selectedCompanyId) {
+            toast.error("You must select or create a company first.");
+            return;
+        }
 
         try {
             await createAccount(accountData);
@@ -118,14 +123,8 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
     const handleCreateCustomer = async (customerData) => {
         try {
             const customerPayload = {
-                firstName: customerData.firstName,
-                lastName: customerData.lastName,
-                username: customerData.username,
+                ...customerData,
                 birthDate: transformDateForApi(customerData.birthDate),
-                gender: customerData.gender,
-                email: customerData.email,
-                phoneNumber: customerData.phoneNumber,
-                address: customerData.address,
                 accountInfo: {
                     currency: selectedCurrency.toUpperCase(),
                     type: "FOREIGN_CURRENCY",
@@ -142,16 +141,12 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
             const createdCustomerId = response?.customer?.id || response?.data?.customer?.id;
 
             if (!createdCustomerId) {
-                console.error("Customer ID nije pronađen u odgovoru:", response);
                 toast.error("Customer was created, but ID was not returned.");
                 return;
             }
 
             setSelectedOwnerId(createdCustomerId);
-
-            // always set companyID, default null
-            const companyID = response?.customer?.companyID || response?.data?.customer?.companyID || null;
-            setSelectedCompanyId(companyID);
+            setSelectedCompanyId(null);
 
             setNewCompany({
                 name: '',
@@ -167,7 +162,23 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
             if (accountType === 'business') {
                 setIsCreateCompanyModalOpen(true);
             } else {
-                onClose(); // if it is not business
+                //Create account if not business
+                const accountData = {
+                    ownerID: createdCustomerId,
+                    currency: selectedCurrency.toUpperCase(),
+                    type: 'FOREIGN_CURRENCY',
+                    subtype: accountType.toUpperCase(),
+                    dailyLimit: 0,
+                    monthlyLimit: 0,
+                    status: "ACTIVE",
+                    companyID: null,
+                    balance: parseFloat(startingBalance),
+                    createCard: makeCard
+                };
+
+                await createAccount(accountData);
+                onClose();
+                onSuccess?.();
             }
 
             toast.success('Customer created successfully');
@@ -176,32 +187,49 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
         }
     };
 
-const handleCreateCompany = async (companyData) => {
-      try {
-        const formattedCompanyData = {
-        companyID: companyData.companyID,
-          name: companyData.name,
-          companyNumber: companyData.companyRegistrationNumber,
-          vatNumber: companyData.pib,
-          address: companyData.address,
-          bas: parseFloat(companyData.activityCode),
-          ownerId: companyData.ownerID
-        };
 
-        console.log('Sending company data:', formattedCompanyData);
+    const handleCreateCompany = async (companyData) => {
+        try {
+            const formattedCompanyData = {
+                name: companyData.name,
+                address: companyData.address,
+                vatNumber: companyData.pib,
+                companyNumber: companyData.companyRegistrationNumber,
+                bas: companyData.activityCode.toString(),
+                ownerId: companyData.ownerID
+            };
 
-        await createCompany(formattedCompanyData);
+            const response = await createCompany(formattedCompanyData);
+            const createdCompanyId = response?.data?.id;
+            setSelectedCompanyId(createdCompanyId);
 
-        toast.success('Company created successfully!');
-        setIsCreateCompanyModalOpen(false);
-        onClose(); // zatvara ceo modal
-        navigate('/employee-bank-accounts-portal'); // preusmeri
-      } catch (error) {
-        console.error('Error creating company:', error);
-        toast.error(`Failed to create company: ${error.message}`);
-      }
+            // Create account after company is created
+            const accountData = {
+                ownerID: selectedOwnerId,
+                currency: selectedCurrency.toUpperCase(),
+                type: 'FOREIGN_CURRENCY',
+                subtype: accountType.toUpperCase(),
+                dailyLimit: 0,
+                monthlyLimit: 0,
+                status: "ACTIVE",
+                companyID: createdCompanyId,
+                balance: parseFloat(startingBalance),
+                createCard: makeCard
+            };
+
+            await createAccount(accountData);
+
+            toast.success('Company and account created successfully');
+            setIsCreateCompanyModalOpen(false);
+            onClose();
+            onSuccess?.();
+            navigate('/employee-bank-accounts-portal');
+        } catch (error) {
+            toast.error(`Failed to create company or account: ${error.message}`);
+        }
     };
-    
+
+
     const resetCustomerForm = () => {
         setNewCustomer({
             firstName: '',
@@ -213,6 +241,17 @@ const handleCreateCompany = async (companyData) => {
             birthDate: '',
             gender: '',
             companyID: null,
+        });
+    };
+
+    const resetCompanyForm = () => {
+        setNewCustomer({
+            name: '',
+            companyRegistrationNumber: '',
+            activityCode: '',
+            pib: '',
+            address: '',
+            ownerID: ''
         });
     };
 
@@ -421,6 +460,18 @@ const handleCreateCompany = async (companyData) => {
                     Create New Customer
                 </Button>
 
+                <EditModal
+                    open={isCreateModalOpen}
+                    onClose={() => {
+                        setIsCreateModalOpen(false);
+                        resetCustomerForm();
+                    }}
+                    data={newCustomer}
+                    formFields={createCustomerFormFields}
+                    onSave={handleCreateCustomer}
+                    title="Create New Customer"
+                />
+
   {accountType === "business" && (
         <>
 
@@ -437,63 +488,45 @@ const handleCreateCompany = async (companyData) => {
                 open={isCreateCompanyModalOpen}
                 onClose={() => {
                     setIsCreateCompanyModalOpen(false);
-                    setNewCompany({
-                        companyID:'',
-                        name: '',
-                        companyRegistrationNumber: '',
-                        activityCode: '',
-                        pib: '',
-                        address: '',
-                        ownerID: ''
-                    });
+                    resetCompanyForm();
                 }}
                 data={newCompany}
                 formFields={createCompanyFormFields}
                 onSave={handleCreateCompany}
+                title="Create New Company"
             />
         </>
   )}
 
-                
-            <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
-                <Button onClick={onClose}>Cancel</Button>
-                <Button
-                    variant="contained"
-                    onClick={() => {handleConfirm()}}
-                    disabled={!selectedOwnerId || !startingBalance}
-                //|| (accountType === "business" && !selectedCompanyId)}
-                >
-                    Confirm
-                </Button>
-            </DialogActions>
-       
-            <EditModal
-                open={isCreateModalOpen}
-                onClose={() => {
-                    setIsCreateModalOpen(false);
-                    resetCustomerForm();
-                }}
-                data={newCustomer}
-                formFields={createCustomerFormFields}
-                onSave={handleCreateCustomer}
-                title="Create New Customer"
-            />
+                <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
+                    <Button onClick={() => {
+                        resetCustomerForm();
+                        resetCompanyForm();
 
-                {accountType === "business" && selectedOwnerId && (
-                    <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
-                        <Button
-                            variant="contained"
-                            onClick={handleConfirm}
-                            disabled={!selectedCompanyId || !startingBalance}
-                        >
-                            Confirm
-                        </Button>
-                    </DialogActions>
-                )}
+                        setSelectedOwnerId('');
+                        setSelectedCompanyId('');
+                        setStartingBalance('');
+                        setSelectedCurrency('');
+                        setIsCreateModalOpen(false);
+                        setIsCreateCompanyModalOpen(false);
 
-                {/* <DialogActions sx={{ justifyContent: 'space-between', padding: '16px' }}>
-                    <Button onClick={onClose}>Cancel</Button>
-                </DialogActions> */}
+                        onClose();
+                    }}>
+                        Cancel
+                    </Button>
+
+                    <Button
+                        variant="contained"
+                        onClick={handleConfirm}
+                        disabled={
+                            !selectedOwnerId ||
+                            !startingBalance ||
+                            (accountType === "business" && !selectedCompanyId)
+                        }
+                    >
+                        Confirm
+                    </Button>
+                </DialogActions>
 
             </DialogContent>
         </Dialog>

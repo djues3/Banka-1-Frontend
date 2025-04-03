@@ -71,10 +71,20 @@ export const getSecurities = async () => {
 
 export const getUserSecurities = async (userId) => {
   try {
-    const response = await apiTrading.get(`/securities/user/${userId}`);
+    const response = await apiTrading.get(`/securities/${userId}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching securities for user ${userId}:`, error);
+    throw error;
+  }
+};
+
+export const getTaxForUser = async (userId) => {
+  try {
+    const response = await apiTrading.get(`/tax/dashboard/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching tax for user:`, error);
     throw error;
   }
 };
@@ -219,6 +229,26 @@ export const fetchFirstStockPrice = async (ticker) => {
     return response.data;
   } catch (error) {
     console.error("Error while fetching the first stock price:", error);
+    throw error;
+  }
+};
+
+export const fetchTaxData = async () => {
+  try {
+    const response = await apiTrading.get(`/tax`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tax data:", error);
+    throw error;
+  }
+};
+
+export const runTax = async () => {
+  try {
+    const response = await apiTrading.post("/tax/run");
+    console.log("Tax calculation started:", response.data);
+  } catch (error) {
+    console.error("Error running tax calculation:", error);
     throw error;
   }
 };

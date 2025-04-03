@@ -14,7 +14,9 @@ const CreateCardModal = ({open, onClose, accountId}) => {
     const [loading, setLoading] = useState(false);
 
     const [showSecuritiesModal, setShowSecuritiesModal] = useState(false);
-    const [authorizedPerson, setAuthorizedPerson] = useState({});
+    const [authorizedPerson, setAuthorizedPerson] = useState(null);
+    const [company, setCompany] = useState(null);
+
 
     // Fetch available accounts when modal opens
     useEffect(() => {
@@ -38,16 +40,25 @@ const CreateCardModal = ({open, onClose, accountId}) => {
         if (open) loadAccounts().then();
     }, [open, accountId]);
 
+    useEffect(() => {
+        if (selectedAccount) {
+            const selectedAcc = accounts.find(account => account.id === selectedAccount);
+            if (selectedAcc) {
+                setCompany(selectedAcc.company);
+            }
+        }
+    }, [selectedAccount, accounts]);
+
     const handleCreateCard = async () => {
         if (!selectedAccount) return;
 
         try {
 
-            await addCard(selectedAccount, selectedType, selectedBrand,authorizedPerson);
+            await addCard(selectedAccount, selectedType, selectedBrand,authorizedPerson, company);
             onClose();
 
             //neka stoji privremeno
-            window.location.reload();
+            // window.location.reload();
         } catch (error) {
             console.error("Error creating card:", error);
         }
@@ -57,6 +68,8 @@ const CreateCardModal = ({open, onClose, accountId}) => {
         if(selectedAccount === "") return false;
 
         const selectedAcc = accounts.find(account => account.id ===selectedAccount)
+
+
 
         return selectedAcc.subtype === "BUSINESS";
 
@@ -70,6 +83,9 @@ const CreateCardModal = ({open, onClose, accountId}) => {
     };
 
     const handleSaveAuthorizedPerson = (authorizedPerson) => {
+        if(company){
+            authorizedPerson.companyID = company.id;
+        }
         setAuthorizedPerson(authorizedPerson)
     }
 

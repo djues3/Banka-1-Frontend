@@ -1,25 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { 
-    Table, 
-    TableBody, 
-    TableCell, 
-    TableContainer, 
-    TableHead, 
-    TableRow, 
-    Paper, 
-    Container, 
-    Card, 
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Container,
+    Card,
     CardHeader,
     CardContent,
     CircularProgress,
     Alert,
     Box,
-    Toolbar
+    Toolbar,
+    Typography,
+    useTheme
 } from '@mui/material';
 import { fetchExchangeRates } from '../../services/AxiosBanking';
 import Sidebar from '../../components/mainComponents/Sidebar';
 
+const currencyToFlagCode = {
+    EUR: 'eu',
+    USD: 'us',
+    GBP: 'gb',
+    CHF: 'ch',
+    JPY: 'jp',
+    CAD: 'ca',
+    AUD: 'au',
+};
+
 const ExchangeRateList = () => {
+    const theme = useTheme();
     const [exchangeRates, setExchangeRates] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -31,10 +44,8 @@ const ExchangeRateList = () => {
             try {
                 const response = await fetchExchangeRates();
                 setExchangeRates(response.data.rates);
-                console.log(response.data.rates);
             } catch (err) {
                 setError('Failed to fetch exchange rates. Please try again later.');
-                console.error('Error fetching exchange rates:', err);
             } finally {
                 setLoading(false);
             }
@@ -43,88 +54,110 @@ const ExchangeRateList = () => {
         loadExchangeRates();
     }, []);
 
-    if (loading) {
-        return (
-            <>
-                <Sidebar />
-                <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - 240px)` }, ml: { sm: '240px' } }}>
-                    <Toolbar />
-                    <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-                        <CircularProgress />
-                    </Container>
-                </Box>
-            </>
-        );
-    }
+    const renderTable = () => (
+        <Card
+            sx={{
+                width: '100%',
+                maxWidth: { xs: '100%', sm: '800px', md: '1100px' },
+                borderRadius: 3,
+                boxShadow: 3,
+                p: { xs: 2.5, sm: 4 },
+                backgroundColor: theme.palette.background.paper,
+            }}
+        >
+            <CardHeader
+                title={
+                    <Box>
+                        <Typography variant="h5" fontWeight={700}>
+                            Exchange Rates
+                        </Typography>
+                        <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+                            <Typography variant="body2" color="text.secondary" fontSize="0.95rem">
+                                All values are expressed in RSD
+                            </Typography>
+                            <img
+                                src="https://flagcdn.com/24x18/rs.png"
+                                alt="RSD flag"
+                                width="24"
+                                height="18"
+                                style={{ borderRadius: 2 }}
+                            />
+                        </Box>
+                    </Box>
+                }
+                sx={{ px: 0, pb: 2 }}
+            />
+            <CardContent sx={{ px: 0 }}>
+                <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
+                    <Table size="medium">
+                        <TableHead>
+                            <TableRow sx={{ backgroundColor: theme.palette.action.hover }}>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Currency</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Buy</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Middle</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Sell</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {supportedCurrencies.map((currency) => {
+                                const rate = exchangeRates?.[currency];
+                                if (!rate) return null;
 
-    if (error) {
-        return (
-            <>
-                <Sidebar />
-                <Box component="main" sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - 240px)` }, ml: { sm: '240px' } }}>
-                    <Toolbar />
-                    <Container sx={{ mt: 4 }}>
-                        <Alert severity="error">{error}</Alert>
-                    </Container>
-                </Box>
-            </>
-        );
-    }
+                                const buy = rate * 0.99;
+                                const sell = rate * 1.01;
+                                const flagCode = currencyToFlagCode[currency];
+
+                                return (
+                                    <TableRow key={currency} hover>
+                                        <TableCell
+                                            sx={{
+                                                fontSize: '1rem',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 1.2
+                                            }}
+                                        >
+                                            <img
+                                                src={`https://flagcdn.com/24x18/${flagCode}.png`}
+                                                alt={`${currency} flag`}
+                                                width="24"
+                                                height="18"
+                                                style={{ borderRadius: 3 }}
+                                            />
+                                            {currency}
+                                        </TableCell>
+                                        <TableCell sx={{ fontSize: '1rem' }}>{buy.toFixed(4)}</TableCell>
+                                        <TableCell sx={{ fontSize: '1rem' }}>{rate.toFixed(4)}</TableCell>
+                                        <TableCell sx={{ fontSize: '1rem' }}>{sell.toFixed(4)}</TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </CardContent>
+        </Card>
+    );
 
     return (
         <>
             <Sidebar />
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                    <Toolbar />
-                    <Box sx={{ 
-                        mt: 4,
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center'
-                    }}>
-                        <Card sx={{ width: '800px' }}>
-                        <CardHeader
-                            title="Current Exchange Rates (RSD)"
-                            sx={{ bgcolor: 'primary.main', color: 'white' }}
-                        />
-                        <CardContent>
-                            <TableContainer component={Paper}>
-                            <Table>
-                                <TableHead>
-                                <TableRow>
-                                    <TableCell>Currency</TableCell>
-                                    <TableCell>Buy Rate</TableCell>
-                                    <TableCell>Middle Rate</TableCell>
-                                    <TableCell>Sell Rate</TableCell>
-                                </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                {supportedCurrencies.map(currency => {
-                                    if (!exchangeRates[currency]) return null;
-                                    
-                                    const middleRate = exchangeRates[currency];
-                                    const buyRate = middleRate * 0.99;
-                                    const sellRate = middleRate * 1.01;
-
-                                    return (
-                                    <TableRow key={currency}>
-                                        <TableCell>{currency}</TableCell>
-                                        <TableCell>{buyRate?.toFixed(4)}</TableCell>
-                                        <TableCell>{middleRate?.toFixed(4)}</TableCell>
-                                        <TableCell>{sellRate?.toFixed(4)}</TableCell>
-                                    </TableRow>
-                                    );
-                                })}
-                                </TableBody>
-                            </Table>
-                            </TableContainer>
-                        </CardContent>
-                        </Card>
-                    </Box>
-                    </Box>
-
+            <Box component="main" sx={{ flexGrow: 1, p: { xs: 2, sm: 3 } }}>
+                <Toolbar />
+                <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'center' }}>
+                    {loading ? (
+                        <CircularProgress />
+                    ) : error ? (
+                        <Alert severity="error" sx={{ fontSize: '1rem' }}>
+                            {error}
+                        </Alert>
+                    ) : (
+                        renderTable()
+                    )}
+                </Container>
+            </Box>
         </>
     );
 };
 
-export default ExchangeRateList; 
+export default ExchangeRateList;

@@ -167,3 +167,71 @@ Cypress.Commands.add('blockCard', () => {
   cy.get('.MuiDataGrid-row--firstVisible > [data-field="accountNumber"]').dblclick();
   cy.get(':nth-child(1) > .MuiSwitch-root > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
   });
+
+Cypress.Commands.add('CreateForeignBusinessAccount', () => {
+  // Do forme
+  cy.get('button[aria-label="open drawer"]').should('be.visible').click();
+  cy.contains('Employee Bank Accounts').should('be.visible').click();
+  cy.contains('Add').should('be.visible').click();
+
+  // Odabir FOREIGN CURRENCY racuna
+  cy.contains('Choose the account you want to create')
+      .parent()
+      .find('[role="combobox"]')
+      .click();
+
+  cy.get('[role="listbox"] [role="option"]').contains('Foreign Currency').click();
+
+  // Odabir BUSINESS tipa
+  cy.contains('Choose the type of account you want to create')
+      .parent()
+      .find('[role="combobox"]')
+      .click();
+
+  cy.get('[role="listbox"] [role="option"]').contains('Business').click();
+
+  cy.contains('Continue').click();
+
+  cy.contains('Choose Currency').parent().within(() => {
+    cy.contains('EUR').click();
+  });
+
+  cy.get('input[type="number"]').first().should('be.visible').clear().type('99999');
+
+
+  // Kreiranje novog korisnika
+  cy.contains('Create New Customer').click();
+
+  cy.get('input[name="firstName"]').type('Test');
+  cy.get('input[name="lastName"]').type('Firma');
+  cy.get('input[name="username"]').type('testfirmaa');
+  cy.get('input[name="email"]').type('firmaa@example.com');
+  cy.get('input[name="phoneNumber"]').type('+38165123456');
+  cy.get('input[name="address"]').type('Ulica broj 1');
+  cy.get('input[name="birthDate"]').type('1995-01-01');
+  cy.contains('Gender')
+      .parent()
+      .find('[role="combobox"]')
+      .click();
+
+  cy.get('[role="listbox"] [role="option"]').contains('Male').click();
+
+  cy.contains('Save').click();
+
+  // Sada se automatski otvara firma forma
+  cy.get('input[name="name"]').type('Firma D.O.O.');
+  cy.get('input[name="companyRegistrationNumber"]').type('12345678');
+  cy.get('input[name="pib"]').type('87654321');
+  cy.get('input[name="address"]').type('Biznis Ulica 22');
+  cy.contains('Activity Code')
+      .parent()
+      .find('[role="combobox"]')
+      .click();
+
+  cy.get('[role="listbox"] [role="option"]').contains('42.2').click();
+
+  cy.contains('Save').click();
+
+  // Proveri da li se vrati na pocetnu stranicu
+  cy.url().should('include', '/employee-bank-accounts-portal');
+});

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Box, Typography, Button, Container, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { motion, useAnimation } from 'framer-motion';
@@ -11,6 +11,10 @@ const Landing = () => {
     const theme = useTheme();
     const scrollTargetRef = useRef(null);
     const bgControls = useAnimation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const bounceAnimation = {
         y: [10, -18, 10],
@@ -78,29 +82,32 @@ const Landing = () => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor: theme.palette.background.default,
+                    px: 2
                 }}
             >
-                <Container maxWidth="md">
+                <Container
+                    maxWidth="sm"
+                    sx={{
+                        textAlign: 'center',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 4
+                    }}
+                >
                     <Box
                         component={motion.div}
                         variants={containerVariants}
                         initial="hidden"
                         animate="visible"
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                        }}
+                        sx={{ width: '100%' }}
                     >
+                        {/* Logo */}
                         <Box
                             component={motion.div}
                             variants={itemVariants}
-                            sx={{
-                                mb: 10,
-                                width: '100%',
-                                maxWidth: 500,
-                            }}
+                            sx={{ mb: 6, width: '100%', maxWidth: 350, mx: 'auto' }}
                         >
                             <img
                                 src={logoSrc}
@@ -109,38 +116,44 @@ const Landing = () => {
                             />
                         </Box>
 
-                        <Box
-                            component={motion.div}
-                            variants={itemVariants}
-                            sx={{ textAlign: 'center', mb: 8 }}
-                        >
-                            <Typography variant="h1" fontWeight="bold" gutterBottom>
+                        {/* Text */}
+                        <Box component={motion.div} variants={itemVariants}>
+                            <Typography
+                                variant="h2"
+                                fontWeight={700}
+                                sx={{ fontSize: 'clamp(1.8rem, 5vw, 2.8rem)', mb: 1 }}
+                            >
                                 Welcome to 1Bank
                             </Typography>
-                            <Typography variant="h4" color="text.secondary">
+                            <Typography
+                                variant="h5"
+                                color="text.secondary"
+                                sx={{ fontSize: 'clamp(1rem, 2.5vw, 1.4rem)' }}
+                            >
                                 Reliable. Agile. Forward-thinking.
                             </Typography>
                         </Box>
 
+                        {/* Button */}
                         <MotionButton
                             animate={bounceAnimation}
-                            whileHover={{ scale: 1.08 }}
-                            whileTap={{ scale: 0.95 }}
+                            whileHover={{ scale: 1.06 }}
+                            whileTap={{ scale: 0.96 }}
                             variants={itemVariants}
                             variant="contained"
-                            color="primary"
                             size="large"
                             onClick={handleLoginScroll}
                             sx={{
-                                py: 2.5,
-                                px: 7,
-                                fontSize: '1.5rem',
+                                mt: 5,
+                                px: 5,
+                                py: 1.5,
+                                fontSize: 'clamp(1rem, 1.4vw, 1.3rem)',
                                 fontWeight: 700,
-                                borderRadius: '40px',
+                                borderRadius: '30px',
                                 textTransform: 'none',
                                 backgroundColor: theme.palette.primary.main,
                                 color: theme.palette.getContrastText(theme.palette.primary.main),
-                                transition: 'all 0.3s ease',
+                                transition: 'all 0.3s ease-in-out',
                                 '&:hover': {
                                     backgroundColor:
                                         theme.palette.mode === 'dark'
