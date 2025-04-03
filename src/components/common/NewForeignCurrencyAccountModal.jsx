@@ -161,25 +161,9 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
 
             if (accountType === 'business') {
                 setIsCreateCompanyModalOpen(true);
-            } else {
-                //Create account if not business
-                const accountData = {
-                    ownerID: createdCustomerId,
-                    currency: selectedCurrency.toUpperCase(),
-                    type: 'FOREIGN_CURRENCY',
-                    subtype: accountType.toUpperCase(),
-                    dailyLimit: 0,
-                    monthlyLimit: 0,
-                    status: "ACTIVE",
-                    companyID: null,
-                    balance: parseFloat(startingBalance),
-                    createCard: makeCard
-                };
-
-                await createAccount(accountData);
-                onClose();
-                onSuccess?.();
             }
+            onClose();
+            onSuccess?.();
 
             toast.success('Customer created successfully');
         } catch (error) {
