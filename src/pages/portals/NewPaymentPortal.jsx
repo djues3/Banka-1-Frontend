@@ -17,6 +17,8 @@ const NewPaymentPortal = () => {
     const location = useLocation();
     const recipient = location.state?.recipient || {};
     const payerAccountId = recipient?.ownerAccountId || null;
+    const payerAccountNumber = location.state?.payerAccountNumber || null;
+
 
     const token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
@@ -120,11 +122,29 @@ const NewPaymentPortal = () => {
 
         setOpenModal(false);
     };
-    
 
     useEffect(() => {
         loadAccounts();
     }, []);
+
+    useEffect(() => {
+        if (payerAccountId && accounts.length > 0) {
+            const foundAccount = accounts.find(acc => acc.id.toString() === payerAccountId.toString());
+            if (foundAccount) {
+                setSelectedAccount(foundAccount);
+                setDailyLimit(foundAccount.dailyLimit);
+                loadRecipients(foundAccount.id);
+            }
+        } else if (payerAccountNumber && accounts.length > 0) {
+            const foundByNumber = accounts.find(acc => acc.accountNumber === payerAccountNumber);
+            if (foundByNumber) {
+                setSelectedAccount(foundByNumber);
+                setDailyLimit(foundByNumber.dailyLimit);
+                loadRecipients(foundByNumber.id);
+            }
+        }
+
+    }, [payerAccountId, payerAccountNumber, accounts]);
 
     const loadAccounts = async () => {
         try {

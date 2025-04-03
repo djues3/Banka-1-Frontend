@@ -1,26 +1,21 @@
-import React, {useEffect, useState} from "react";
-import { Button, Box, Typography} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Typography, IconButton, Tooltip, Skeleton, Fade } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import AddFastPayment from "./AddFastPayment";
 import {
-    createRecipient, createRecipientt,
+    createRecipientt,
     fetchRecipientsForFast,
     getUserIdFromToken
 } from "../../services/AxiosBanking";
 
-
-
 const FastPayments = ({ accountId }) => {
-
-    //state za modal, state za novu osobu za brzo placanje,
-    // state za upravljanje osobama za brzo placanje, poruka za error
     const navigate = useNavigate();
     const [openModal, setOpenModal] = useState(false);
     const [recipient, setRecipient] = useState({ name: "", accountNumber: "" });
     const [recipientList, setRecipientList] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
-    console.log("Received accountId:", accountId);
+    const [hoveredIndex, setHoveredIndex] = useState(null);
 
     useEffect(() => {
         const userId = getUserIdFromToken();
@@ -29,9 +24,41 @@ const FastPayments = ({ accountId }) => {
                 try {
                     setLoading(true);
                     const data = await fetchRecipientsForFast(accountId);
-                    console.log(data);
-                    setRecipientList(data || []);
-                } catch {
+
+                    if (!data || data.length === 0) {
+                        const mockRecipients = [
+                            {
+                                id: 101,
+                                ownerAccountId: accountId,
+                                accountNumber: "111122223333",
+                                firstName: "Mocka",
+                                lastName: "Milić",
+                                address: "Test adresa 1"
+                            },
+                            {
+                                id: 102,
+                                ownerAccountId: accountId,
+                                accountNumber: "222233334444",
+                                firstName: "Testko",
+                                lastName: "Todorović",
+                                address: "Test adresa 2"
+                            },
+                            {
+                                id: 103,
+                                ownerAccountId: accountId,
+                                accountNumber: "333344445555",
+                                firstName: "Jovana",
+                                lastName: "Mockić",
+                                address: "Test adresa 3"
+                            }
+                        ];
+
+                        setRecipientList(mockRecipients);
+
+                    } else {
+                        setRecipientList(data.receivers || []);
+                    }
+                } catch (err) {
                     setError("Failed to load recipients.");
                 } finally {
                     setLoading(false);
@@ -44,10 +71,6 @@ const FastPayments = ({ accountId }) => {
         }
     }, [accountId]);
 
-
-    // Funkcija za dodavanje novog primaoca, imitira API POST poziv,
-    // dodaje primaoca u listu,
-    // zatvara modal, cisti unos
     const handleAddRecipient = async () => {
         if (!recipient.name || !recipient.accountNumber) {
             setError("Both fields must be filled.");
@@ -67,56 +90,102 @@ const FastPayments = ({ accountId }) => {
         };
 
         try {
-
             await createRecipientt(newRecipient);
             const updatedRecipients = await fetchRecipientsForFast(accountId);
             setRecipientList(updatedRecipients);
-
-            // Resetuj formu
             setOpenModal(false);
             setRecipient({ name: "", accountNumber: "" });
             setError("");
-
-
         } catch (err) {
             setError("Failed to add recipient.");
         }
     };
 
-
-
+    const getInitials = (firstName, lastName) => {
+        const first = firstName?.trim()?.charAt(0)?.toUpperCase() || "";
+        const last = lastName?.trim()?.charAt(0)?.toUpperCase() || "";
+        return first + last;
+    };
 
 
     return (
-        <Box sx={{ textAlign: "center", mb: 4 }}>
+        <Box sx={{
+            width: "max-content",
+            borderRadius: 4,
+            padding: 3,
+            paddingLeft:"50px",
+            bgcolor: "transparent",
+            backdropFilter: "none",
+            textAlign: "left",
+            mb: 4
+        }} >
             <Typography variant="h6" sx={{ mb: 2 }}>
                 Fast Payments
             </Typography>
 
-            {/* Lista osoba za brzo placanje */}
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-                {recipientList.map((recipient, index) => (
-                    <Button
-                        key={index}
-                        variant="contained"
-                        sx={{ marginRight: 1 }}
-                        //ovde kad se klikne treba da se otvori stranica za placanje sa datim recipientom
-                        onClick={() => navigate("/new-payment-portal", { state: { recipient } })}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, ml: "auto", mr: "auto", width: "fit-content" }}>
+                {loading ? (
+                    Array.from({ length: 3 }).map((_, i) => (
+                        <Box key={i} sx={{ display: "flex", gap: 2 }}>
+                            <Skeleton variant="circular" width={64} height={64} />
+                            <Skeleton variant="text" width={120} />
+                        </Box>
+                    ))
+                ) : (
+                    recipientList.map((recipient, index) => (
+                        <Box
+                            key={index}
+                            sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                        >
+
+                            <IconButton
+                                onClick={() => navigate("/new-payment-portal", { state: { recipient } })}
+                                sx={{
+                                    width: 50,
+                                    height: 50,
+                                    borderRadius: "50%",
+                                    backgroundColor: "#7256d6",
+                                    color: "#fff",
+                                    fontWeight: "italic",
+                                    fontSize: "16px",
+                                    "&:hover": {
+                                        backgroundColor: "#6244d5"
+                                    }
+                                }}
+
+                                onMouseEnter={() => setHoveredIndex(index)}
+                                onMouseLeave={() => setHoveredIndex(null)}
+                            >
+                                {getInitials(recipient.firstName, recipient.lastName)}
+
+                            </IconButton>
+
+                            <Fade in={hoveredIndex === index}>
+                                <Typography>{recipient.firstName} {recipient.lastName}</Typography>
+                            </Fade>
+                        </Box>
+                    ))
+                )}
+
+                <Box>
+                    <IconButton
+                        onClick={() => setOpenModal(true)}
+                        sx={{
+                            width: 50,
+                            height: 50,
+                            borderRadius: "50%",
+                            backgroundColor: "transparent",
+                            border: "2px dashed #1976d2",
+                            color: "#1976d2",
+                            fontSize: "20px",
+                            fontWeight: "bold"
+                        }}
                     >
-                        {recipient.firstName} {recipient.lastName}
-                    </Button>
-                ))}
-
-
-
-
-                {/* Dugme za dodavanje novog primaoca, otvara modal */}
-                <Button variant="outlined" onClick={() => setOpenModal(true)}>
-                    Add New Recipient
-                </Button>
+                        +
+                    </IconButton>
+                </Box>
             </Box>
 
-            {/* Pozivanje modalne komponente */}
             <AddFastPayment
                 open={openModal}
                 onClose={() => setOpenModal(false)}
@@ -125,16 +194,8 @@ const FastPayments = ({ accountId }) => {
                 setRecipient={setRecipient}
                 error={error}
             />
-
-
-
-
-
-
-
         </Box>
     );
 };
 
 export default FastPayments;
-
