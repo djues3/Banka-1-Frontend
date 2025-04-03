@@ -105,11 +105,22 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
         try {
             const customerPayload = {
                 ...customerData,
-                birthDate: transformDateForApi(customerData.birthDate)
+                birthDate: transformDateForApi(customerData.birthDate),
+                accountInfo: {
+                    currency: "RSD",
+                    type: "CURRENT",
+                    subtype: accountType.toUpperCase(),
+                    dailyLimit: 0,
+                    monthlyLimit: 0,
+                    status: "ACTIVE",
+                    createCard: makeCard,
+                    balance: parseFloat(startingBalance),
+                }
             };
 
             const response = await createCustomer(customerPayload);
             const createdCustomerId = response?.customer?.id || response?.data?.customer?.id;
+            onClose();
 
             if (!createdCustomerId) {
                 toast.error("Customer was created, but ID was not returned.");
@@ -132,25 +143,8 @@ const NewCurrentAccountModal = ({ open, onClose, accountType, onSuccess }) => {
 
             if (accountType === 'business') {
                 setIsCreateCompanyModalOpen(true);
-            } else {
-
-                await createAccount({
-                    ownerID: createdCustomerId,
-                    currency: "RSD",
-                    type: 'CURRENT',
-                    subtype: accountType.toUpperCase(),
-                    dailyLimit: 0,
-                    monthlyLimit: 0,
-                    status: "ACTIVE",
-                    createCard: makeCard,
-                    balance: parseFloat(startingBalance),
-                    companyID: null,
-                });
-
-                toast.success("Customer and account created successfully");
-                onClose();
-                onSuccess?.();
             }
+
 
             toast.success('Customer created successfully');
         } catch (error) {
