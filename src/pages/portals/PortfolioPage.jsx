@@ -38,9 +38,9 @@ const PortfolioPage = () => {
             try {
                 const data = await getUserSecurities(userId);
                 const tax = await getTaxForUser(userId);
-                console.log(tax.data);
-                //console.log(data.data);
-                setPortfolioData(data);
+                console.log(data.data);
+
+                setPortfolioData(data.data);
                 setTaxData(tax.data);
             } catch (error) {
                 console.error("Error fetching user securities:", error);
