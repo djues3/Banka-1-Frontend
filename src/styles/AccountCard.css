@@ -1,0 +1,241 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600&display=swap");
+
+:root {
+    --clr-green: #595992;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: #232228;
+    font-family: "Nunito", sans-serif;
+    overflow-x: hidden;
+    display: grid;
+    place-items: center;
+}
+
+button {
+    border: none;
+    background: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+section {
+    width: 80%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 50em;
+    margin-inline: auto;
+    gap: 3.25rem;
+    align-items: center;
+    padding: 5em 0;
+    position: relative;
+    z-index: 10;
+}
+
+.card {
+    position: relative;
+    z-index: 555;
+    max-width: 15rem;
+    min-height: 20rem;
+    width: 90%;
+    display: grid;
+    place-content: center;
+    place-items: center;
+    text-align: center;
+    box-shadow: 1px 12px 25px rgb(0 0 0 / 78%);
+    border-radius: 2.25rem;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    color: var(--clr-green);
+}
+
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 2.25rem;
+    z-index: -1;
+    border: 1px solid black;
+    background-clip: padding-box;
+    background-origin: border-box;
+    background: linear-gradient(45deg, #232228, #232228, #595992);
+    pointer-events: none;
+}
+
+
+.card:hover::before {
+    display: none;
+}
+.card.selected::before{
+    display: none;
+}
+.card-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.8em 0.5em 0em 1.5em;
+
+}
+
+.card-header .account {
+    color: #ddd;
+}
+
+.card-header svg {
+    color: #fff;
+    width: 2.5rem;
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+.card:hover {
+    transform: scale(1.015);
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.7);
+    background: var(--clr-green);
+}
+
+.card.selected {
+    transform: scale(1.015);
+    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.7);
+    background: var(--clr-green);
+}
+
+.card-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /*padding: 2rem 1.5rem;*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 70px;
+}
+
+.card-body h3 {
+    color: #fff;
+    font-size: 1.375rem;
+    margin-top: 0.625em;
+    margin-bottom: 0.188em;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+.card-body p {
+    color: #ddd;
+    font-size: 1rem;
+    letter-spacing: 0.031rem;
+}
+
+/* FOOTER */
+
+.card-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-top: 1px solid #292929;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.7em 1.25em 0.5em 1.5em;
+    background: #151419;
+    border-bottom-left-radius: 2.25rem;
+    border-bottom-right-radius: 2.25rem;
+}
+
+.card-footer ul {
+    display: flex;
+    align-items: center;
+}
+
+.card-footer ul li {
+    list-style: none;
+    display: flex;
+    margin-right: -0.625rem;
+}
+
+.btn-add {
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #555;
+    transition: background 0.3s ease;
+}
+
+.btn-add svg {
+    width: 1rem;
+}
+
+.btn-add:hover {
+    background: var(--clr-green);
+}
+
+.btn-countdown {
+    background: #222127;
+    color: #fff;
+    border-radius: 2em;
+    padding: 0.625rem 1.5rem;
+    transition: background 0.2s ease;
+    margin-left: 0;       /* resetuj ako postoji */
+    margin-right: 2rem;
+}
+
+.btn-countdown:hover {
+    background: var(--clr-green);
+}
+
+.menu-container {
+    position: relative;
+}
+
+.card-dropdown {
+    position: absolute;
+    top: 2.5rem;
+    right: 0;
+    background: #1c1c1f;
+    border: 1px solid #333;
+    border-radius: 0.5rem;
+    z-index: 1000;
+    min-width: 7rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    padding: 0.25rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-dropdown button {
+    background: none;
+    border: none;
+    color: #ddd;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.card-dropdown button:hover {
+    background: #414178;
+    color: #fff;
+}

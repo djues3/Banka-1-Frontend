@@ -105,9 +105,10 @@ const PasswordSetConfirmation = () => {
                         </>
                     ) : (
                         <form onSubmit={handleSubmit}>
-                            <p className={styles.label}>Password must be at least 8 characters, 1 uppercase, 1 number.</p>
+                            <p className={styles.label}>Password must be at least 8 characters, 1 uppercase, 1
+                                number.</p>
                             {error && (
-                                <Alert severity="error" sx={{ marginBottom: '16px' }}>
+                                <Alert severity="error" sx={{marginBottom: '16px'}}>
                                     {error}
                                 </Alert>
                             )}
@@ -135,7 +136,7 @@ const PasswordSetConfirmation = () => {
                                 <button type="submit" className={styles.loginButton} disabled={isSubmitting}>
                                     {isSubmitting ? (
                                         <>
-                                            <CircularProgress size={20} style={{ marginRight: 8 }} />
+                                            <CircularProgress size={20} style={{marginRight: 8}}/>
                                             Submitting...
                                         </>
                                     ) : (
@@ -143,11 +144,13 @@ const PasswordSetConfirmation = () => {
                                     )}
                                 </button>
                             </div>
-                            <button type="button" onClick={() => navigate('/login')} className={styles.signupLink}>
-                                Cancel
-                            </button>
+                            <div className={styles.buttonRow}>
+                                <button type="button" onClick={() => navigate('/login')} className={styles.loginButton}>
+                                    Cancel
+                                </button>
+                            </div>
                         </form>
-                    )}
+                        )}
                 </div>
             </div>
         </div>
