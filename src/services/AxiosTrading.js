@@ -72,7 +72,7 @@ export const getSecurities = async () => {
 export const getUserSecurities = async (userId) => {
   try {
     const response = await apiTrading.get(`/securities/${userId}`);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error(`Error fetching securities for user ${userId}:`, error);
     throw error;
@@ -252,5 +252,19 @@ export const runTax = async () => {
     throw error;
   }
 };
+
+export const updatePublicCount = async (ticker, publicCount) => {
+  try {
+    const response = await apiTrading.put("/securities/public-count", {
+      ticker,
+      publicCount
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating public count:", error);
+    throw error;
+  }
+};
+
 
 export default apiTrading;
