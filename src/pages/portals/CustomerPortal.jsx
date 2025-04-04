@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/mainComponents/Navbar";
 import Sidebar from "../../components/mainComponents/Sidebar";
 import SearchDataTable from "../../components/tables/SearchDataTable";
 import EditModal from "../../components/common/EditModal";
@@ -11,7 +10,6 @@ import {
 } from "../../services/AxiosUser";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import AddButton from "../../components/common/AddButton";
 
 const CustomerPortal = () => {
     const [rows, setRows] = useState([]);
@@ -70,6 +68,50 @@ const CustomerPortal = () => {
             setLoading(false);
         }
     };
+
+    const validateEmail = (email) => {
+        email = email.trim();
+        console.log("Validating email:", email);
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            toast.error("Invalid email format.");
+            return false;
+        }
+        return true;
+    };
+
+    const validateCustomerData = (customer) => {
+        let isValid = true;
+
+        // Required fields
+        Object.keys(customer).forEach((key) => {
+            if (!customer[key] && key !== "id") {
+                toast.error(`${key} is required.`);
+                isValid = false;
+            }
+        });
+
+        // Phone number validation
+        if (!customer.phoneNumber.startsWith("+381") || customer.phoneNumber.length !== 12) {
+            toast.error("Phone number must start with +381 and have 8 digits after");
+            isValid = false;
+        }
+
+        // Address validation (must contain a number at the end)
+        const addressParts = customer.address.split(" ");
+        const lastPart = addressParts[addressParts.length - 1];
+        if (isNaN(Number(lastPart))) {
+            toast.error("Address must contain a number");
+            isValid = false;
+        }
+
+        // Email validation
+        if (!validateEmail(customer.email)) {
+            isValid = false;
+        }
+
+        return isValid;
+    };
     // Format the date in the log to YYYY-MM-DD
     const formatLogDate = (log) => {
         if (typeof log !== "string" && typeof log !== "number") return String(log);
@@ -117,6 +159,7 @@ const CustomerPortal = () => {
 
     // Handle the save event when the user clicks the save button in the edit modal formm
     const handleSaveCustomer = async (updatedCustomerData) => {
+        if (!validateCustomerData(updatedCustomerData)) return;
         try {
 
             updatedCustomerData.birthDate = transformDateForApi(updatedCustomerData.birthDate);
@@ -156,6 +199,7 @@ const CustomerPortal = () => {
 
     // Add create customer handler
     const handleCreateCustomer = async (customerData) => {
+        if (!validateCustomerData(customerData)) return;
         try {
             customerData.birthDate = transformDateForApi(customerData.birthDate);
 
@@ -185,6 +229,7 @@ const CustomerPortal = () => {
             // password: ""
         });
     };
+
 
 
     // Define the form fields for the customer form in the edit modal

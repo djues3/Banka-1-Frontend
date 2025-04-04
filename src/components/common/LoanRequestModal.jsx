@@ -41,6 +41,26 @@ const LoanRequestModal = ({ open, onClose }) => {
     if (open) fetchUserAccounts();
   }, [open]);
 
+  const isFormValid = () => {
+    return (
+        selectedAccount &&
+        loanType &&
+        loanAmount &&
+        currencyType &&
+        loanPurpose &&
+        salaryAmount &&
+        employmentStatus &&
+        employmentDuration &&
+        phoneNumber &&
+        numberOfInstallments &&
+        !isNaN(loanAmount) &&
+        !isNaN(salaryAmount) &&
+        !isNaN(phoneNumber) &&
+        !isNaN(employmentDuration)
+    );
+  };
+
+
   const handleAccountChange = (e) => {
     const accountId = e.target.value;
     const selectedAcc = accounts.find(acc => acc.id === accountId);
@@ -50,6 +70,37 @@ const LoanRequestModal = ({ open, onClose }) => {
       setCurrencyType(selectedAcc.currencyType);
     }
   };
+  const handleLoanAmountChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setLoanAmount(value);
+    }
+  };
+
+  const handleSalaryAmountChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setSalaryAmount(value);
+    }
+  };
+
+
+
+  const handlePhoneNumberChange = (e) => {
+    const value = e.target.value;
+
+    if (/^\d*$/.test(value)) {
+        setPhoneNumber(value);
+    }
+  };
+
+  const handleEmploymentDurationChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setEmploymentDuration(value);
+    }
+  };
+
 
   const installmentOptions = {
     CASH: [12, 24, 36, 48, 60, 72, 84],
@@ -62,6 +113,17 @@ const LoanRequestModal = ({ open, onClose }) => {
   const handleSubmit = async () => {
     if (!selectedAccount || !loanType || !loanAmount || !currencyType || !loanPurpose || !salaryAmount || !employmentStatus || !employmentDuration || !phoneNumber || !numberOfInstallments) {
       toast("Please fill in all required fields.");
+      return;
+    }
+
+    if (isNaN(loanAmount) || isNaN(salaryAmount) || isNaN(phoneNumber) || isNaN(employmentDuration)) {
+      toast("Loan Amount, Salary Amount, Phone Number, and Employment Duration must be numbers.");
+      return;
+    }
+
+    const phoneNumberRegex = /^\+381\d{8}$/;
+    if (!phoneNumberRegex.test(phoneNumber)) {
+      toast.error("Invalid phone number. It must start with +381 and be followed by 8 digits.");
       return;
     }
 
@@ -156,7 +218,12 @@ const LoanRequestModal = ({ open, onClose }) => {
               <MenuItem value="STUDENT">Student</MenuItem>
             </Select>
           </FormControl>
-          <TextField label="Loan amount" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value)} fullWidth />
+          <TextField
+              label="Loan amount"
+              value={loanAmount}
+              onChange={handleLoanAmountChange}
+              fullWidth
+          />
         </Box>
 
         <TextField label="Loan purpose" value={loanPurpose} onChange={(e) => setLoanPurpose(e.target.value)} fullWidth sx={{ mb: 1 }} />
@@ -179,8 +246,12 @@ const LoanRequestModal = ({ open, onClose }) => {
           </Select>
         </FormControl>
 
-        <TextField label="Salary amount" value={salaryAmount} onChange={(e) => setSalaryAmount(e.target.value)} fullWidth sx={{ mb: 1 }} />
-
+        <TextField
+            label="Salary amount"
+            value={salaryAmount}
+            onChange={handleSalaryAmountChange}
+            fullWidth
+        />
         <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
           <FormControl fullWidth>
             <InputLabel>Employment status</InputLabel>
@@ -190,16 +261,26 @@ const LoanRequestModal = ({ open, onClose }) => {
               <MenuItem value="UNEMPLOYED">Unemployed</MenuItem>
             </Select>
           </FormControl>
-          <TextField label="Employment duration (months)" value={employmentDuration} onChange={(e) => setEmploymentDuration(e.target.value)} fullWidth />
+
+          <TextField
+              label="Employment duration (months)"
+              value={employmentDuration}
+              onChange={handleEmploymentDurationChange}
+              fullWidth
+          />
         </Box>
 
-        <TextField label="Phone number" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} fullWidth sx={{ mb: 1 }} />
-
+        <TextField
+            label="Phone number"
+            value={phoneNumber}
+            onChange={handlePhoneNumberChange}
+            fullWidth
+        />
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
           <Button variant="contained" color="error" onClick={() => { resetForm(); onClose(); }}>
             Cancel
           </Button>
-          <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading}>
+          <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading || !isFormValid()}>
             {loading ? "Submitting..." : "Submit"}
           </Button>
         </Box>

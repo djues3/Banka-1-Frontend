@@ -86,6 +86,8 @@ const EmployeeBankAccountsPortal = () => {
     }
   };
 
+
+
   const handleRowClick = (row) => {
     navigate('/employee-cards-portal', { state: { selectedAccount: row } });
   };

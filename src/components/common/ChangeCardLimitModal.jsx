@@ -12,7 +12,16 @@ const ChangeCardLimitModal = ({ open, onClose, card }) => {
     onClose();
   };
 
-  return (
+    const handleNewLimitChange = (e) => {
+        // Uzimamo samo brojčane vrednosti
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) {
+            setNewLimit(value);
+        }
+    };
+
+
+    return (
     <Modal open={open} onClose={onClose}>
        <Box
           sx={{
@@ -35,8 +44,13 @@ const ChangeCardLimitModal = ({ open, onClose, card }) => {
           fullWidth disabled 
           value={card?.cardLimit} 
         />
-        <Typography className="modal-label">New Limit</Typography>
-        <TextField fullWidth value={newLimit} onChange={(e) => setNewLimit(e.target.value)} />
+           <Typography className="modal-label">New Limit</Typography>
+           <TextField
+               fullWidth
+               value={newLimit}
+               onChange={handleNewLimitChange}
+               inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} // Omogućava unos samo brojeva
+           />
 
         <Box className="modal-buttons" sx={{marginTop: 2}}>
           <Button variant="contained" color="error" onClick={onClose}>
