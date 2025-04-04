@@ -30,6 +30,16 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
       [name]: type === 'checkbox' ? checked : value
     });
   };
+
+  const handlePhoneInput = (e) => {
+    const { name, value } = e.target;
+    // Replace any non-digit characters
+    const numericValue = value.replace(/\D/g, '');
+    setFormData({
+      ...formData,
+      [name]: numericValue
+    });
+  };
   // Handle save button click
   const handleSave = () => {
     // Basic validation
@@ -52,6 +62,8 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
   const isFormValid = formFields.every(field => {
     return !field.required || (formData[field.name]?.toString().trim() !== '');
   });
+
+
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -89,17 +101,17 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
                   label={field.label}
                 />
               ) : (
-                <TextField
-                  fullWidth
-                  label={field.label}
-                  name={field.name}
-                  type={field.type || 'text'}
-                  value={formData[field.name] || ''}
-                  onChange={handleChange}
-                  error={!!errors[field.name]}
-                  helperText={errors[field.name]}
-                  InputProps={field.readOnly ? { readOnly: true } : {}}
-                />
+                  <TextField
+                      fullWidth
+                      label={field.label}
+                      name={field.name}
+                      type={field.name === 'phoneNumber' ? 'text' : field.type || 'text'}
+                      value={formData[field.name] || ''}
+                      onChange={field.name === 'phoneNumber' ? handlePhoneInput : handleChange}
+                      error={!!errors[field.name]}
+                      helperText={errors[field.name]}
+                      InputProps={field.readOnly ? { readOnly: true } : {}}
+                  />
               )}
             </Grid>
           ))}

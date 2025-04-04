@@ -17,8 +17,6 @@ const NewPaymentPortal = () => {
     const location = useLocation();
     const recipient = location.state?.recipient || {};
     const payerAccountId = recipient?.ownerAccountId || null;
-    const payerAccountNumber = location.state?.payerAccountNumber || null;
-
 
     const token = localStorage.getItem("token");
     const decodedToken = jwtDecode(token);
@@ -59,6 +57,19 @@ const NewPaymentPortal = () => {
         }
     };
 
+    const isFormValid = () => {
+        return (
+            selectedAccount &&
+            newPayment.recipientAccount.trim() !== "" &&
+            !isNaN(newPayment.amount)  &&
+            newPayment.recipientName.trim() !== "" &&
+            newPayment.paymentPurpose.trim() !== "" &&
+            newPayment.adress.trim() !== "" &&
+            newPayment.referenceNumber.trim() !== ""
+        );
+    };
+
+
     const handleVerificationConfirm = async (verificationCode) => {
         console.log("Transfer confirmed with verification code: ", verificationCode);
 
@@ -88,7 +99,7 @@ const NewPaymentPortal = () => {
                 console.error("Error during OTP verification: ", error);
             }
         }
-        
+
         setOpenModal(true);
         handleCancel();
     };
@@ -123,28 +134,10 @@ const NewPaymentPortal = () => {
         setOpenModal(false);
     };
 
+
     useEffect(() => {
         loadAccounts();
     }, []);
-
-    useEffect(() => {
-        if (payerAccountId && accounts.length > 0) {
-            const foundAccount = accounts.find(acc => acc.id.toString() === payerAccountId.toString());
-            if (foundAccount) {
-                setSelectedAccount(foundAccount);
-                setDailyLimit(foundAccount.dailyLimit);
-                loadRecipients(foundAccount.id);
-            }
-        } else if (payerAccountNumber && accounts.length > 0) {
-            const foundByNumber = accounts.find(acc => acc.accountNumber === payerAccountNumber);
-            if (foundByNumber) {
-                setSelectedAccount(foundByNumber);
-                setDailyLimit(foundByNumber.dailyLimit);
-                loadRecipients(foundByNumber.id);
-            }
-        }
-
-    }, [payerAccountId, payerAccountNumber, accounts]);
 
     const loadAccounts = async () => {
         try {
@@ -264,6 +257,9 @@ const NewPaymentPortal = () => {
         setShowModal(true);
         // setOpenModal(true);
     };
+    useEffect(() => {
+        setIsSuccess(isFormValid());
+    }, [newPayment, selectedAccount]);
 
     return (
         <div>
@@ -353,10 +349,17 @@ const NewPaymentPortal = () => {
                             <input
                                 type="text"
                                 value={newPayment.recipientAccount}
-                                onChange={(e) => setNewPayment({ ...newPayment, recipientAccount: e.target.value })}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^\d*$/.test(value)) {
+                                        setNewPayment({...newPayment, recipientAccount: value});
+                                    }
+                                }}
+                                placeholder="Enter 18-digit account number"
                                 required
                                 disabled={recipient.id !== undefined}
                             />
+
                         </div>
 
                         <div className="payment-purpose">
@@ -364,7 +367,7 @@ const NewPaymentPortal = () => {
                             <input
                                 type="text"
                                 value={newPayment.paymentPurpose}
-                                onChange={(e) => setNewPayment({ ...newPayment, paymentPurpose: e.target.value })}
+                                onChange={(e) => setNewPayment({...newPayment, paymentPurpose: e.target.value })}
                             />
                         </div>
                     </div>
@@ -376,13 +379,19 @@ const NewPaymentPortal = () => {
                                 <input
                                     type="number"
                                     value={newPayment.amount}
-                                    onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (/^\d*\.?\d*$/.test(value)) {
+                                            setNewPayment({...newPayment, amount: value});
+                                        }
+                                    }}
                                     required
                                 />
                                 <span className="currency-display">
                                     {selectedAccount?.currencyType || ''}
                                 </span>
-                                <span title={`Daily Limit: ${dailyLimit ?? "N/A"}`} style={{ cursor: "pointer" }}>ℹ️</span>
+                                <span title={`Daily Limit: ${dailyLimit ?? "N/A"}`}
+                                      style={{cursor: "pointer"}}>ℹ️</span>
                             </div>
                         </div>
                         <div className="adress">
@@ -402,22 +411,23 @@ const NewPaymentPortal = () => {
                             <input
                                 type="text"
                                 value={newPayment.referenceNumber}
-                                onChange={(e) => setNewPayment({ ...newPayment, referenceNumber: e.target.value })}
+                                onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (/^\d*$/.test(value)) {
+                                        setNewPayment({...newPayment, referenceNumber: value});
+                                    }
+                                }}
                                 required
                             />
+
                         </div>
                         <Button
                             variant="contained"
                             color="primary"
                             type="submit"
                             onClick={handleConfirm}
-                            disabled={
-                                !selectedAccount ||
-                                !newPayment.recipientAccount ||
-                                !newPayment.amount ||
-                                !newPayment.recipientName ||
-                                !newPayment.paymentPurpose
-                            }
+                            disabled={!isFormValid()}
+                            sx={{ width: '25ch' }}
 
                             sx={{ width: '25ch' }}
                         >
@@ -434,7 +444,6 @@ const NewPaymentPortal = () => {
                     onClose={handleCancel}
                     onConfirm={handleVerificationConfirm}
                 />
-
                 <PaymentResultModal
                     open={openModal}
                     onClose={() => setOpenModal(false)}
