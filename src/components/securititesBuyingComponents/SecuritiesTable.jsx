@@ -168,7 +168,7 @@ const SecuritiesTable = ({ role }) => {
                 : sec.type.toLowerCase() !== "bond";
 
             const matchesType = selectedType === "all" || sec.type.toLowerCase() === selectedType.toLowerCase();
-           // const matchesSearch = sec.ticker.toLowerCase().includes(search.toLowerCase()) || sec.name.toLowerCase().includes(search.toLowerCase());
+            // const matchesSearch = sec.ticker.toLowerCase().includes(search.toLowerCase()) || sec.name.toLowerCase().includes(search.toLowerCase());
             const matchesExchange = exchangeFilter ? sec.exchange.toLowerCase().startsWith(exchangeFilter.toLowerCase()) : true;
             const matchesPrice = priceRange.min === "" || priceRange.max === "" || (sec.lastPrice >= parseFloat(priceRange.min) && sec.lastPrice <= parseFloat(priceRange.max));
 
@@ -255,16 +255,16 @@ const SecuritiesTable = ({ role }) => {
             headerName: "Initial Margin Cost",
             width: 200,
             type: "number",
-           // valueGetter: (params) => (params.row.maintenanceMargin ? (params.row.maintenanceMargin * 1.1).toFixed(2) : "N/A")
+            // valueGetter: (params) => (params.row.maintenanceMargin ? (params.row.maintenanceMargin * 1.1).toFixed(2) : "N/A")
         },
         { field: "actions", headerName: "Action", width: 100, renderCell: (params) => (
                 <>
                     {params.row.availableQuantity > 0 && ( /*Treba da se zove dunjin BuyModal */
-                        <Button variant="outlined" onClick={() => handleBuyClick(selectedSecurity)}>Buy</Button>
+                        <Button variant="outlined" onClick={() => handleBuyClick(params.row)}>Buy</Button>
                     )}
                 </>
             )}
-,{
+        ,{
             field: "Details",
             headerName: "",
             width: 120,
@@ -409,8 +409,8 @@ const SecuritiesTable = ({ role }) => {
             {
                 isModalOpen && (
                     <BuyModal
-                        open={true}
                         security={selectedSecurity}
+                        open={true}
                         onClose={handleCloseModal}  // Funkcija koja zatvara modal
                     />
                 )
