@@ -33,8 +33,7 @@ import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPorta
 import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
 import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 import CompaniesPortal from "./pages/portals/CompaniesPortal";
-//import TaxTrackingPortal from "./pages/portals/TaxTrackingPortal";
-
+import TaxTrackingPortal from "./pages/portals/TaxTrackingPortal";
 
 function App() {
   return (
@@ -64,8 +63,8 @@ function App() {
                     "DIRECTOR",
                     "HR",
                     "ADMIN",
-                      "SUPERVISOR",
-                      "AGENT"
+                    "SUPERVISOR",
+                    "AGENT",
                   ]}
                 >
                   <HomePage />
@@ -88,23 +87,22 @@ function App() {
                 </AuthGuard>
               }
             />
-              <Route
-                  path="/companies-portal"
-                  element={
-                      <AuthGuard
-                          allowedPositions={[
-                              "WORKER",
-                              "MANAGER",
-                              "DIRECTOR",
-                              "HR",
-                              "ADMIN",
-                          ]}
-                      >
-                          <CompaniesPortal/>
-                      </AuthGuard>
-
-                  }
-              />
+            <Route
+              path="/companies-portal"
+              element={
+                <AuthGuard
+                  allowedPositions={[
+                    "WORKER",
+                    "MANAGER",
+                    "DIRECTOR",
+                    "HR",
+                    "ADMIN",
+                  ]}
+                >
+                  <CompaniesPortal />
+                </AuthGuard>
+              }
+            />
             <Route
               path="/employee-bank-accounts-portal"
               element={
@@ -208,14 +206,14 @@ function App() {
               }
             />
 
-              <Route
-                  path="/tax-tracking-portal"
-                  element={
-                      <AuthGuard allowedPositions={["SUPERVISOR"]}>
-                          {/*<TaxTrackingPortal />*/}
-                      </AuthGuard>
-                  }
-              />
+            <Route
+              path="/tax-tracking-portal"
+              element={
+                <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                  <TaxTrackingPortal />
+                </AuthGuard>
+              }
+            />
 
             <Route
               path="/portfolio-page"
@@ -227,14 +225,14 @@ function App() {
             />
 
             {/* Customer-Only Routes */}
-              <Route
-                  path="/customer-home"
-                  element={
-                      <AuthGuard allowedPositions={["NONE"]}>
-                          <CustomerAccountPortal />
-                      </AuthGuard>
-                  }
-              />
+            <Route
+              path="/customer-home"
+              element={
+                <AuthGuard allowedPositions={["NONE"]}>
+                  <CustomerAccountPortal />
+                </AuthGuard>
+              }
+            />
             <Route
               path="/client-buying-portal"
               element={
