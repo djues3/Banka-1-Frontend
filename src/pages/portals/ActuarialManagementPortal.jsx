@@ -22,6 +22,7 @@ const ActuarialManagementPortal = () => {
         try {
             setLoading(true);
             const data = await getActuaries();
+            console.log("data", data);
             setActuaries(data.data);
         } catch (err) {
             console.error(err);

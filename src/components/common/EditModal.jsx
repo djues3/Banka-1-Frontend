@@ -34,7 +34,7 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
   const handlePhoneInput = (e) => {
     const { name, value } = e.target;
     // Replace any non-digit characters
-    const numericValue = value.replace(/\D/g, '');
+    const numericValue = value.replace(/[^\d+]/g, '');
     setFormData({
       ...formData,
       [name]: numericValue

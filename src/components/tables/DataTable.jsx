@@ -8,6 +8,12 @@ const DataTable = ({columns, rows, checkboxSelection = false, onRowClick}) => {
   return (
     <Paper sx={{ height: 400, width: '100%' }}>
       <DataGrid
+        // autosizeOptions={{
+        //   includeHeaders: true,
+        //   includeOutliers: true,
+        //   expand: true,
+        //   }
+        // }
         rows={rows}
         columns={columns}
         initialState={{ pagination: { paginationModel } }}

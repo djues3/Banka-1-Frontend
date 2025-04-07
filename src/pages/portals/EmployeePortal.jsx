@@ -195,7 +195,7 @@ const EmployeePortal = () => {
 
         const digitsAfterPrefix = phoneNumber.slice(4).trim(); // Uklanja "+381" i ostavlja ostatak broja
 
-        if (digitsAfterPrefix.length !== 8 || isNaN(digitsAfterPrefix)) {
+        if (digitsAfterPrefix.length < 8 || isNaN(digitsAfterPrefix)) {
             toast.error("Phone number must contain exactly 8 digits after +381.");
             return false;
         }
