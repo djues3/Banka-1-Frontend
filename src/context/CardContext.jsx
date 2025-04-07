@@ -1,6 +1,10 @@
 
 import React, { createContext, useContext, useState } from "react";
 import { fetchUserCards, createCard, changeCardName, changeCardLimit, updateCardStatus } from "../services/AxiosBanking.js";
+import { toast } from "react-toastify";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const CardContext = createContext();
 
@@ -29,15 +33,24 @@ export const CardProvider = ({ children }) => {
     try {
 
       await createCard(accountId, cardType, cardBrand, authorizedPerson,company);
+      toast.success("Kartica je uspešno kreirana!");
       await fetchCards(accountId);
     } catch (error) {
       // ignore not found errors
       if (error.response.status === 404) {
       } else {
         console.error("Error creating card:", error);
+        let errorMessage =
+            error.response?.data?.error || "Greška prilikom kreiranja kartice. Pokušajte ponovo.";
+
+
+        toast.error(errorMessage );
+        // toast.error("Greška prilikom kreiranja kartice. Pokušajte ponovo.");
       }
+      return false;
     }
     setLoading(false);
+    return true;
   };
 
   // Update card name
@@ -86,6 +99,7 @@ export const CardProvider = ({ children }) => {
     <CardContext.Provider value={{ cards, fetchCards, addCard, updateCardName, updateCardLimit, updateStatus, loading }}>
       {children}
     </CardContext.Provider>
+
   );
 };
 

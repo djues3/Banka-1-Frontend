@@ -191,6 +191,14 @@ export const createCard = async (
     const response = await apiBanking.post("/cards/", requestBody);
     return response.data;
   } catch (error) {
+    // if(error.response.data.error === "Privatni racun moze biti povezan sa najvise dve kartice!"){
+    //   return alert("Privatni račun može biti povezan sa najviše dve kartice. \nMolimo Vas da deaktivirate jednu od postojećih kartica pre pokušaja dodavanja nove.")
+    // }else if (error.response.data.error === "Poslovni racun moze biti povezan sa najvise pet kartica!"){
+    //   return alert("Poslovni racun moze biti povezan sa najvise pet kartica!")
+    // }else if (error.response.data.error === "Ovaj korisnik vec ima pristup kartici ove firme!"){
+    //   return alert("Ovaj korisnik vec ima pristup kartici ove firme!")
+    // }
+
     console.error("Error creating a new card:", error);
     throw error;
   }
@@ -330,6 +338,7 @@ export const deleteRecipient = async (id) => {
 };
 
 export const createNewMoneyTransfer = async (transferData) => {
+  console.log(transferData)
   try {
     const response = await apiBanking.post("/money-transfer", transferData);
     return response.data;

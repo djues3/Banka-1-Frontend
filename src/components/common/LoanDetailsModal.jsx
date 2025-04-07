@@ -22,6 +22,7 @@ const LoanDetailsModal = ({ open, onClose, loanId }) => {
                     console.log(loanResponse);
                     const installmentsResponse = await fetchRemainingInstallments(loanId);
 
+
                     setLoanDetails({
                         ...loanResponse.data.loan, // Information about loan
                         remainingInstallments: installmentsResponse.data.remaining_number // Number of remaining installments
@@ -40,6 +41,14 @@ const LoanDetailsModal = ({ open, onClose, loanId }) => {
         }
     }, [open, loanId]);
 
+    const formatUnixDate = (timestamp) => {
+        const date = new Date(timestamp * 1000);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
     if (!open) return null;
     if (loading) return <Dialog open={open} onClose={onClose}><DialogTitle>Loading...</DialogTitle></Dialog>;
 
@@ -57,8 +66,8 @@ const LoanDetailsModal = ({ open, onClose, loanId }) => {
                         { label: "Remaining Installments", value: loanDetails.remainingInstallments },
                         { label: "Nominal Interest Rate", value: `${loanDetails.nominalRate}%` },
                         { label: "Effective Interest Rate", value: `${loanDetails.effectiveRate}%` },
-                        { label: "Contract Date", value: new Date(loanDetails.createdDate).toLocaleDateString() },
-                        { label: "Final Payment Date", value: new Date(loanDetails.allowedDate).toLocaleDateString() },
+                        { label: "Contract Date", value: formatUnixDate(loanDetails.createdDate) },
+                        { label: "Final Payment Date", value: formatUnixDate(loanDetails.allowedDate) },
                         { label: "Next Installment Amount", value: loanDetails.monthlyPayment },
                         { label: "Next Installment Date", value: new Date(loanDetails.nextPaymentDate).toLocaleDateString() },
                         { label: "Currency", value: loanDetails.currencyType },

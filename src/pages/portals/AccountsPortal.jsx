@@ -8,6 +8,7 @@ import {
 } from "../../services/AxiosBanking";
 import AccountButton from "../../components/common/AccountButton";
 import { jwtDecode } from "jwt-decode";
+import {fetchCustomerById} from "../../services/AxiosUser";
 
 const AccountsPortal = () => {
     const [rows, setRows] = useState([]);
@@ -19,7 +20,7 @@ const AccountsPortal = () => {
 
     const columns = [
         { field: "id", headerName: "ID", width: 70 },
-        { field: "ownerID", headerName: "Owner ID", width: 100 },
+        { field: "owner", headerName: "Owner", width: 150 },
         { field: "accountNumber", headerName: "Account Number", width: 200 },
         { field: "balance", headerName: "Balance", width: 100 },
        // { field: "reservedBalance", headerName: "Reserved Balance", width: 100},
@@ -28,8 +29,8 @@ const AccountsPortal = () => {
        // { field: "subtype", headerName: "Subtype", width: 120 },
        // { field: "createdDate", headerName: "Created Date", width: 150 },
        // { field: "expirationDate", headerName: "Expiration Date", width: 150 },
-       // { field: "dailyLimit", headerName: "Daily Limit", width: 100 },
-       // { field: "monthlyLimit", headerName: "Monthly Limit", width: 100 },
+       { field: "dailyLimit", headerName: "Daily Limit", width: 100 },
+       { field: "monthlyLimit", headerName: "Monthly Limit", width: 100 },
        // { field: "dailySpent", headerName: "Daily Spent",  width: 100 },
        // { field: "monthlySpent", headerName: "Monthly Spent", width: 100},
        { field: "status", headerName: "Status", width: 120 },
@@ -60,6 +61,18 @@ const AccountsPortal = () => {
         const loadAccounts = async () => {
             try {
                 const filteredAccounts = await fetchAccountsForUser();
+                console.log("filtered accounts = ", filteredAccounts)
+                let ownerName ="";
+                if(Array.isArray(filteredAccounts) && filteredAccounts.length > 0) {
+                    const respones = await fetchCustomerById(filteredAccounts[0].ownerID);
+                    ownerName = respones.data.firstName + " " + respones.data.lastName;
+                    console.log(ownerName)
+                    setSelectedAccountId(filteredAccounts[0].id)
+                }
+
+                // const ownerName = "neko";
+                // const accountOwner = await  fetchCustomerById(filteredAccounts.ownerID);
+                // console.log(accountOwner)
                 console.log(filteredAccounts);
                 //const response = await fetchAccounts();
                 //const filteredAccounts = response.filter(row => row.ownerID === userId);
@@ -67,6 +80,7 @@ const AccountsPortal = () => {
                 const formattedRows = filteredAccounts.map(row => ({
                     id: row.id,
                     ownerID: row.ownerID,
+                    owner: ownerName,
                     accountNumber: row.accountNumber,
                     balance: row.balance,
                     reservedBalance: row.reservedBalance,
@@ -149,15 +163,17 @@ const AccountsPortal = () => {
                         onRowClick={handleAccountClick} 
                     />*/}
 
-                {selectedAccountId && (
+                {/*{selectedAccountId && (*/}
                     <div style={{ marginTop: "20px" }}>
-                        <h3>Transactions: </h3>
+                        <h3>Transactions for account {selectedAccountId}</h3>
                         <AccountTransactionsList accountId={selectedAccountId} />
                     </div>
-                )}
+                {/*)}*/}
 
             </div>
+
         </div>
+
         
     );
 
