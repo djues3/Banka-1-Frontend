@@ -164,7 +164,7 @@ const SecuritiesTable = ({ role }) => {
     const filteredSecurities = useMemo(() => {
         return securities.filter(sec => {
             const matchesRole = role === "client"
-                ? ["stock", "future"].includes(sec.type.toLowerCase())
+                ? ["stock", "future","forex"].includes(sec.type.toLowerCase())
                 : sec.type.toLowerCase() !== "bond";
 
             const matchesType = selectedType === "all" || sec.type.toLowerCase() === selectedType.toLowerCase();
@@ -405,6 +405,15 @@ const SecuritiesTable = ({ role }) => {
             {/* DataGrid iz DataTable komponente */}
 
             <DataTable rows={filteredSecurities} columns={columns} checkboxSelection={false}/>
+            <Button
+                variant="outlined"
+                onClick={() => openDetailsModal({
+                    type: "Stock",
+                    ticker: "AAPL"
+                })}
+            >
+                Details
+            </Button>
 
             {
                 isModalOpen && (

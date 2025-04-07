@@ -58,6 +58,7 @@ const AccountTransactionsList = ({ accountId }) => {
       try {
         const response = await fetchAccountsTransactions(accountId);
         const data = response.data.transactions;
+        console.log("Tranzakcije = ", data)
 
         const formattedTransactions = data.map((transaction) => {
           const isIncoming = transaction.transfer.toAccountId.id === accountId;

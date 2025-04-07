@@ -4,8 +4,11 @@ import {useCards} from "../../context/CardContext";
 import {fetchAccountsId1, getUserIdFromToken} from "../../services/AxiosBanking";
 import SecuritiesModal from "./SecuritiesModal";
 import AuthorizedPersonModal from "./AuthorizedPersonModal";
+import { toast } from "react-toastify";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const CreateCardModal = ({open, onClose, accountId}) => {
+const CreateCardModal = ({open, onClose,onSave, accountId}) => {
     const {addCard} = useCards();
     const [selectedAccount, setSelectedAccount] = useState("");
     const [selectedType, setSelectedType] = useState("DEBIT");
@@ -54,7 +57,10 @@ const CreateCardModal = ({open, onClose, accountId}) => {
 
         try {
 
-            await addCard(selectedAccount, selectedType, selectedBrand,authorizedPerson, company);
+            const created = await addCard(selectedAccount, selectedType, selectedBrand,authorizedPerson, company);
+            console.log("Is card Created = ", created)
+
+            onSave(created);
             onClose();
 
             //neka stoji privremeno
@@ -179,6 +185,7 @@ const CreateCardModal = ({open, onClose, accountId}) => {
 
             </Modal>
             <AuthorizedPersonModal open={showSecuritiesModal} onClose={handleCloseAuthorizedPersonModal} onSave={handleSaveAuthorizedPerson} />
+
         </>
 
 

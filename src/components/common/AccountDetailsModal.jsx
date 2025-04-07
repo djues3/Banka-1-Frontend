@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Dialog,
   DialogActions,
@@ -14,6 +14,7 @@ import AccountNameChangeModal from "./AccountNameChangeModal";
 import AccountLimitChangeModal from "./AccountLimitChangeModal";
 import { Link as RouterLink } from "react-router-dom";
 import CreateCardModal from "../../components/common/CreateCardModal";
+import {fetchCustomerById} from "../../services/AxiosUser";
 
 
 const AccountDetailsModal = ({ open, onClose, account }) => {
@@ -21,6 +22,7 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
   const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
   const [isCardModalOpen, setIsCardModalOpen] = useState(false);
+
 
 
   return (
@@ -37,7 +39,8 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
             <TextField fullWidth label="Account number" value={account?.accountNumber || ""} disabled />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField fullWidth label="Account owner" value={account?.ownerID || ""} disabled />
+            {/*<TextField fullWidth label="Account owner" value={owner || ""} disabled />*/}
+              <TextField fullWidth label="Account owner" value={account?.owner || ""} disabled />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField fullWidth label="Type" value={`${account?.type}` || ""} disabled />

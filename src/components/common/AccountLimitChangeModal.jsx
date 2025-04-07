@@ -10,19 +10,24 @@ import { updateAccount } from "../../services/AxiosBanking"; // Pretpostavljamo 
 
 const AccountLimitChangeModal = ({ open, onClose, account, onSave }) => {
   const [limit, setLimit] = useState(0);
+  const [monthlyLimit, setMonthlyLimit] = useState(0);
 
   useEffect(() => {
     if (account) {
       setLimit(account.available || "");
+      setMonthlyLimit(account.available || "")
       console.log(account);
     }
   }, [account]);
 
   const handleSave = async () => {
 
+
+
     const updatedAccount = {
+
       dailyLimit: limit,
-      monthlyLimit: account.monthlyLimit,
+      monthlyLimit: monthlyLimit,
     };
 
     /*
@@ -99,25 +104,54 @@ const AccountLimitChangeModal = ({ open, onClose, account, onSave }) => {
       <DialogTitle>Account Details</DialogTitle>
       <DialogContent>
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Current limit"
-              value={account?.dailyLimit || ""}
-              disabled
-            />
+          {/* Left column: Daily Limits */}
+          <Grid item xs={12} md={6}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                    fullWidth
+                    label="Current Daily Limit"
+                    value={account?.dailyLimit || ""}
+                    disabled
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                    fullWidth
+                    label="New Daily Limit"
+                    value={limit}
+                    onChange={(e) => setLimit(e.target.value)}
+                    type="number"
+                />
+              </Grid>
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="New limit"
-              value={limit}
-              onChange={(e) => setLimit(e.target.value)}
-              type="number" // Obezbeđuje da korisnik unese broj
-            />
+
+          {/* Right column: Monthly Limits */}
+          <Grid item xs={12} md={6}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                    fullWidth
+                    label="Current Monthly Limit"
+                    value={account?.monthlyLimit || ""}
+                    disabled
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                    fullWidth
+                    label="New Monthly Limit"
+                    value={monthlyLimit}
+                    onChange={(e) => setMonthlyLimit(e.target.value)}
+                    type="number"
+                />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose}>BACK</Button>
         <Button onClick={handleSave} variant="contained">SAVE</Button>

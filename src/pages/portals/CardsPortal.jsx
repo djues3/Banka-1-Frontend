@@ -19,6 +19,7 @@ import {
     getUserIdFromToken
 } from "../../services/AxiosBanking";
 import { AnimatePresence, motion } from "framer-motion";
+import {ToastContainer} from "react-toastify";
 
 const CardsPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -29,45 +30,46 @@ const CardsPage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchAllData = async () => {
-            setLoading(true);
-            setError(null);
-            try {
-                const userId = getUserIdFromToken();
-                if (!userId) {
-                    setError("User ID not found.");
-                    setLoading(false);
-                    return;
-                }
-
-                const accounts = await fetchAccountsForUser(userId);
-                if (!Array.isArray(accounts) || accounts.length === 0) {
-                    setLoading(false);
-                    return;
-                }
-
-                const cardPromises = accounts.map(async (account) => {
-                    try {
-                        const res = await fetchUserCards(account.id);
-                        const cards = res.data?.cards || [];
-                        return cards.map(card => ({ ...card, account }));
-                    } catch {
-                        return [];
-                    }
-                });
-
-                const result = await Promise.all(cardPromises);
-                setCards(result.flat());
-            } catch (err) {
-                console.error(err);
-                setError("Failed to load cards");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchAllData();
     }, []);
+
+    const fetchAllData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const userId = getUserIdFromToken();
+            if (!userId) {
+                setError("User ID not found.");
+                setLoading(false);
+                return;
+            }
+
+            const accounts = await fetchAccountsForUser(userId);
+            if (!Array.isArray(accounts) || accounts.length === 0) {
+                setLoading(false);
+                return;
+            }
+
+            const cardPromises = accounts.map(async (account) => {
+                try {
+                    const res = await fetchUserCards(account.id);
+                    const cards = res.data?.cards || [];
+                    return cards.map(card => ({ ...card, account }));
+                } catch {
+                    return [];
+                }
+            });
+
+            const result = await Promise.all(cardPromises);
+            console.log("Sve kartice = ", result);
+            setCards(result.flat());
+        } catch (err) {
+            console.error(err);
+            setError("Failed to load cards");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handlePrev = () => {
         if (!cards.length) return;
@@ -224,13 +226,22 @@ const CardsPage = () => {
                 </Box>
             </Box>
 
-            <CreateCardModal open={modalOpen} onClose={() => setModalOpen(false)} />
+            <CreateCardModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSave={async (wasCreated) => {
+                    if (wasCreated) {
+                        await fetchAllData();
+                    }
+                }}
+            />
 
             <CardDetailsModal
                 open={detailsModalOpen}
                 onClose={() => setDetailsModalOpen(false)}
                 card={cards[currentIndex]}
             />
+            <ToastContainer position="bottom-right"/>
         </>
     );
 };
