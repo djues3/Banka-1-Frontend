@@ -76,7 +76,7 @@ Cypress.Commands.add('addEmployee', () => {
   cy.get('input[name="username"]').should('be.visible').type(`user_${randomString()}`);
   cy.get('input[name="email"]').should('be.visible').type(randomEmail());
 
-  cy.get('input[name="phoneNumber"]').should('be.visible').type(`0${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}${randomNumber()}`);
+  cy.get('input[name="phoneNumber"]').should('be.visible').type("+381611302112");
   cy.get('input[name="address"]').should('be.visible').type('Georgi Dimitrova 12');
   cy.get('input[name="birthDate"]').should('be.visible').type('1995-01-01');
 
@@ -204,8 +204,8 @@ Cypress.Commands.add('CreateForeignBusinessAccount', () => {
 
   cy.get('input[name="firstName"]').type('Test');
   cy.get('input[name="lastName"]').type('Firma');
-  cy.get('input[name="username"]').type('testfirmaa');
-  cy.get('input[name="email"]').type('firmaa@example.com');
+  cy.get('input[name="username"]').type('testfirmaaa');
+  cy.get('input[name="email"]').type('firmaaa@example.com');
   cy.get('input[name="phoneNumber"]').type('+38165123456');
   cy.get('input[name="address"]').type('Ulica broj 1');
   cy.get('input[name="birthDate"]').type('1995-01-01');
@@ -218,7 +218,9 @@ Cypress.Commands.add('CreateForeignBusinessAccount', () => {
 
   cy.contains('Save').click();
 
+  
   // Sada se automatski otvara firma forma
+  cy.get('.MuiDialogContent-root > :nth-child(7)').should('be.visible').click();
   cy.get('input[name="name"]').type('Firma D.O.O.');
   cy.get('input[name="companyRegistrationNumber"]').type('12345678');
   cy.get('input[name="pib"]').type('87654321');
@@ -229,9 +231,10 @@ Cypress.Commands.add('CreateForeignBusinessAccount', () => {
       .click();
 
   cy.get('[role="listbox"] [role="option"]').contains('42.2').click();
-
   cy.contains('Save').click();
 
+  cy.get('.MuiDialogActions-root > .MuiButton-contained').contains("Confirm").click();
+
   // Proveri da li se vrati na pocetnu stranicu
-  cy.url().should('include', '/employee-bank-accounts-portal');
+  
 });

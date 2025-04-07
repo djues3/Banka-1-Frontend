@@ -89,9 +89,9 @@ const LoanRequestModal = ({ open, onClose }) => {
   const handlePhoneNumberChange = (e) => {
     const value = e.target.value;
 
-    if (/^\d*$/.test(value)) {
-        setPhoneNumber(value);
-    }
+   if (/^\+?\d*$/.test(value)) {
+    setPhoneNumber(value);
+    } 
   };
 
   const handleEmploymentDurationChange = (e) => {

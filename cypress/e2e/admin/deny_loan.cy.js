@@ -14,7 +14,7 @@ describe('Create account flow', () => {
       // Verify dashboard content is visible
       cy.verifyLoggedIn();
 
-  
+      cy.denyLoan();
       // Use your custom logout command
       cy.logout();
   

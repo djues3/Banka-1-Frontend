@@ -428,8 +428,6 @@ const NewPaymentPortal = () => {
                             onClick={handleConfirm}
                             disabled={!isFormValid()}
                             sx={{ width: '25ch' }}
-
-                            sx={{ width: '25ch' }}
                         >
                             Continue
                         </Button>

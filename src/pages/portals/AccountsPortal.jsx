@@ -21,7 +21,7 @@ const AccountsPortal = () => {
         { field: "id", headerName: "ID", width: 70 },
         { field: "ownerID", headerName: "Owner ID", width: 100 },
         { field: "accountNumber", headerName: "Account Number", width: 200 },
-        { field: "balance", headerName: "Balance", width: 100 },
+        { field: "balance", headerName: "Balance", width: 150 },
        // { field: "reservedBalance", headerName: "Reserved Balance", width: 100},
         { field: "currencyType", headerName: "Currency", width: 100 },
         { field: "type", headerName: "Type", width: 200 },

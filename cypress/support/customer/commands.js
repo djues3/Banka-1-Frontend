@@ -87,17 +87,40 @@ Cypress.Commands.add('applyLoan', () => {
     cy.get('ul[role="listbox"] li').first().click();
     cy.get(':nth-child(4) > .css-q8hpuo-MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select').should('be.visible').click();
     cy.get('ul[role="listbox"] li').first().click();
-    cy.get('#\\:r1n\\:').clear().type('1000');
-    cy.get('#\\:r1p\\:').clear().type("something")
+    cy.contains('Loan amount')  
+      .parent() 
+      .find('input')  
+      .clear()
+      .type('1000')
+      .should('have.value', '1000');
+    cy.contains('Loan purpose')  
+      .parent() 
+      .find('input')  
+      .clear()
+      .type('Svasta')
+      .should('have.value', 'Svasta');
     cy.get(':nth-child(6) > .MuiInputBase-root > .MuiSelect-select').should('be.visible').click();
     cy.get('ul[role="listbox"] li').first().click();
-    cy.get(':nth-child(7) > .MuiInputBase-root > .MuiSelect-select').should('be.visible').click();
-    cy.get('ul[role="listbox"] li').first().click();
-    cy.get('#\\:r1v\\:').clear().type('1000');
+    cy.contains('Salary amount')  
+      .parent() 
+      .find('input')  
+      .clear()
+      .type('1200')
+      .should('have.value', '1200');
     cy.get(':nth-child(9) > .css-q8hpuo-MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select').should('be.visible').click();
     cy.get('ul[role="listbox"] li').first().click();
-    cy.get('#\\:r23\\:').clear().type('2');
-    cy.get('#\\:r25\\:').clear().type('1200');
+    cy.contains('Employment duration (months)')  
+      .parent() 
+      .find('input')  
+      .clear()
+      .type('1000')
+      .should('have.value', '1000');
+    cy.contains('Phone number')  
+      .parent() 
+      .find('input')  
+      .clear()
+      .type('+38161130211')
+      .should('have.value', '+38161130211');
     cy.contains("Submit").should('be.visible').click();
     
 })

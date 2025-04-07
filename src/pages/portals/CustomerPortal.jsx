@@ -91,8 +91,8 @@ const CustomerPortal = () => {
             }
         });
 
-        // Phone number validation
-        if (!customer.phoneNumber.startsWith("+381") || customer.phoneNumber.length !== 12) {
+        // Phone number validation ("+" is counted as a character)
+        if (!customer.phoneNumber.startsWith("+381") || customer.phoneNumber.length !== 13) {
             toast.error("Phone number must start with +381 and have 8 digits after");
             isValid = false;
         }

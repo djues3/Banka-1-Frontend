@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Box, Typography, TextField, Button, MenuItem } from '@mui/material';
-import { createInternalTransfer, createExchangeTransfer, verifyOTP, fetchAccountsForUser, fetchExchangeRatesForCurrency } from "../../services/AxiosBanking";
+import { createInternalTransfer, createExchangeTransfer, verifyOTP, fetchAccountsForUser, fetchExchangeRatesForCurrency, previewExchangeTransfer } from "../../services/AxiosBanking";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -16,7 +16,10 @@ const InternalTransferForm = () => {
     const [showModal, setShowModal] = useState(false);
     const [verificationCode, setVerificationCode] = useState('');
     const navigate = useNavigate();
-    const [exchangeRate, setExchangeRate] = useState(1);
+    const [fromExchangeRate, setFromExchangeRate] = useState(1);
+    const [toExchangeRate, setToExchangeRate] = useState(1);
+    const [provision, setProvision] = useState(0);
+    const [finalAmount, setFinalAmount] = useState(0);
 
 
     useEffect(() => {
@@ -63,12 +66,26 @@ const InternalTransferForm = () => {
         setModalStep('details');
 
         try {
-            const response = await fetchExchangeRatesForCurrency(currency);
-            const rate = response.data.rates.find(rate => rate.targetCurrency === currency2);
-            if (rate) {
-                setExchangeRate(rate.exchangeRate);
+            // const response = await fetchExchangeRatesForCurrency(currency);
+            const response = await previewExchangeTransfer(currency, currency2, amount);
+            if ("exchangeRate" in response) {
+                if (currency === "RSD") {
+                    setToExchangeRate(response.exchangeRate.toFixed(5))
+                } else {
+                    setFromExchangeRate(response.exchangeRate.toFixed(5))
+                }
+            } else {
+                setFromExchangeRate(response.firstExchangeRate.toFixed(5));
+                setToExchangeRate(response.secondExchangeRate.toFixed(5));   
             }
-            else setExchangeRate(1);
+              setProvision(response.provision);
+              setFinalAmount(response.finalAmount);
+            // const rate = response.data.rates.find(rate => rate.targetCurrency === currency2);
+            // if (rate) {
+            //     setExchangeRate(rate.exchangeRate);
+            // }
+            // else setExchangeRate(1);
+            console.log("res", response);
         } catch (error) {
             console.error("Error fetching exchange rates:", error);
         }
@@ -212,13 +229,24 @@ const InternalTransferForm = () => {
                             <Typography><strong>Amount:</strong> {amount} {currency}</Typography>
                             <Typography><strong>To account:</strong> {inflowAccountNumber}</Typography>
                             <Typography>
-                                <strong>Amount:</strong> {exchangeRate ? ((amount * exchangeRate) % 1 === 0 ? (amount * exchangeRate) : (amount * exchangeRate).toFixed(3)) : amount} {currency2}
+                                <strong>Final Amount:</strong> {finalAmount.toFixed(3)}
                             </Typography>
                             <Typography>
-                                <strong>Exchange rate:</strong> {exchangeRate ? (exchangeRate % 1 === 0 ? exchangeRate : exchangeRate.toFixed(3)) : '1'}
+                                {currency === 'RSD'
+                                    ? <></>
+                                    : <strong>{currency} to RSD Exchange rate: {' '} {fromExchangeRate}</strong> 
+                                }
+                                </Typography>
+
+                                <Typography>
+                                {currency2 === 'RSD'
+                                    ? <></>
+                                    : <strong>{currency2} from RSD Exchange rate: {' '} {toExchangeRate}</strong>
+                                }
+                                </Typography>
+                            <Typography>
+                                <strong>Provision:</strong>  {provision.toFixed(3)}
                             </Typography>
-                            {!conversion && <Typography><strong>Transfer fee:</strong> 0.00 {currency}</Typography>}
-                            {conversion && <Typography><strong>Transfer fee:</strong> {amount * 0.01} {currency}</Typography>}
                             <Box sx={{display: 'flex', justifyContent: 'space-between', mt: 2}}>
                                 <Button variant="outlined" onClick={onClose}>Cancel</Button>
                                 <Button variant="contained" onClick={handleConfirmTransfer}>Continue</Button>
