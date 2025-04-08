@@ -28,7 +28,6 @@ const RecentTransactions = ({ accountId }) => {
             }
             try {
                 const data = await fetchAccountsTransactions(accountId);
-                console.log("OVOOOO", data)
                 if (data && Array.isArray(data)) {
                     const enriched = data.map((tx) => {
                         const isIncoming = tx.receiverId === accountId;
@@ -136,7 +135,7 @@ const RecentTransactions = ({ accountId }) => {
                                         {row.receiverAccount}
                                     </TableCell>
                                     <TableCell sx={{  borderBottom: "none", fontSize: "1rem" }}>
-                                        {row.amount}
+                                        {row.amount.split(" ")[0]}
                                     </TableCell>
                                     <TableCell sx={{  borderBottom: "none", fontSize: "1rem" }}>
                                         {row.currency}
