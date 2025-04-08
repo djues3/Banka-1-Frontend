@@ -34,6 +34,7 @@ import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal
 import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 import CompaniesPortal from "./pages/portals/CompaniesPortal";
 import TaxTrackingPortal from "./pages/portals/TaxTrackingPortal";
+import ActuarialPerformancePortal from "./pages/portals/ActuarialPerformancePortal"
 
 function App() {
   return (
@@ -196,6 +197,14 @@ function App() {
                 </AuthGuard>
               }
             />
+              <Route
+                  path="/actuarial-performance-portal"
+                  element={
+                      <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                          <ActuarialPerformancePortal />
+                      </AuthGuard>
+                  }
+              />
 
             <Route
               path="/view-order-portal"

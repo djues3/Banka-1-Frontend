@@ -34,6 +34,7 @@ import { useEffect, useState } from "react";
 import { Collapse } from "@mui/material";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
+import PriceCheckIcon from '@mui/icons-material/PriceCheck';
 import {LibraryBooks, FolderTwoTone, CorporateFare, BarChart, ShoppingCart} from "@mui/icons-material";
 
 const drawerWidth = 240;
@@ -257,7 +258,13 @@ export default function Sidebar() {
                   <ListItem disablePadding>
                     <ListItemButton onClick={() => handleNavigation('/actuarial-management-portal')}>
                       <ListItemIcon><CompareArrowsIcon /></ListItemIcon>
-                      <ListItemText primary="Agent Management" />
+                      <ListItemText primary="Actuarial Management" />
+                    </ListItemButton>
+                  </ListItem>
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => handleNavigation('/actuarial-performance-portal')}>
+                      <ListItemIcon><PriceCheckIcon /></ListItemIcon>
+                      <ListItemText primary="Actuarial Performance" />
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding>
