@@ -3,11 +3,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
+    flex-grow: 1;
+    width: 100%;
     padding: 20px;
-    margin-left: -240px;
     flex-direction: column;
-
 }
 
 .container {
@@ -23,11 +22,9 @@
 }
 
 .title {
-    position: absolute;
-    top: -40px;
-    left: 0;
     font-size: 20px;
     font-weight: bold;
+    margin-bottom: 16px;
 }
 
 .table {
@@ -75,7 +72,7 @@
     gap: 10px;
 }
 
-th .addButtonWrapper {
+.addButtonWrapper {
     display: flex;
     justify-content: flex-end;
 }
@@ -89,7 +86,6 @@ th .addButtonWrapper {
 }
 
 .dropdown {
-    margin-right: 40px;
     margin-bottom: 16px;
 }
 
@@ -99,7 +95,7 @@ th .addButtonWrapper {
     margin-top: 20px;
 }
 
-/* Media query za manje ekrane (mobilni/tablet) */
+/* Media query za mobilne/tablete */
 @media (max-width: 768px) {
     .container {
         width: 100%;
@@ -108,7 +104,6 @@ th .addButtonWrapper {
 
     .title {
         font-size: 18px;
-        top: -30px;
     }
 
     .table th,
@@ -118,7 +113,7 @@ th .addButtonWrapper {
     }
 
     .dropdown {
-        margin-right: 10px;
+        margin-right: 0;
     }
 
     .headerRow {
@@ -129,4 +124,10 @@ th .addButtonWrapper {
     .addButton {
         justify-content: flex-start;
     }
+}
+.paginationBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
 }

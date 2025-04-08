@@ -88,14 +88,14 @@ const ExchangeRateList = () => {
                 sx={{ px: 0, pb: 2 }}
             />
             <CardContent sx={{ px: 0 }}>
-                <TableContainer component={Paper} sx={{ borderRadius: 2 }}>
-                    <Table size="medium">
+                <TableContainer component={Paper} sx={{ borderRadius: 2, boxShadow: 'none' }}>
+                    <Table size="medium" sx={{ borderCollapse: 'collapse' }}>
                         <TableHead>
                             <TableRow sx={{ backgroundColor: theme.palette.action.hover }}>
                                 <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Currency</TableCell>
-                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Buy</TableCell>
-                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Middle</TableCell>
-                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600 }}>Sell</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600, textAlign: 'center' }}>Buy</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600, textAlign: 'center' }}>Middle</TableCell>
+                                <TableCell sx={{ fontSize: '1.05rem', fontWeight: 600, textAlign: 'center' }}>Sell</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -108,13 +108,14 @@ const ExchangeRateList = () => {
                                 const flagCode = currencyToFlagCode[currency];
 
                                 return (
-                                    <TableRow key={currency} hover>
+                                    <TableRow key={currency} hover sx={{ borderBottom: 'none' }}>
                                         <TableCell
                                             sx={{
                                                 fontSize: '1rem',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                gap: 1.2
+                                                gap: 1.2,
+                                                borderBottom: 'none',
                                             }}
                                         >
                                             <img
@@ -126,9 +127,33 @@ const ExchangeRateList = () => {
                                             />
                                             {currency}
                                         </TableCell>
-                                        <TableCell sx={{ fontSize: '1rem' }}>{buy.toFixed(4)}</TableCell>
-                                        <TableCell sx={{ fontSize: '1rem' }}>{rate.toFixed(4)}</TableCell>
-                                        <TableCell sx={{ fontSize: '1rem' }}>{sell.toFixed(4)}</TableCell>
+                                        <TableCell
+                                            sx={{
+                                                fontSize: '1rem',
+                                                textAlign: 'center',
+                                                borderBottom: 'none',
+                                            }}
+                                        >
+                                            {buy.toFixed(4)}
+                                        </TableCell>
+                                        <TableCell
+                                            sx={{
+                                                fontSize: '1rem',
+                                                textAlign: 'center',
+                                                borderBottom: 'none',
+                                            }}
+                                        >
+                                            {rate.toFixed(4)}
+                                        </TableCell>
+                                        <TableCell
+                                            sx={{
+                                                fontSize: '1rem',
+                                                textAlign: 'center',
+                                                borderBottom: 'none',
+                                            }}
+                                        >
+                                            {sell.toFixed(4)}
+                                        </TableCell>
                                     </TableRow>
                                 );
                             })}

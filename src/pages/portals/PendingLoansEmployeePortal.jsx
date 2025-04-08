@@ -1,59 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
+import {
+    Typography,
+    Card,
+    CardContent,
+    CardActions,
+    useTheme,
+    Box,
+    IconButton,
+    Grid,
+} from "@mui/material";
 import Sidebar from "../../components/mainComponents/Sidebar";
-import SearchDataTable from '../../components/tables/SearchDataTable';
 import { toast } from "react-toastify";
 import { fetchAllPendingLoans } from "../../services/AxiosBanking";
 import ApproveLoanButton from "../../components/common/ApproveLoanButton";
 import DenyLoanButton from "../../components/common/DenyLoanButton";
+import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 
 const PendingLoansEmployeePortal = () => {
     const [loans, setLoans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const theme = useTheme();
 
-    const columns = [
-        { field: "id", headerName: "Loan ID", width: 100 },
-        { field: "loanType", headerName: "Loan Type", width: 150 },
-        { field: "numberOfInstallments", headerName: "Number of Installments", width: 180 },
-        { field: "currencyType", headerName: "Currency Type", width: 150 },
-        { field: "interestType", headerName: "Interest Type", width: 150 },
-        { field: "paymentStatus", headerName: "Payment Status", width: 150 },
-        { field: "nominalRate", headerName: "Nominal Rate", width: 150 },
-        { field: "effectiveRate", headerName: "Effective Rate", width: 150 },
-        { field: "loanAmount", headerName: "Loan Amount", width: 150 },
-        { field: "duration", headerName: "Duration (months)", width: 150 },
-        { field: "createdDate", headerName: "Created Date", width: 180 },
-        { field: "allowedDate", headerName: "Allowed Date", width: 180 },
-        { field: "monthlyPayment", headerName: "Monthly Payment", width: 150 },
-        { field: "nextPaymentDate", headerName: "Next Payment Date", width: 180 },
-        { field: "remainingAmount", headerName: "Remaining Amount", width: 150 },
-        { field: "loanReason", headerName: "Loan Reason", width: 200 },
-        { field: "accountNumber", headerName: "Account Number", width: 200 },
-        {
-            field: "approve",
-            headerName: "Approve",
-            width: 120,
-            renderCell: (params) => (
-                <ApproveLoanButton
-                    loanId={params.row.id}
-                    onAction={() => setRefreshKey(prev => prev + 1)}
-                />
-            )
-        },
-        {
-            field: "deny",
-            headerName: "Deny",
-            width: 120,
-            renderCell: (params) => (
-                <DenyLoanButton
-                    loanId={params.row.id}
-                    onAction={() => setRefreshKey(prev => prev + 1)}
-                />
-            )
-        }
-    ];
+    const CARDS_PER_PAGE = 6;
 
     useEffect(() => {
         loadLoans();
@@ -64,7 +35,7 @@ const PendingLoansEmployeePortal = () => {
             setLoading(true);
             const filteredLoans = await fetchAllPendingLoans();
 
-            const formattedLoans = filteredLoans.map(loan => ({
+            const formattedLoans = filteredLoans.map((loan) => ({
                 id: loan.id,
                 loanType: loan.loanType,
                 numberOfInstallments: loan.numberOfInstallments ?? "N/A",
@@ -81,7 +52,7 @@ const PendingLoansEmployeePortal = () => {
                 nextPaymentDate: new Date(loan.nextPaymentDate).toLocaleDateString(),
                 remainingAmount: loan.remainingAmount.toFixed(2),
                 loanReason: loan.loanReason || "N/A",
-                accountNumber: loan.account?.accountNumber ?? "N/A"
+                accountNumber: loan.account?.accountNumber ?? "N/A",
             }));
 
             setLoans(formattedLoans);
@@ -95,22 +66,95 @@ const PendingLoansEmployeePortal = () => {
         }
     };
 
+    const handleNext = () => {
+        if (currentIndex + CARDS_PER_PAGE < loans.length) {
+            setCurrentIndex(currentIndex + CARDS_PER_PAGE);
+        }
+    };
+
+    const handlePrev = () => {
+        if (currentIndex - CARDS_PER_PAGE >= 0) {
+            setCurrentIndex(currentIndex - CARDS_PER_PAGE);
+        }
+    };
+
+    const visibleLoans = loans.slice(currentIndex, currentIndex + CARDS_PER_PAGE);
+
     return (
         <div>
             <Sidebar />
-            <div style={{ padding: "20px", marginTop: "64px" }}>
-                <Typography variant="h4" component="h1" gutterBottom>
+            <Box sx={{ padding: "20px", marginTop: "64px", width: "100%" }}>
+                <Typography variant="h4" component="h1" gutterBottom textAlign="center">
                     Pending Loans Overview
                 </Typography>
 
-                <SearchDataTable
-                    rows={loans}
-                    columns={columns}
-                    checkboxSelection={false}
-                    loading={loading}
-                    error={error}
-                />
-            </div>
+                {loading ? (
+                    <Typography textAlign="center">Loading...</Typography>
+                ) : error ? (
+                    <Typography color="error" textAlign="center">{error}</Typography>
+                ) : (
+                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                        <Grid container spacing={3} sx={{ maxWidth: 1400 }}>
+                            {visibleLoans.map((loan) => (
+                                <Grid item xs={12} sm={6} md={4} key={loan.id}>
+                                    <Card
+                                        sx={{
+                                            borderRadius: 3,
+                                            boxShadow: 3,
+                                            height: "100%",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "space-between",
+                                            backgroundColor:
+                                                theme.palette.mode === "dark"
+                                                    ? theme.palette.background.paper
+                                                    : "#fff",
+                                            color: theme.palette.text.primary,
+                                        }}
+                                    >
+                                        <CardContent>
+                                            <Typography variant="h6" gutterBottom>
+                                                {loan.loanType} ({loan.currencyType})
+                                            </Typography>
+                                            <Typography variant="body2"><strong>Loan Amount:</strong> {loan.loanAmount}</Typography>
+                                            <Typography variant="body2"><strong>Monthly Payment:</strong> {loan.monthlyPayment}</Typography>
+                                            <Typography variant="body2"><strong>Remaining:</strong> {loan.remainingAmount}</Typography>
+                                            <Typography variant="body2"><strong>Installments:</strong> {loan.numberOfInstallments}</Typography>
+                                            <Typography variant="body2"><strong>Account:</strong> {loan.accountNumber}</Typography>
+                                            <Typography variant="body2"><strong>Next Payment:</strong> {loan.nextPaymentDate}</Typography>
+                                        </CardContent>
+                                        <CardActions sx={{ justifyContent: "space-between", px: 2, pb: 2 }}>
+                                            <ApproveLoanButton
+                                                loanId={loan.id}
+                                                onAction={() => setRefreshKey((prev) => prev + 1)}
+                                                style={{ borderRadius: "20px", textTransform: "none", fontWeight: "bold" }}
+                                            />
+                                            <DenyLoanButton
+                                                loanId={loan.id}
+                                                onAction={() => setRefreshKey((prev) => prev + 1)}
+                                                label="Decline"
+                                                style={{ borderRadius: "20px", textTransform: "none", fontWeight: "bold" }}
+                                            />
+                                        </CardActions>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+
+                        <Box sx={{ mt: 4 }}>
+                            <IconButton onClick={handlePrev} disabled={currentIndex === 0}>
+                                <ArrowBackIos />
+                            </IconButton>
+                            <IconButton
+                                onClick={handleNext}
+                                disabled={currentIndex + CARDS_PER_PAGE >= loans.length}
+                            >
+                                <ArrowForwardIos />
+                            </IconButton>
+                        </Box>
+                    </Box>
+                )}
+            </Box>
         </div>
     );
 };

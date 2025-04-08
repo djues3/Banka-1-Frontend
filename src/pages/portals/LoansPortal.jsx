@@ -14,7 +14,7 @@ const LoansPortal = () => {
 
     const columns = [
         { field: "loanName", headerName: "Loan Name", width: 200 },
-        { field: "loanNumber", headerName: "Loan Number", width: 150 },
+        { field: "nextInstallmentDate", headerName: "Next Installment Date", width: 200 },
         { field: "remainingAmount", headerName: "Remaining Amount", width: 150 },
         {
             field: "details",
@@ -39,7 +39,6 @@ const LoansPortal = () => {
         setModalOpen(true);
     };
 
-
     const handleCloseModal = () => {
         setModalOpen(false);
         setSelectedLoanId(null);
@@ -55,6 +54,7 @@ const LoansPortal = () => {
                         loanName: loan.loanType,
                         loanNumber: loan.id,
                         remainingAmount: loan.remainingAmount,
+                        nextInstallmentDate: loan.nextPaymentDate || "N/A",
                     }));
                     setRows(formattedLoans);
                 }
@@ -66,17 +66,16 @@ const LoansPortal = () => {
         loadLoans();
     }, []);
 
-
     return (
         <div className="flex">
             <Sidebar />
             <div style={{ padding: "20px", marginTop: "64px", width: "100%", textAlign: "left", fontSize: 20 }}>
                 <h2>Loans Overview</h2>
 
-                <Button 
-                    variant="contained"     
-                    color="primary"          
-                    onClick={() => setLoanModalOpen(true)}  
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => setLoanModalOpen(true)}
                 >
                     Apply for loan
                 </Button>
@@ -88,7 +87,6 @@ const LoansPortal = () => {
 
             {/* Pop up za novi zahtev */}
             <LoanRequestModal open={loanModalOpen} onClose={() => setLoanModalOpen(false)} />
-
         </div>
     );
 };

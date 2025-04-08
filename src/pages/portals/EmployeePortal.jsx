@@ -3,12 +3,12 @@ import Navbar from "../../components/mainComponents/Navbar";
 import Sidebar from "../../components/mainComponents/Sidebar";
 import SearchDataTable from "../../components/tables/SearchDataTable";
 import EditModal from "../../components/common/EditModal";
-import { 
-  fetchEmployees, 
-  updateEmployeeStatus, 
-  fetchEmployeeById, 
-  updateEmployee,
-  createEmployee
+import {
+    fetchEmployees,
+    updateEmployeeStatus,
+    fetchEmployeeById,
+    updateEmployee,
+    createEmployee
 } from "../../services/AxiosUser";
 import Switch from '@mui/material/Switch';
 import Checkbox from '@mui/material/Checkbox';
@@ -19,21 +19,21 @@ import AddButton from "../../components/common/AddButton";
 
 // Custom styled switch for active/inactive status
 const StatusSwitch = styled(Switch)(({ theme }) => ({
-  '& .MuiSwitch-switchBase.Mui-checked': {
-    color: '#4caf50',
-    '&:hover': {
-      backgroundColor: '#4caf5014',
+    '& .MuiSwitch-switchBase.Mui-checked': {
+        color: '#4caf50',
+        '&:hover': {
+            backgroundColor: '#4caf5014',
+        },
     },
-  },
-  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-    backgroundColor: '#4caf50',
-  },
-  '& .MuiSwitch-switchBase': {
-    color: '#f44336',
-  },
-  '& .MuiSwitch-track': {
-    backgroundColor: '#f44336',
-  },
+    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+        backgroundColor: '#4caf50',
+    },
+    '& .MuiSwitch-switchBase': {
+        color: '#f44336',
+    },
+    '& .MuiSwitch-track': {
+        backgroundColor: '#f44336',
+    },
 }));
 
 const EmployeePortal = () => {
@@ -65,9 +65,9 @@ const EmployeePortal = () => {
         { field: 'email', headerName: 'Email', width: 200 },
         { field: 'phoneNumber', headerName: 'Phone', width: 150 },
         { field: 'department', headerName: 'Department', width: 150 },
-        { 
-            field: 'isAdmin', 
-            headerName: 'Admin', 
+        {
+            field: 'isAdmin',
+            headerName: 'Admin',
             width: 80,
             renderCell: (params) => (
                 <Checkbox checked={params.value} disabled />
@@ -81,26 +81,25 @@ const EmployeePortal = () => {
                 <StatusSwitch
                     checked={params.value}
                     onChange={(event) => {
-                        event.stopPropagation(); 
+                        event.stopPropagation();
                         handleStatusToggle(params.row);
                     }}
-                    onClick={(event) => event.stopPropagation()} 
+                    onClick={(event) => event.stopPropagation()}
                 />
             ),
         },
     ];
-    
+
     // Load employees on component mount
     useEffect(() => {
         loadEmployees();
     }, []);
-    
+
     const loadEmployees = async () => {
         try {
             setLoading(true);
             const data = await fetchEmployees();
             const rowData = data.data.rows;
-            
             const formattedRows = rowData.map((row) => ({
                 id: row.id,
                 firstName: row.firstName,
@@ -113,7 +112,7 @@ const EmployeePortal = () => {
                 // Store original data for update
                 originalData: { ...row }
             }));
-            
+
             setRows(formattedRows);
         } catch (err) {
             console.error(err);
@@ -146,8 +145,8 @@ const EmployeePortal = () => {
         }
     };
 
-    
-    
+
+
     // Handle toggle of active status
     const handleStatusToggle = async (row) => {
 
@@ -195,7 +194,7 @@ const EmployeePortal = () => {
 
         const digitsAfterPrefix = phoneNumber.slice(4).trim(); // Uklanja "+381" i ostavlja ostatak broja
 
-        if (digitsAfterPrefix.length < 8 || isNaN(digitsAfterPrefix)) {
+        if (digitsAfterPrefix.length !== 8 || isNaN(digitsAfterPrefix)) {
             toast.error("Phone number must contain exactly 8 digits after +381.");
             return false;
         }
@@ -275,7 +274,7 @@ const EmployeePortal = () => {
                 isAdmin: employeeData.isAdmin,
                 permissions: ["user.employee.create"] // Default permission
             };
-            
+
             await createEmployee(employeePayload);
             setIsCreateModalOpen(false);
             resetEmployeeForm();
@@ -301,7 +300,7 @@ const EmployeePortal = () => {
             isAdmin: false
         });
     };
-    
+
     const handleRowClick = async (row) => {
 
         if(!row.isAdmin) {
@@ -338,7 +337,7 @@ const EmployeePortal = () => {
             toast.error(`Admin cannot edit admin.`);
         }
     };
-    
+
     const handleSaveEmployee = async (updatedEmployeeData) => {
         if (!validatePhoneNumber(updatedEmployeeData.phoneNumber)) {
             return;
@@ -359,7 +358,7 @@ const EmployeePortal = () => {
                 toast.error('Employee ID is missing');
                 return;
             }
-            
+
             // Create a clean object to send to the API
             const employeePayload = {
                 firstName: updatedEmployeeData.firstName,
@@ -375,7 +374,7 @@ const EmployeePortal = () => {
                 active: updatedEmployeeData.active,
                 isAdmin: updatedEmployeeData.isAdmin
             };
-            
+
             await updateEmployee(updatedEmployeeData.id, employeePayload);
             setIsEditModalOpen(false);
             toast.success('Employee updated successfully');
@@ -394,42 +393,42 @@ const EmployeePortal = () => {
         { name: 'address', label: 'Address' },
         { name: 'birthDate', label: 'Birth Date', type: 'date' },
         { name: 'gender', label: 'Gender', type: 'select', options: [
-            { value: 'MALE', label: 'Male' },
-            { value: 'FEMALE', label: 'Female' },
-        ] },
+                { value: 'MALE', label: 'Male' },
+                { value: 'FEMALE', label: 'Female' },
+            ] },
         // Removed position field from here
         { name: 'department', label: 'Department', type: 'select', options: [
-            { value: 'ACCOUNTING', label: 'Accounting' },
-            { value: 'MARKETING', label: 'Marketing' },
-            { value: 'HR', label: 'HR' },
-            { value: 'SALES', label: 'Sales' },
-            { value: 'IT', label: 'IT' },
-            { value: 'SUPERVISOR', label: 'Supervisor' },
-            { value: 'AGENT', label: 'Agent' }
-        ] },
+                { value: 'ACCOUNTING', label: 'Accounting' },
+                { value: 'MARKETING', label: 'Marketing' },
+                { value: 'HR', label: 'HR' },
+                { value: 'SALES', label: 'Sales' },
+                { value: 'IT', label: 'IT' },
+                { value: 'SUPERVISOR', label: 'Supervisor' },
+                { value: 'AGENT', label: 'Agent' }
+            ] },
         { name: 'active', label: 'Active', type: 'switch' },
         { name: 'isAdmin', label: 'Admin', type: 'switch' }
     ];
-    
+
     return (
         <div>
 
             <Sidebar/>
             <div style={{ padding: '20px', marginTop: '64px' }}>
                 <h2>Employee Management</h2>
-                    {loading ? (
-                        <p>Loading employee data...</p>
-                    ) : error ? (
-                        <p>Error: {error}</p>
-                    ) : (
-                        <SearchDataTable 
-                            rows={rows} 
-                            columns={columns} 
-                            checkboxSelection={false}
-                            onRowClick={handleRowClick}
-                            actionButton={<AddButton onClick={() => setIsCreateModalOpen(true)} label="Add Employee" />}
-                        />
-                    )}
+                {loading ? (
+                    <p>Loading employee data...</p>
+                ) : error ? (
+                    <p>Error: {error}</p>
+                ) : (
+                    <SearchDataTable
+                        rows={rows}
+                        columns={columns}
+                        checkboxSelection={false}
+                        onRowClick={handleRowClick}
+                        actionButton={<AddButton onClick={() => setIsCreateModalOpen(true)} label="Add Employee" />}
+                    />
+                )}
                 {/* Edit Modal */}
                 {selectedEmployee && (
                     <EditModal
@@ -441,12 +440,12 @@ const EmployeePortal = () => {
                         title="Edit Employee"
                     />
                 )}
-                
+
                 {/* Create Modal */}
                 <EditModal
                     open={isCreateModalOpen}
-                    onClose={() => 
-                        {setIsCreateModalOpen(false);
+                    onClose={() =>
+                    {setIsCreateModalOpen(false);
                         resetEmployeeForm();
                     }}
                     data={newEmployee}
@@ -454,7 +453,7 @@ const EmployeePortal = () => {
                     onSave={handleCreateEmployee}
                     title="Create New Employee"
                 />
-                
+
                 <ToastContainer position="bottom-right" />
             </div>
         </div>
