@@ -81,9 +81,9 @@ export const fetchAccountsTransactions = async (accountId) => {
       console.log(`Transactions for account ${accountId}:`, transactions);
       return transactions.map((t) => ({
         id: t.id || "N/A",
-        sender: t.fromAccountId?.ownerID || "N/A",
+        sender: t.senderName || "N/A",
         senderAccount: t.fromAccountId?.accountNumber || "N/A",
-        receiver: t.toAccountId?.ownerID || "N/A",
+        receiver: t.receiverName || "N/A",
         receiverId: t.toAccountId?.id || "N/A",
         receiverAccount: t.toAccountId?.accountNumber || "N/A",
         amount: t.amount ? `${t.amount} ${t.currency?.code || "N/A"}` : "N/A",
