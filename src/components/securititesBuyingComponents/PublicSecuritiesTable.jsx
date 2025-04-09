@@ -34,11 +34,13 @@ const PublicSecuritiesTable = () => {
         const fetchData = async () => {
             try {
                 const res = await fetchPublicSecurities();
+                console.log(res.data);
                 const data = res?.data || [];
                 const mapped = data.map((item, i) => ({
                     id: i,
                     ...item.security,
                     availableQuantity: item.security.availableQuantity || 0,
+                    portfolioId: item.id // dodaj portfolioId ovde
                 }));
                 setSecurities(mapped);
             } catch (error) {
@@ -139,15 +141,15 @@ const PublicSecuritiesTable = () => {
     }, [securities, selectedType, search, askRange, bidRange, priceRange, volumeRange, settlementDate]);
 
     const columns = [
-        { field: "ticker", headerName: "Ticker", width: 150 },
-        { field: "lastPrice", headerName: "Price", width: 150 },
-        { field: "ask", headerName: "Ask", width: 150 },
-        { field: "bid", headerName: "Bid", width: 150 },
-        { field: "availableQuantity", headerName: "Volume", width: 150 },
+        { field: "ticker", headerName: "Ticker", width: 100 },
+        { field: "lastPrice", headerName: "Price", width: 200 },
+        { field: "ask", headerName: "Ask", width: 200 },
+        { field: "bid", headerName: "Bid", width: 200 },
+        { field: "availableQuantity", headerName: "Volume", width: 100 },
         {
             field: "actions",
             headerName: "Actions",
-            width: 200,
+            width: 300,
             renderCell: (params) => (
                 <>
                     <Button variant="outlined" onClick={() => openMakeOfferModal(params.row)}>Make Offer</Button>

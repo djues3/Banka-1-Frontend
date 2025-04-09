@@ -10,7 +10,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Chip,
-  Toolbar
+  Toolbar,
 } from "@mui/material";
 import { getContracts, executeOffers } from "../../services/AxiosTrading";
 import { jwtDecode } from "jwt-decode";
@@ -56,104 +56,110 @@ const ContractsPage = () => {
   };
 
   const filteredContracts = contracts.filter((c) =>
-    filter === "valid" ? isValid(c) : !isValid(c)
+      filter === "valid" ? isValid(c) : !isValid(c)
   );
 
   const buyerContracts = filteredContracts.filter((c) => c.BuyerID === userId);
   const sellerContracts = filteredContracts.filter((c) => c.SellerID === userId);
 
-  const renderContracts = (title, data, showExecute = false) => (
-    <Box sx={{ mb: 6 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        {title}
-      </Typography>
-      <Grid container spacing={3}>
-        {data.map((contract) => {
-          const sec = contract.portfolio?.security || {};
-          const expired = !isValid(contract);
+  const renderContracts = (title, data, showExecute = false, role) => (
+      <Box sx={{ mb: 6 }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          {title}
+        </Typography>
+        {data.length === 0 ? (
+            <Typography variant="body1" color="text.secondary" sx={{ ml: 1 }}>
+              You have no contracts as a {role}.
+            </Typography>
+        ) : (
+            <Grid container spacing={3}>
+              {data.map((contract) => {
+                const sec = contract.portfolio?.security || {};
+                const expired = !isValid(contract);
 
-          return (
-            <Grid item xs={12} sm={6} md={4} key={contract.ID}>
-              <Card
-                variant="outlined"
-                sx={{
-                  backgroundColor: expired ? "#f5f5f5" : "inherit",
-                  position: "relative",
-                  height: "100%",
-                }}
-              >
-                <CardContent>
-                  <Typography variant="h6">
-                    {sec.ticker} - {sec.name}
-                  </Typography>
-
-                  {expired && (
-                    <Chip
-                      label="Expired"
-                      color="default"
-                      size="small"
-                      sx={{ position: "absolute", top: 16, right: 16 }}
-                    />
-                  )}
-
-                  <Divider sx={{ my: 1 }} />
-                  <Typography>
-                    <strong>Quantity:</strong> {contract.Quantity}
-                  </Typography>
-                  <Typography>
-                    <strong>Strike price:</strong> ${contract.StrikePrice}
-                  </Typography>
-                  <Typography>
-                    <strong>Premium:</strong> ${contract.Premium}
-                  </Typography>
-                  <Typography>
-                    <strong>Settlement:</strong>{" "}
-                    {new Date(contract.SettlementAt).toLocaleDateString()}
-                  </Typography>
-
-                  {!expired && showExecute && (
-                    <Box sx={{ mt: 2 }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => handleExecute(contract.ID)}
+                return (
+                    <Grid item xs={12} sm={6} md={4} key={contract.ID}>
+                      <Card
+                          variant="outlined"
+                          sx={{
+                            backgroundColor: expired ? "#f5f5f5" : "inherit",
+                            position: "relative",
+                            height: "100%",
+                          }}
                       >
-                        Execute
-                      </Button>
-                    </Box>
-                  )}
-                </CardContent>
-              </Card>
+                        <CardContent>
+                          <Typography variant="h6">
+                            {sec.ticker} - {sec.name}
+                          </Typography>
+
+                          {expired && (
+                              <Chip
+                                  label="Expired"
+                                  color="default"
+                                  size="small"
+                                  sx={{ position: "absolute", top: 16, right: 16 }}
+                              />
+                          )}
+
+                          <Divider sx={{ my: 1 }} />
+                          <Typography>
+                            <strong>Quantity:</strong> {contract.Quantity}
+                          </Typography>
+                          <Typography>
+                            <strong>Strike price:</strong> ${contract.StrikePrice}
+                          </Typography>
+                          <Typography>
+                            <strong>Premium:</strong> ${contract.Premium}
+                          </Typography>
+                          <Typography>
+                            <strong>Settlement:</strong>{" "}
+                            {new Date(contract.SettlementAt).toLocaleDateString()}
+                          </Typography>
+
+                          {!expired && showExecute && (
+                              <Box sx={{ mt: 2 }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleExecute(contract.ID)}
+                                >
+                                  Execute
+                                </Button>
+                              </Box>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                );
+              })}
             </Grid>
-          );
-        })}
-      </Grid>
-    </Box>
+        )}
+      </Box>
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <Sidebar />
-      <Box component="main" sx={{ flexGrow: 1, p: 4 }}>
-        <Toolbar />
-        <Typography variant="h4" gutterBottom>
-          Sklopljeni OTC Ugovori
-        </Typography>
+      <Box sx={{ display: "flex" }}>
+        <Sidebar />
+        <Box component="main" sx={{ flexGrow: 1, p: 4 }}>
+          <Toolbar />
+          <Typography variant="h4" gutterBottom>
+            OTC Contracts
+          </Typography>
 
-        <ToggleButtonGroup
-          value={filter}
-          exclusive
-          onChange={(e, val) => val && setFilter(val)}
-          sx={{ mb: 4 }}
-        >
-          <ToggleButton value="valid">Valid</ToggleButton>
-          <ToggleButton value="expired">Expired</ToggleButton>
-        </ToggleButtonGroup>
+          <ToggleButtonGroup
+              value={filter}
+              exclusive
+              onChange={(e, val) => val && setFilter(val)}
+              sx={{ mb: 4 }}
+          >
+            <ToggleButton value="valid">Valid</ToggleButton>
+            <ToggleButton value="expired">Expired</ToggleButton>
+          </ToggleButtonGroup>
 
-        {renderContracts("As buyer", buyerContracts, true)}
-        {renderContracts("As seller", sellerContracts, false)}
+          {renderContracts("As buyer", buyerContracts, true, "buyer")}
+          {renderContracts("As seller", sellerContracts, false, "seller")}
+        </Box>
       </Box>
-    </Box>
   );
 };
 

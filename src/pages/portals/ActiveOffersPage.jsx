@@ -8,7 +8,7 @@ import {
   Grid,
   Divider,
   Chip,
-  Toolbar
+  Toolbar,
 } from "@mui/material";
 import { getActiveOffers, acceptOffer } from "../../services/AxiosTrading";
 import CounterOfferModal from "../../components/common/CounterOfferModal";
@@ -72,102 +72,106 @@ const ActiveOffersPage = () => {
   const sellerOffers = offers.filter((o) => o.SellerID === userId);
   const buyerOffers = offers.filter((o) => o.BuyerID === userId);
 
-  const renderOffers = (title, offerList) => (
-    <Box sx={{ mb: 6 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        {title}
-      </Typography>
-      <Grid container spacing={3}>
-        {offerList.map((offer) => {
-          const security = offer.portfolio?.security || {};
-          const isLastModifiedByUser = offer.ModifiedBy === userId;
-          const canInteract = !isLastModifiedByUser;
-          const priceColor = getPriceColor(offer.PricePerUnit, security.lastPrice);
-          const isUnread = !isLastModifiedByUser;
+  const renderOffers = (title, offerList, role) => (
+      <Box sx={{ mb: 6 }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          {title}
+        </Typography>
+        {offerList.length === 0 ? (
+            <Typography variant="body1" color="text.secondary" sx={{ ml: 1 }}>
+              You have no active offers as a {role}.
+            </Typography>
+        ) : (
+            <Grid container spacing={3}>
+              {offerList.map((offer) => {
+                const security = offer.portfolio?.security || {};
+                const isLastModifiedByUser = offer.ModifiedBy === userId;
+                const canInteract = !isLastModifiedByUser;
+                const priceColor = getPriceColor(offer.PricePerUnit, security.lastPrice);
+                const isUnread = !isLastModifiedByUser;
 
-          return (
-            <Grid item xs={12} sm={6} md={4} key={offer.ID}>
-              <Card variant="outlined" sx={{ height: "100%" }}>
-                <CardContent>
-                  <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <Typography variant="h6">
-                      {security.ticker} - {security.name}
-                    </Typography>
-                    {isUnread && <Chip label="New" color="info" size="small" />}
-                  </Box>
-                  <Divider sx={{ my: 1 }} />
-                  <Typography><strong>Quantity:</strong> {offer.Quantity}</Typography>
-                  <Typography>
-                    <strong>Price per unit:</strong>{" "}
-                    <Chip
-                      label={`$${offer.PricePerUnit}`}
-                      color={priceColor}
-                      variant="outlined"
-                      size="small"
-                    />
-                  </Typography>
-                  <Typography><strong>Premium:</strong> ${offer.Premium}</Typography>
-                  <Typography>
-                    <strong>Settlement date:</strong>{" "}
-                    {new Date(offer.SettlementAt).toLocaleDateString()}
-                  </Typography>
+                return (
+                    <Grid item xs={12} sm={6} md={4} key={offer.ID}>
+                      <Card variant="outlined" sx={{ height: "100%" }}>
+                        <CardContent>
+                          <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                            <Typography variant="h6">
+                              {security.ticker} - {security.name}
+                            </Typography>
+                            {isUnread && <Chip label="New" color="info" size="small" />}
+                          </Box>
+                          <Divider sx={{ my: 1 }} />
+                          <Typography><strong>Quantity:</strong> {offer.Quantity}</Typography>
+                          <Typography>
+                            <strong>Price per unit:</strong>{" "}
+                            <Chip
+                                label={`$${offer.PricePerUnit}`}
+                                color={priceColor}
+                                variant="outlined"
+                                size="small"
+                            />
+                          </Typography>
+                          <Typography><strong>Premium:</strong> ${offer.Premium}</Typography>
+                          <Typography>
+                            <strong>Settlement date:</strong>{" "}
+                            {new Date(offer.SettlementAt).toLocaleDateString()}
+                          </Typography>
 
-                  <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      disabled={!canInteract}
-                      onClick={() => handleCounterOffer(offer)}
-                    >
-                      Counter Offer
-                    </Button>
-                    {offer.SellerID === userId && (
-                      <Button
-                        variant="contained"
-                        color="success"
-                        disabled={!canInteract}
-                        onClick={() => handleAcceptOffer(offer.ID)}
-                      >
-                        Accept Offer
-                      </Button>
-                    )}
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      disabled={!canInteract}
-                      onClick={() => console.log("Cancel offer clicked")}
-                    >
-                      Cancel Offer
-                    </Button>
-                  </Box>
-                </CardContent>
-              </Card>
+                          <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                disabled={!canInteract}
+                                onClick={() => handleCounterOffer(offer)}
+                            >
+                              Counter Offer
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="success"
+                                disabled={!canInteract}
+                                onClick={() => handleAcceptOffer(offer.ID)}
+                            >
+                              Accept Offer
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="error"
+                                disabled={!canInteract}
+                                onClick={() => console.log("Cancel offer clicked")}
+                            >
+                              Cancel Offer
+                            </Button>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                );
+              })}
             </Grid>
-          );
-        })}
-      </Grid>
-    </Box>
+        )}
+      </Box>
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <Sidebar />
-      <Box component="main" sx={{ flexGrow: 1, p: 4 }}>
-        <Toolbar />
-        <Typography variant="h4" gutterBottom>
-          Active Offers
-        </Typography>
+      <Box sx={{ display: "flex" }}>
+        <Sidebar />
+        <Box component="main" sx={{ flexGrow: 1, p: 4 }}>
+          <Toolbar />
+          <Typography variant="h4" gutterBottom>
+            Active Offers
+          </Typography>
 
-        {renderOffers("As seller", sellerOffers)}
-        {renderOffers("As buyer", buyerOffers)}
+          {renderOffers("As seller", sellerOffers, "seller")}
+          {renderOffers("As buyer", buyerOffers, "buyer")}
 
-        <CounterOfferModal
-          open={isCounterModalOpen}
-          onClose={handleCloseCounterModal}
-          offer={selectedOffer}
-        />
+          <CounterOfferModal
+              open={isCounterModalOpen}
+              onClose={handleCloseCounterModal}
+              offer={selectedOffer}
+          />
+        </Box>
       </Box>
-    </Box>
   );
 };
 
