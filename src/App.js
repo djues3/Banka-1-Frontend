@@ -34,10 +34,12 @@ import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal
 import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 import CompaniesPortal from "./pages/portals/CompaniesPortal";
 import TaxTrackingPortal from "./pages/portals/TaxTrackingPortal";
+import TokenExpiryHandler from "./components/common/TokenExpiryHandler";
 import ActuarialPerformancePortal from "./pages/portals/ActuarialPerformancePortal"
 import OtcTradingPortal from "./pages/portals/OtcTradingPortal"; 
 import ActiveOffersPage from "./pages/portals/ActiveOffersPage";
 import ContractsPage from "./pages/portals/ContractsPage";
+
 
 function App() {
   return (
@@ -45,6 +47,7 @@ function App() {
       <CardProvider>
         <CssBaseline />
         <BrowserRouter>
+            <TokenExpiryHandler/>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
