@@ -266,11 +266,11 @@ export default function Sidebar() {
                       </ListItemButton>
                       <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/otc-active-offers')}>
                         <ListItemIcon><GavelIcon /></ListItemIcon>
-                        <ListItemText primary="OTC Ponude" />
+                        <ListItemText primary="OTC Active Offers" />
                       </ListItemButton>
                       <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/otc-contracts')}>
                         <ListItemIcon><HandshakeIcon /></ListItemIcon>
-                        <ListItemText primary="OTC Ugovori" />
+                        <ListItemText primary="OTC Contracts" />
                       </ListItemButton>
                     </List>
                   </Collapse>

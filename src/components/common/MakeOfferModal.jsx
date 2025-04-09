@@ -8,9 +8,10 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import { createOffer } from "../../services/AxiosTrading"; 
+import { createOffer } from "../../services/AxiosTrading";
 
 const MakeOfferModal = ({ open, onClose, security }) => {
+    const portfolioId = security?.portfolioId;
     const [quantity, setQuantity] = useState("");
     const [pricePerUnit, setPricePerUnit] = useState("");
     const [settlementDate, setSettlementDate] = useState("");
@@ -25,7 +26,7 @@ const MakeOfferModal = ({ open, onClose, security }) => {
 
     const handleMakeOffer = async () => {
         const payload = {
-            portfolio_id: security?.id,
+            portfolio_id: portfolioId,
             quantity: parseInt(quantity),
             price_per_unit: parseFloat(pricePerUnit),
             premium: 100.0,

@@ -1,5 +1,4 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
 const apiTrading = axios.create({
   baseURL: `${process.env.REACT_APP_TRADING_API_URL}`,
@@ -14,11 +13,11 @@ apiTrading.interceptors.request.use(
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
 
-        // console.log(
-        //     `${config.method.toUpperCase()} ${
-        //         config.url
-        //     } - Token: ${token.substring(0, 20)}...`
-        // );
+        console.log(
+            `${config.method.toUpperCase()} ${
+                config.url
+            } - Token: ${token.substring(0, 20)}...`
+        );
       }
       return config;
     },
@@ -330,8 +329,7 @@ export const counterOffer = async (offer_id, payload) => {
 
 export const acceptOffer = async (offer_id) => {
   try {
-    const response = await apiTrading.put(`/otctrade/offer/${offer_id}/accept`);
-    return response;
+    return await apiTrading.put(`/otctrade/offer/${offer_id}/accept`);
   } catch (error) {
     console.error("Greška prihvatanju ugovora:", error);
     throw error;
@@ -350,8 +348,7 @@ export const getContracts = async () => {
 
 export const executeOffers = async (offer_id) => {
   try {
-    const response = await apiTrading.get(`/otctrade/option/${offer_id}/execute`);
-    return response;
+    return await apiTrading.put(`/otctrade/option/${offer_id}/execute`);
   } catch (error) {
     console.error("Greška executovanju ponude:", error);
     throw error;
