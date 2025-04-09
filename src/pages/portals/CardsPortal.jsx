@@ -16,10 +16,10 @@ import CardDetailsModal from "../../components/common/CardDetailsModal";
 import {
     fetchAccountsForUser,
     fetchUserCards,
-    getUserIdFromToken
+    getUserIdFromToken, updateCardStatus
 } from "../../services/AxiosBanking";
 import { AnimatePresence, motion } from "framer-motion";
-import {ToastContainer} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 const CardsPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -80,6 +80,35 @@ const CardsPage = () => {
         if (!cards.length) return;
         setCurrentIndex((prev) => (prev + 1) % cards.length);
     };
+
+
+    const handleBlockToggle = async (card) => {
+        if(card.blocked){
+            try {
+                await updateCardStatus(card.id, false);
+                toast.success("Card successfully unblocked!")
+                // alert("Card successfully unblocked!");
+            } catch (error) {
+                toast.error("Failed to unblock card.")
+                // alert("Failed to block card.");
+                console.error("Error blocking card:", error);
+            }
+        }else{
+            try {
+                await updateCardStatus(card.id, true);
+                toast.success("Card successfully blocked!")
+                // alert("Card successfully blocked!");
+            } catch (error) {
+                toast.error("Failed to block card.")
+                console.error("Error blocking card:", error);
+            }
+        }
+        fetchAllData();
+
+    };
+
+
+
 
     return (
         <>
@@ -159,8 +188,7 @@ const CardsPage = () => {
                                     >
                                         <CreditCardDisplay
                                             card={cards[currentIndex]}
-                                            onBlockToggle={() => {}}
-                                            onActiveToggle={() => {}}
+                                            onBlockToggle={() => {handleBlockToggle(cards[currentIndex])}}
                                             theme="dark"
                                         />
                                     </motion.div>
@@ -238,7 +266,12 @@ const CardsPage = () => {
 
             <CardDetailsModal
                 open={detailsModalOpen}
-                onClose={() => setDetailsModalOpen(false)}
+                onClose={() => {
+                    setDetailsModalOpen(false)
+                    fetchAllData()
+                }
+
+            }
                 card={cards[currentIndex]}
             />
             <ToastContainer position="bottom-right"/>
