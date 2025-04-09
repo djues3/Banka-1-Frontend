@@ -35,6 +35,10 @@ import { Collapse } from "@mui/material";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import {LibraryBooks, FolderTwoTone, CorporateFare, BarChart, ShoppingCart} from "@mui/icons-material";
+import HandshakeIcon from "@mui/icons-material/Handshake";
+import GavelIcon from "@mui/icons-material/Gavel";
+import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+
 
 const drawerWidth = 240;
 
@@ -73,6 +77,7 @@ export default function Sidebar() {
   const [showPaymentsMenu, setShowPaymentsMenu] = useState(false);
   const [showLoanOptions, setShowLoanOptions] = useState(false);
   const [showExchangeMenu, setShowExchangeMenu] = useState(false);
+  const [showOtcMenu, setShowOtcMenu] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -243,6 +248,32 @@ export default function Sidebar() {
                       <ListItemText primary="Portfolio" />
                     </ListItemButton>
                   </ListItem>
+
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => setShowOtcMenu(!showOtcMenu)}>
+                      <ListItemIcon><RequestQuoteIcon /></ListItemIcon>
+                      <ListItemText primary="OTC" />
+                      {showOtcMenu ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    </ListItemButton>
+                  </ListItem>
+
+                  <Collapse in={showOtcMenu} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                      <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/otc-trading-portal')}>
+                        <ListItemIcon><ShoppingCart /></ListItemIcon>
+                        <ListItemText primary="OTC Trading" />
+                      </ListItemButton>
+                      <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/otc-active-offers')}>
+                        <ListItemIcon><GavelIcon /></ListItemIcon>
+                        <ListItemText primary="OTC Ponude" />
+                      </ListItemButton>
+                      <ListItemButton sx={{ pl: 4 }} onClick={() => handleNavigation('/otc-contracts')}>
+                        <ListItemIcon><HandshakeIcon /></ListItemIcon>
+                        <ListItemText primary="OTC Ugovori" />
+                      </ListItemButton>
+                    </List>
+                  </Collapse>
+
                   {/*DO OVDE*/}
                 </>
             )}
