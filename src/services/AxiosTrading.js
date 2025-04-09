@@ -29,13 +29,24 @@ apiTrading.interceptors.request.use(
 
 export const getActuaries = async () => {
   try {
-    const response = await apiTrading.get("/actuaries");
+    const response = await apiTrading.get("/actuaries/all");
     return response.data;
   } catch (error) {
     console.error("Error fetching actuaries:", error);
     throw error;
   }
 };
+
+export const getActuarialProfits = async () => {
+  try {
+    const response = await apiTrading.get("/actuaries/profits");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching actuary profits:", error);
+    throw error;
+  }
+};
+
 
 export const getActuaryById = async (id) => {
   try {

@@ -34,6 +34,7 @@ import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal
 import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 import CompaniesPortal from "./pages/portals/CompaniesPortal";
 import TaxTrackingPortal from "./pages/portals/TaxTrackingPortal";
+import ActuarialPerformancePortal from "./pages/portals/ActuarialPerformancePortal"
 import OtcTradingPortal from "./pages/portals/OtcTradingPortal"; 
 import ActiveOffersPage from "./pages/portals/ActiveOffersPage";
 import ContractsPage from "./pages/portals/ContractsPage";
@@ -97,31 +98,58 @@ function App() {
             } />
 
             {/* Special Employee Routes (Supervisor, Agent) */}
-            <Route path="/actuary-buying-portal" element={
-              <AuthGuard allowedPositions={["SUPERVISOR", "AGENT"]}>
-                <ActuarySecuritiesBuyingPortal />
-              </AuthGuard>
-            } />
-            <Route path="/actuarial-management-portal" element={
-              <AuthGuard allowedPositions={["SUPERVISOR"]}>
-                <ActuarialManagementPortal />
-              </AuthGuard>
-            } />
-            <Route path="/view-order-portal" element={
-              <AuthGuard allowedPositions={["SUPERVISOR"]}>
-                <ViewOrderPortal />
-              </AuthGuard>
-            } />
-            <Route path="/tax-tracking-portal" element={
-              <AuthGuard allowedPositions={["SUPERVISOR"]}>
-                <TaxTrackingPortal />
-              </AuthGuard>
-            } />
-            <Route path="/portfolio-page" element={
-              <AuthGuard allowedPositions={["NONE", "SUPERVISOR", "AGENT"]}>
-                <PortfolioPage />
-              </AuthGuard>
-            } />
+
+            <Route
+              path="/actuary-buying-portal"
+              element={
+                <AuthGuard allowedPositions={["SUPERVISOR", "AGENT"]}>
+                  <ActuarySecuritiesBuyingPortal />
+                </AuthGuard>
+              }
+            />
+            <Route
+              path="/actuarial-management-portal"
+              element={
+                <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                  <ActuarialManagementPortal />
+                </AuthGuard>
+              }
+            />
+              <Route
+                  path="/actuarial-performance-portal"
+                  element={
+                      <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                          <ActuarialPerformancePortal />
+                      </AuthGuard>
+                  }
+              />
+
+            <Route
+              path="/view-order-portal"
+              element={
+                <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                  <ViewOrderPortal />
+                </AuthGuard>
+              }
+            />
+
+            <Route
+              path="/tax-tracking-portal"
+              element={
+                <AuthGuard allowedPositions={["SUPERVISOR"]}>
+                  <TaxTrackingPortal />
+                </AuthGuard>
+              }
+            />
+
+            <Route
+              path="/portfolio-page"
+              element={
+                <AuthGuard allowedPositions={["NONE", "SUPERVISOR", "AGENT"]}>
+                  <PortfolioPage />
+                </AuthGuard>
+              }
+            />
 
             {/* Customer-Only Routes */}
             <Route path="/customer-home" element={
