@@ -60,9 +60,9 @@ const ActuarialManagementPortal = () => {
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'fullName', headerName: 'Full Name', width: 200 },
-        { field: 'email', headerName: 'Email', width: 200 },
-        { field: 'role', headerName: 'Role', width: 150 },
+        { field: 'fullName', headerName: 'Full Name', width: 220 },
+        { field: 'email', headerName: 'Email', width: 220 },
+        { field: 'department', headerName: 'Department', width: 150 },
         { field: 'limit', headerName: 'Limit', width: 120 },
         { field: 'usedLimit', headerName: 'Used Limit', width: 120 },
         {

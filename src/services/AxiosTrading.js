@@ -29,13 +29,24 @@ apiTrading.interceptors.request.use(
 
 export const getActuaries = async () => {
   try {
-    const response = await apiTrading.get("/actuaries");
+    const response = await apiTrading.get("/actuaries/all");
     return response.data;
   } catch (error) {
     console.error("Error fetching actuaries:", error);
     throw error;
   }
 };
+
+export const getActuarialProfits = async () => {
+  try {
+    const response = await apiTrading.get("/actuaries/profits");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching actuary profits:", error);
+    throw error;
+  }
+};
+
 
 export const getActuaryById = async (id) => {
   try {
@@ -146,6 +157,16 @@ export const resetUsedLimit = async (id) => {
 export const fetchSecurities = async () => {
   try {
     const response = await apiTrading.get(`/securities`);
+    return response.data;
+  } catch (error) {
+    console.error("Greška pri dohvatanju hartija:", error);
+    throw error;
+  }
+};
+
+export const fetchPublicSecurities = async () => {
+  try {
+    const response = await apiTrading.get(`/portfolio/public`);
     return response.data;
   } catch (error) {
     console.error("Greška pri dohvatanju hartija:", error);
@@ -265,6 +286,68 @@ export const updatePublicCount = async (ticker, publicCount) => {
     throw error;
   }
 };
+
+export const createOffer = async (payload) => {
+  try {
+    const response = await apiTrading.post(`/otctrade/offer`, payload);
+    return response;
+  } catch (error) {
+    console.error("Greška kreiranju ponude:", error);
+    throw error;
+  }
+};
+
+
+export const getActiveOffers = async () => {
+  try {
+    const response = await apiTrading.get(`/otctrade/offer/active`);
+    return response.data;
+  } catch (error) {
+    console.error("Greška kreiranju ponude:", error);
+    throw error;
+  }
+};
+
+export const counterOffer = async (offer_id, payload) => {
+  try {
+    const response = await apiTrading.put(`/otctrade/offer/${offer_id}/counter`, payload);
+    return response;
+  } catch (error) {
+    console.error("Greška prilikom slanja counter ponude:", error);
+    throw error;
+  }
+};
+
+export const acceptOffer = async (offer_id) => {
+  try {
+    const response = await apiTrading.put(`/otctrade/offer/${offer_id}/accept`);
+    return response;
+  } catch (error) {
+    console.error("Greška prihvatanju ugovora:", error);
+    throw error;
+  }
+};
+
+export const getContracts = async () => {
+  try {
+    const response = await apiTrading.get(`/otctrade/option/contracts`);
+    return response.data;
+  } catch (error) {
+    console.error("Greška dohvatanju ugovora:", error);
+    throw error;
+  }
+};
+
+export const executeOffers = async (offer_id) => {
+  try {
+    const response = await apiTrading.get(`/otctrade/option/${offer_id}/execute`);
+    return response;
+  } catch (error) {
+    console.error("Greška executovanju ponude:", error);
+    throw error;
+  }
+};
+
 
 
 export default apiTrading;
