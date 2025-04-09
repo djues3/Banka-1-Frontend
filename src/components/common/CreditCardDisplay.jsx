@@ -9,6 +9,7 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
 
     const cardNumberGroups = formatCardNumber(card.cardNumber).split(' ');
 
+
     return (
         <div className={`${styles.creditCard} ${styles[theme]} ${card.blocked ? styles.blocked : ''}`}>
             <div className={styles.cardTop}>
@@ -31,7 +32,10 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
             </div>
 
             <div className={styles.cardButtons}>
-                <div className={styles.toggleLabel}>
+                <div
+                    className={styles.toggleLabel}
+                    onClick={(e) => { e.stopPropagation(); }}
+                >
                     <Switch
                         checked={card.blocked}
                         onChange={() => onBlockToggle(card)}
@@ -40,10 +44,14 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
                     />
                     <span>{card.blocked ? "Blocked" : "Unblocked"}</span>
                 </div>
-                <div className={styles.toggleLabel}>
+                <div
+                    className={styles.toggleLabel}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                    }}
+                >
                     <Switch
                         checked={card.active}
-                        onChange={() => onActiveToggle(card)}
                         className={styles.activeSwitch}
                         disabled={!card.active}
                     />

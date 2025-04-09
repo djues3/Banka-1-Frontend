@@ -15,8 +15,7 @@ body {
     background: #232228;
     font-family: "Nunito", sans-serif;
     overflow-x: hidden;
-    display: grid;
-    place-items: center;
+    display: block;
 }
 
 button {

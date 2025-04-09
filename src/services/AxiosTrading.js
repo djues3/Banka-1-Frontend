@@ -1,5 +1,4 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
 const apiTrading = axios.create({
   baseURL: `${process.env.REACT_APP_TRADING_API_URL}`,
@@ -29,13 +28,24 @@ apiTrading.interceptors.request.use(
 
 export const getActuaries = async () => {
   try {
-    const response = await apiTrading.get("/actuaries");
+    const response = await apiTrading.get("/actuaries/all");
     return response.data;
   } catch (error) {
     console.error("Error fetching actuaries:", error);
     throw error;
   }
 };
+
+export const getActuarialProfits = async () => {
+  try {
+    const response = await apiTrading.get("/actuaries/profits");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching actuary profits:", error);
+    throw error;
+  }
+};
+
 
 export const getActuaryById = async (id) => {
   try {
@@ -153,6 +163,16 @@ export const fetchSecurities = async () => {
   }
 };
 
+export const fetchPublicSecurities = async () => {
+  try {
+    const response = await apiTrading.get(`/portfolio/public`);
+    return response.data;
+  } catch (error) {
+    console.error("Greška pri dohvatanju hartija:", error);
+    throw error;
+  }
+};
+
 export const fetchAvailableSecurities = async () => {
   try {
     const response = await apiTrading.get(`/securities/available`);
@@ -233,6 +253,16 @@ export const fetchFirstStockPrice = async (ticker) => {
   }
 };
 
+export const fetchOptions = async (ticker) => {
+  try {
+    const response = await apiTrading.get(`/options/symbol/${ticker}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching the first stock price:", error);
+    throw error;
+  }
+};
+
 export const fetchTaxData = async () => {
   try {
     const response = await apiTrading.get(`/tax`);
@@ -265,6 +295,66 @@ export const updatePublicCount = async (ticker, publicCount) => {
     throw error;
   }
 };
+
+export const createOffer = async (payload) => {
+  try {
+    const response = await apiTrading.post(`/otctrade/offer`, payload);
+    return response;
+  } catch (error) {
+    console.error("Greška kreiranju ponude:", error);
+    throw error;
+  }
+};
+
+
+export const getActiveOffers = async () => {
+  try {
+    const response = await apiTrading.get(`/otctrade/offer/active`);
+    return response.data;
+  } catch (error) {
+    console.error("Greška kreiranju ponude:", error);
+    throw error;
+  }
+};
+
+export const counterOffer = async (offer_id, payload) => {
+  try {
+    const response = await apiTrading.put(`/otctrade/offer/${offer_id}/counter`, payload);
+    return response;
+  } catch (error) {
+    console.error("Greška prilikom slanja counter ponude:", error);
+    throw error;
+  }
+};
+
+export const acceptOffer = async (offer_id) => {
+  try {
+    return await apiTrading.put(`/otctrade/offer/${offer_id}/accept`);
+  } catch (error) {
+    console.error("Greška prihvatanju ugovora:", error);
+    throw error;
+  }
+};
+
+export const getContracts = async () => {
+  try {
+    const response = await apiTrading.get(`/otctrade/option/contracts`);
+    return response.data;
+  } catch (error) {
+    console.error("Greška dohvatanju ugovora:", error);
+    throw error;
+  }
+};
+
+export const executeOffers = async (offer_id) => {
+  try {
+    return await apiTrading.put(`/otctrade/option/${offer_id}/execute`);
+  } catch (error) {
+    console.error("Greška executovanju ponude:", error);
+    throw error;
+  }
+};
+
 
 
 export default apiTrading;

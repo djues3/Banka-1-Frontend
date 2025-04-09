@@ -6,6 +6,7 @@ import ChangeCardLimitModal from "./ChangeCardLimitModal";
 import { useNavigate } from "react-router-dom";
 import "../../styles/CardModal.module.css"; 
 import { updateCardStatus } from "../../services/AxiosBanking";
+import {toast} from "react-toastify";
 
 
 const CardDetailsModal = ({ open, onClose, card }) => {
@@ -109,24 +110,37 @@ const CardDetailsModal = ({ open, onClose, card }) => {
             <Link sx={{ml:10}} onClick={() => setLimitModalOpen(true)} className="modal-link">Change card limit</Link>
           </DialogActions>
 
-          {card.active && (
-            <DialogActions sx={{justifyContent: "center", alignItems: "center"}}>
+
+          <DialogActions sx={{justifyContent: "center", alignItems: "center"}}>
               <Link
                   className="modal-link"
                   onClick={async () => {
-                    try {
-                      await updateCardStatus(card.id, true);
-                      alert("Card successfully blocked!");
-                    } catch (error) {
-                      alert("Failed to block card.");
-                      console.error("Error blocking card:", error);
-                    }
+                      try {
+                          // You can handle the action of blocking/unblocking here
+                          if (card.blocked) {
+                              // Unblock the card
+                              await updateCardStatus(card.id, false);
+                              toast.success("Card successfully unblocked!")
+                              // alert("Card successfully unblocked!");
+                          } else {
+                              // Block the card
+                              await updateCardStatus(card.id, true);
+                              toast.success("Card successfully blocked!")
+                              // alert("Card successfully blocked!");
+                          }
+                          onClose();
+                      } catch (error) {
+                          toast.error(card.blocked ? "Failed to unblock card." : "Failed to block card.")
+                          // alert(card.blocked ? "Failed to unblock card." : "Failed to block card.");
+                          console.error("Error blocking/unblocking card:", error);
+                      }
                   }}
-                >
-                  Block card
+              >
+                  {card.blocked ? "Unblock card" : "Block card"}
               </Link>
-            </DialogActions>
-          )}
+          </DialogActions>
+
+
 
           <DialogActions sx={{ justifyContent: "center" , alignItems: "center"}}>
               <Button className="modal-button" variant="contained" onClick={onClose}>Back</Button>

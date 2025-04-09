@@ -11,10 +11,10 @@ const DenyLoanButton = ({ loanId, onAction }) => {
             };
 
             await denyLoan(loanId, deniedLoan);
-            toast.success(`Loan ${loanId} denied successfully.`);
+            toast.success(`Loan ${loanId} declined successfully.`);
             onAction?.();
         } catch (error) {
-            toast.error(`Error denying loan ${loanId}: ${error.message}`);
+            toast.error(`Error declining loan ${loanId}: ${error.message}`);
             console.error(error);
         }
     };
@@ -23,14 +23,18 @@ const DenyLoanButton = ({ loanId, onAction }) => {
         <button
             onClick={handleDeny}
             style={{
-                backgroundColor: "red",
-                color: "white",
-                padding: "5px 10px",
+                backgroundColor: "#D32F2F",
+                color: "#fff",
+                padding: "8px 16px",
                 border: "none",
-                cursor: "pointer"
+                borderRadius: "20px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                fontSize: "0.9rem",
+                transition: "background-color 0.3s",
             }}
         >
-            Deny
+            Decline
         </button>
     );
 };

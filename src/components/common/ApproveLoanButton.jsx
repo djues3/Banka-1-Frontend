@@ -23,11 +23,15 @@ const ApproveLoanButton = ({ loanId, onAction }) => {
         <button
             onClick={handleApprove}
             style={{
-                backgroundColor: "green",
-                color: "white",
-                padding: "5px 10px",
+                backgroundColor: "#4CAF50",
+                color: "#fff",
+                padding: "8px 16px",
                 border: "none",
-                cursor: "pointer"
+                borderRadius: "20px",
+                cursor: "pointer",
+                fontWeight: "bold",
+                fontSize: "0.9rem",
+                transition: "background-color 0.3s",
             }}
         >
             Approve
