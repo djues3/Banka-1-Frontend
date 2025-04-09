@@ -15,8 +15,7 @@ import {
   blockCard,
   changingAccountStatus,
   deactivateCard,
-  fetchCardsByAccountId,
-  fetchCompany
+  fetchCardsByAccountId
 } from '../../services/AxiosBanking';
 import { toast } from 'react-toastify';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -34,7 +33,7 @@ const EmployeeCardsPortal = () => {
     try {
       await blockCard(row.id, !row.blocked);
       setCards(prev =>
-          prev.map(r => (r.id === row.id ? { ...r, blocked: !r.blocked } : r))
+        prev.map(r => (r.id === row.id ? { ...r, blocked: !r.blocked } : r))
       );
       toast.success('Blocked successfully');
     } catch (error) {
@@ -52,7 +51,7 @@ const EmployeeCardsPortal = () => {
       const newStatus = !row.active;
       await deactivateCard(row.id, newStatus);
       setCards(prev =>
-          prev.map(r => (r.id === row.id ? { ...r, active: newStatus } : r))
+        prev.map(r => (r.id === row.id ? { ...r, active: newStatus } : r))
       );
       toast.success("Card deactivated successfully");
     } catch (error) {
@@ -79,6 +78,21 @@ const EmployeeCardsPortal = () => {
       }));
 
       setCards(formattedRows);
+
+      // Ako je poslovni račun i postoji company info unutar kartice
+      if (
+        selectedAccount.accountType?.toLowerCase() === 'business' &&
+        rowData.length > 0 &&
+        rowData[0].account?.company
+      ) {
+        const comp = rowData[0].account.company;
+        setCompany({
+          name: comp.name,
+          address: comp.address,
+          pib: comp.vatNumber,
+          companyRegistrationNumber: comp.companyNumber
+        });
+      }
     } catch (err) {
       toast.error('Failed to load cards data');
     } finally {
@@ -88,22 +102,8 @@ const EmployeeCardsPortal = () => {
 
   useEffect(() => {
     if (!selectedAccount) return;
-
     loadCards();
-
-    if (selectedAccount.accountType?.toLowerCase() === 'business' && selectedAccount.companyID) {
-      loadCompanyInfo(selectedAccount.companyID);
-    }
   }, [selectedAccount, loadCards]);
-
-  const loadCompanyInfo = async (companyId) => {
-    try {
-      const response = await fetchCompany(companyId);
-      setCompany(response.company);
-    } catch {
-      toast.error('Failed to load company info');
-    }
-  };
 
   const maskCardNumber = (cardNumber) => {
     return cardNumber.replace(/^(\d{4})\d{8}(\d{4})$/, '$1********$2');
@@ -112,6 +112,11 @@ const EmployeeCardsPortal = () => {
   const handleBack = () => navigate('/employee-bank-accounts-portal');
 
   const handleStatusChange = async (status) => {
+    if (selectedAccount.status === 'CLOSED') {
+      toast.error('Cannot change status of a closed account.');
+      return;
+    }
+
     try {
       await changingAccountStatus(selectedAccount.id, status);
       toast.success('Account status updated.');
@@ -122,105 +127,104 @@ const EmployeeCardsPortal = () => {
   };
 
   return (
-      <div>
-        <Sidebar />
-        <Box sx={{ padding: '16px', marginTop: '64px' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mr: 2, fontSize: '0.75rem' }}>
-              Back to Accounts
-            </Button>
-          </Box>
+    <div>
+      <Sidebar />
+      <Box sx={{ padding: '16px', marginTop: '64px' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+          <Button startIcon={<ArrowBackIcon />} onClick={handleBack} sx={{ mr: 2, fontSize: '0.75rem' }}>
+            Back to Accounts
+          </Button>
+        </Box>
 
-          <Typography variant="h5" align="center" sx={{ fontWeight: 'bold', mb: 4 }}>
-            Cards for Account
-          </Typography>
+        <Typography variant="h5" align="center" sx={{ fontWeight: 'bold', mb: 4 }}>
+          Cards for Account
+        </Typography>
 
-          <Grid container spacing={2} justifyContent="center" sx={{ mb: 4 }}>
-            {cards.map((card) => (
-                <Grid item key={card.id}>
-                  <CreditCardDisplay
-                      card={card}
-                      onBlockToggle={handleBlock}
-                      onActiveToggle={handleActive}
-                  />
-                </Grid>
-            ))}
-          </Grid>
+        <Grid container spacing={2} justifyContent="center" sx={{ mb: 4 }}>
+          {cards.map((card) => (
+            <Grid item key={card.id}>
+              <CreditCardDisplay
+                card={card}
+                onBlockToggle={handleBlock}
+                onActiveToggle={handleActive}
+              />
+            </Grid>
+          ))}
+        </Grid>
 
-          <Typography variant="h6" align="center" sx={{ mb: 2 }}>
-            Account Details
-          </Typography>
+        <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+          Account Details
+        </Typography>
 
-          <Grid container spacing={2} justifyContent="center">
-            {[{ label: 'Account Number', value: selectedAccount.accountNumber },
-              { label: 'First Name', value: selectedAccount.firstName },
-              { label: 'Last Name', value: selectedAccount.lastName },
-              { label: 'Account Type', value: selectedAccount.accountType },
-              { label: 'Currency Type', value: selectedAccount.currencyType },
-              { label: 'Status', isSelect: true }].map((item, idx) => (
-                <Grid item xs={12} sm={6} md={4} key={idx}>
-                  <Card
+        <Grid container spacing={2} justifyContent="center">
+          {[{ label: 'Account Number', value: selectedAccount.accountNumber },
+            { label: 'First Name', value: selectedAccount.firstName },
+            { label: 'Last Name', value: selectedAccount.lastName },
+            { label: 'Account Type', value: selectedAccount.accountType },
+            { label: 'Currency Type', value: selectedAccount.currencyType },
+            { label: 'Status', isSelect: true }].map((item, idx) => (
+              <Grid item xs={12} sm={6} md={4} key={idx}>
+                <Card
+                  variant="outlined"
+                  sx={{ height: 110, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}
+                >
+                  <CardContent sx={{ width: '100%' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {item.label}
+                    </Typography>
+                    {item.isSelect ? (
+                      <Select
+                        fullWidth
+                        value={selectedAccount.status}
+                        onChange={(e) => handleStatusChange(e.target.value)}
+                        sx={{ mt: 1, fontSize: '0.9rem', fontWeight: 600 }}
+                        disabled={selectedAccount.status === 'CLOSED'}
+                      >
+                        <MenuItem value="ACTIVE">ACTIVE</MenuItem>
+                        <MenuItem value="BLOCKED">BLOCKED</MenuItem>
+                        <MenuItem value="CLOSED">CLOSED</MenuItem>
+                      </Select>
+                    ) : (
+                      <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
+                        {item.value}
+                      </Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              </Grid>
+          ))}
+        </Grid>
+
+        {selectedAccount.accountType.toLowerCase() === 'business' && company && (
+          <>
+            <Typography variant="h6" align="center" sx={{ mt: 5, mb: 2 }}>
+              Company Information
+            </Typography>
+            <Grid container spacing={2} justifyContent="center">
+              {[{ label: 'Company Name', value: company.name },
+                { label: 'Registration Number', value: company.companyRegistrationNumber },
+                { label: 'PIB', value: company.pib }].map((item, idx) => (
+                  <Grid item xs={12} sm={6} md={4} key={idx}>
+                    <Card
                       variant="outlined"
                       sx={{ height: 110, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}
-                  >
-                    <CardContent sx={{ width: '100%' }}>
-                      <Typography variant="body2" color="text.secondary">
-                        {item.label}
-                      </Typography>
-                      {item.isSelect ? (
-                          <Select
-                              fullWidth
-                              value={selectedAccount.status}
-                              onChange={(e) => handleStatusChange(e.target.value)}
-                              sx={{ mt: 1, fontSize: '0.9rem', fontWeight: 600 }}
-                          >
-                            <MenuItem value="ACTIVE">ACTIVE</MenuItem>
-                            <MenuItem value="BLOCKED">BLOCKED</MenuItem>
-                            <MenuItem value="CLOSED">CLOSED</MenuItem>
-                            <MenuItem value="FROZEN">FROZEN</MenuItem>
-                          </Select>
-                      ) : (
-                          <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
-                            {item.value}
-                          </Typography>
-                      )}
-                    </CardContent>
-                  </Card>
-                </Grid>
-            ))}
-          </Grid>
-
-          {selectedAccount.accountType.toLowerCase() === 'business' && company && (
-              <>
-                <Typography variant="h6" align="center" sx={{ mt: 5, mb: 2 }}>
-                  Company Information
-                </Typography>
-                <Grid container spacing={2} justifyContent="center">
-                  {[{ label: 'Company Name', value: company.name },
-                    { label: 'Registration Number', value: company.companyRegistrationNumber },
-                    { label: 'PIB', value: company.pib },
-                    { label: 'Address', value: company.address }].map((item, idx) => (
-                      <Grid item xs={12} sm={6} md={4} key={idx}>
-                        <Card
-                            variant="outlined"
-                            sx={{ height: 110, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}
-                        >
-                          <CardContent>
-                            <Typography variant="body2" color="text.secondary">
-                              {item.label}
-                            </Typography>
-                            <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
-                              {item.value}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                  ))}
-                </Grid>
-              </>
-          )}
-        </Box>
-      </div>
+                    >
+                      <CardContent>
+                        <Typography variant="body2" color="text.secondary">
+                          {item.label}
+                        </Typography>
+                        <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
+                          {item.value}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+              ))}
+            </Grid>
+          </>
+        )}
+      </Box>
+    </div>
   );
 };
 

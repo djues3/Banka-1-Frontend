@@ -36,6 +36,7 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
                         checked={card.blocked}
                         onChange={() => onBlockToggle(card)}
                         className={styles.blockSwitch}
+                        disabled={!card.active}
                     />
                     <span>{card.blocked ? "Blocked" : "Unblocked"}</span>
                 </div>

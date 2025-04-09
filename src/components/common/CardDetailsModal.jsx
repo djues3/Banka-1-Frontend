@@ -109,24 +109,24 @@ const CardDetailsModal = ({ open, onClose, card }) => {
             <Link sx={{ml:10}} onClick={() => setLimitModalOpen(true)} className="modal-link">Change card limit</Link>
           </DialogActions>
 
-          <DialogActions sx={{justifyContent: "center", alignItems: "center"}}>
-            <Link
-                className="modal-link"
-                onClick={async () => {
-                  try {
-                    await updateCardStatus(card.id, true);
-                    alert("Card successfully blocked!");
-                  } catch (error) {
-                    alert("Failed to block card.");
-                    console.error("Error blocking card:", error);
-                  }
-                }}
-              >
-                Block card
-            </Link>
-          </DialogActions>
-
-
+          {card.active && (
+            <DialogActions sx={{justifyContent: "center", alignItems: "center"}}>
+              <Link
+                  className="modal-link"
+                  onClick={async () => {
+                    try {
+                      await updateCardStatus(card.id, true);
+                      alert("Card successfully blocked!");
+                    } catch (error) {
+                      alert("Failed to block card.");
+                      console.error("Error blocking card:", error);
+                    }
+                  }}
+                >
+                  Block card
+              </Link>
+            </DialogActions>
+          )}
 
           <DialogActions sx={{ justifyContent: "center" , alignItems: "center"}}>
               <Button className="modal-button" variant="contained" onClick={onClose}>Back</Button>

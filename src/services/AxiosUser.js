@@ -41,9 +41,24 @@ export const loginUser = async (email, password) => {
   }
 };
 
+// export const fetchCustomers = async () => {
+//   try {
+//     const response = await apiUser.get("/api/users/search/customers");
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error fetching customers:", error);
+//     throw error;
+//   }
+// };
+
 export const fetchCustomers = async () => {
   try {
-    const response = await apiUser.get("/api/users/search/customers");
+    const response = await apiUser.get("/api/users/search/customers", {
+      params: {
+        page: 0,
+        pageSize: 1000 // ili bilo koji broj koji ti odgovara
+      }
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching customers:", error);
