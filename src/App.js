@@ -34,6 +34,7 @@ import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal
 import ViewOrderPortal from "./pages/portals/ViewOrderPortal";
 import CompaniesPortal from "./pages/portals/CompaniesPortal";
 import TaxTrackingPortal from "./pages/portals/TaxTrackingPortal";
+import TokenExpiryHandler from "./components/common/TokenExpiryHandler";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
       <CardProvider>
         <CssBaseline />
         <BrowserRouter>
+            <TokenExpiryHandler/>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
