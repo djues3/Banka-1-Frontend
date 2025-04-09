@@ -8,22 +8,31 @@ import Dialog from "@mui/material/Dialog";
 import {createRecipientt} from "../../services/AxiosBanking";
 import {
     fetchFirstStockPrice,
-    fetchForex, fetchFuture,
+    fetchForex, fetchFuture, fetchOptions,
     fetchStock, fetchStockPriceByDate,
     fetchStockPriceByMonth
 } from "../../services/AxiosTrading";
 function SecuritiesModal({ isOpen, onClose, ticker, type }) {
 
     const [security, setSecurity] = useState([]);
-    const [options, setOptions] = useState([]);
+    // const [options, setOptions] = useState({});
+
+
+    const [detailsData, setDetailsData] = useState({});
+
+
+    const [options, setOptions] = useState({});
+    const [settlementDates, setSettlementDates] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(null);
     const [calls, setCalls] = useState([]);
     const [puts, setPuts] = useState([]);
     const [sharedPrice, setSharedPrice] = useState(0);
-    const [detailsData, setDetailsData] = useState({});
-    const [stockDataMonth, setStockDataMonth] = useState([]
-    );
-    const [stockDataDay, setStockDataDay] = useState({});
+
+
+
+
     const [stockDataWeek, setStockDataWeek] = useState({});
+    const [stockDataMonth, setStockDataMonth] = useState([]);
     const [stockDataYear, setStockDataYear] = useState({});
     const [stockDataFiveYears, setStockDataFiveYears] = useState({});
     const [stockDataStart, setStockDataStart] = useState({});
@@ -208,26 +217,66 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
 
     const loadOptions = async () => {
         try {
-            // const data = await fetchOptions(ticker);
+            const data = await fetchOptions(ticker);
+            console.log( "Ucitane ocpije ==  ",data.data)
             // setOptions(data);
-            const options1 = [
-                { optionType: "call", lastPrice: 120, bid: 118, ask: 122, impliedVol: 25.3, openInterest: 500, strikePrice: 100 },
-                { optionType: "put", lastPrice: 10, bid: 9, ask: 11, impliedVol: 28.1, openInterest: 450, strikePrice: 100 },
+            const { details, listing } = data.data;
 
-                { optionType: "call", lastPrice: 95, bid: 93, ask: 97, impliedVol: 22.8, openInterest: 600, strikePrice: 90 },
-                { optionType: "put", lastPrice: 15, bid: 14, ask: 16, impliedVol: 30.5, openInterest: 550, strikePrice: 90 },
+            const groupedBySettlementAndType = {};
 
-                { optionType: "call", lastPrice: 75, bid: 73, ask: 77, impliedVol: 21.1, openInterest: 700, strikePrice: 80 },
-                { optionType: "put", lastPrice: 20, bid: 19, ask: 21, impliedVol: 33.2, openInterest: 650, strikePrice: 80 },
+            details.forEach((detail, index) => {
+                const settlementDate = detail.SettlementDate;
+                const optionType = detail.OptionType.toLowerCase(); // "call" or "put"
+                const combined = {
+                    ...detail,
+                    ...listing[index], // merge corresponding listing entry
+                };
 
-                { optionType: "call", lastPrice: 50, bid: 48, ask: 52, impliedVol: 19.4, openInterest: 800, strikePrice: 70 },
-                { optionType: "put", lastPrice: 30, bid: 29, ask: 31, impliedVol: 35.0, openInterest: 750, strikePrice: 70 },
+                if (!groupedBySettlementAndType[settlementDate]) {
+                    groupedBySettlementAndType[settlementDate] = {
+                        call: [],
+                        put: [],
+                    };
+                }
 
-                { optionType: "call", lastPrice: 30, bid: 28, ask: 32, impliedVol: 18.5, openInterest: 900, strikePrice: 60 },
-                { optionType: "put", lastPrice: 45, bid: 44, ask: 46, impliedVol: 38.2, openInterest: 850, strikePrice: 60 },
-            ];
-            console.log("options: ", options1)
-            setOptions(options1);
+                groupedBySettlementAndType[settlementDate][optionType].push(combined);
+            });
+
+            const dates = Object.keys(groupedBySettlementAndType).sort()
+
+            console.log("Grupisane po datumu i tipu == ",groupedBySettlementAndType);
+            setOptions(groupedBySettlementAndType);
+            setSettlementDates(dates);
+            setSelectedDate(dates[0] ?? null);
+
+
+
+
+
+
+
+
+
+
+
+            // const options1 = [
+            //     { optionType: "call", lastPrice: 120, bid: 118, ask: 122, impliedVol: 25.3, openInterest: 500, strikePrice: 100 },
+            //     { optionType: "put", lastPrice: 10, bid: 9, ask: 11, impliedVol: 28.1, openInterest: 450, strikePrice: 100 },
+            //
+            //     { optionType: "call", lastPrice: 95, bid: 93, ask: 97, impliedVol: 22.8, openInterest: 600, strikePrice: 90 },
+            //     { optionType: "put", lastPrice: 15, bid: 14, ask: 16, impliedVol: 30.5, openInterest: 550, strikePrice: 90 },
+            //
+            //     { optionType: "call", lastPrice: 75, bid: 73, ask: 77, impliedVol: 21.1, openInterest: 700, strikePrice: 80 },
+            //     { optionType: "put", lastPrice: 20, bid: 19, ask: 21, impliedVol: 33.2, openInterest: 650, strikePrice: 80 },
+            //
+            //     { optionType: "call", lastPrice: 50, bid: 48, ask: 52, impliedVol: 19.4, openInterest: 800, strikePrice: 70 },
+            //     { optionType: "put", lastPrice: 30, bid: 29, ask: 31, impliedVol: 35.0, openInterest: 750, strikePrice: 70 },
+            //
+            //     { optionType: "call", lastPrice: 30, bid: 28, ask: 32, impliedVol: 18.5, openInterest: 900, strikePrice: 60 },
+            //     { optionType: "put", lastPrice: 45, bid: 44, ask: 46, impliedVol: 38.2, openInterest: 850, strikePrice: 60 },
+            // ];
+            // console.log("options: ", options1)
+
             setSharedPrice(80);
 
 
@@ -238,23 +287,33 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
     }
 
     useEffect(() => {
-        if (options.length > 0) {
-            console.log("Updated options:", options);
-            splitOptions();
+        if (selectedDate && options[selectedDate]) {
+            setCalls(options[selectedDate].call || []);
+            setPuts(options[selectedDate].put || []);
+        } else {
+            setCalls([]);
+            setPuts([]);
         }
-    }, [options]); // Runs when options change
+    }, [selectedDate, options]);
 
-    const splitOptions = () => {
-        const sortedOptions = [...options].sort((a, b) => a.strikePrice - b.strikePrice);
-        const newCalls = sortedOptions.filter(item => item.optionType === "call");
-        const newPuts = sortedOptions.filter(item => item.optionType === "put");
-
-        console.log("Calls:", newCalls);
-        console.log("Puts:", newPuts);
-
-        setCalls(newCalls);
-        setPuts(newPuts);
-    };
+    // useEffect(() => {
+    //     if (options.length > 0) {
+    //         console.log("Updated options:", options);
+    //         splitOptions();
+    //     }
+    // }, [options]); // Runs when options change
+    //
+    // const splitOptions = () => {
+    //     const sortedOptions = [...options].sort((a, b) => a.strikePrice - b.strikePrice);
+    //     const newCalls = sortedOptions.filter(item => item.optionType === "call");
+    //     const newPuts = sortedOptions.filter(item => item.optionType === "put");
+    //
+    //     console.log("Calls:", newCalls);
+    //     console.log("Puts:", newPuts);
+    //
+    //     setCalls(newCalls);
+    //     setPuts(newPuts);
+    // };
 
 
 
@@ -268,7 +327,6 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
             setPuts([]);
             setDetailsData({});
             setStockDataMonth([]);
-            setStockDataDay({});
             setStockDataWeek({});
             setStockDataYear({});
             setStockDataFiveYears({});
@@ -282,7 +340,7 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
         if(type === "Stock"){
             fillStockData();
             loadOptions();
-            // splitOptions();
+
         }
 
 
@@ -301,7 +359,7 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
             maxWidth="lg"
             fullWidth
             sx={{ "& .MuiDialog-paper": { minHeight: "700px" } }}>
-            <DialogTitle>{detailsData?.listing?.name}</DialogTitle>
+            <DialogTitle>{detailsData?.listing?.ticker}</DialogTitle>
 
             <DialogContent>
 
@@ -454,26 +512,45 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
                                     <h2 className="text-2xl font-bold text-center mb-4">Option chain</h2>
                                     <br/>
 
-                                    <label htmlFor="optionCount">Select Option: </label>
-                                    <select
-                                        id="optionCount"
-                                        value={selectedValue}
-                                        onChange={(e) => setSelectedValue(Number(e.target.value))}
-                                        className="mb-4 p-2 border rounded"
-                                    >
-                                        {calls.map((_, index) => (
-                                            <option key={index + 1} value={index + 1}>
-                                                {index + 1}
-                                            </option>
-                                        ))}
-                                    </select>
+
+                                    {/*<select*/}
+                                    {/*    id="optionCount"*/}
+                                    {/*    value={selectedValue}*/}
+                                    {/*    onChange={(e) => setSelectedValue(Number(e.target.value))}*/}
+                                    {/*    className="mb-4 p-2 border rounded"*/}
+                                    {/*>*/}
+                                    {/*    {calls.map((_, index) => (*/}
+                                    {/*        <option key={index + 1} value={index + 1}>*/}
+                                    {/*            {index + 1}*/}
+                                    {/*        </option>*/}
+                                    {/*    ))}*/}
+                                    {/*</select>*/}
+
+
+
+                                    {selectedDate && (
+                                        <>
+                                            <label htmlFor="settlementDate">Settlement Date:  </label>
+                                            <select
+                                                value={selectedDate}
+                                                onChange={(e) => setSelectedDate(e.target.value)}
+                                            >
+                                                {settlementDates.map((date) => (
+                                                    <option key={date} value={date}>
+                                                        {date}
+                                                    </option>
+                                                ))}
+                                            </select>
+
+                                        </>
+                                    )}
 
 
                                     <table className={styles.optionChainTable}>
-                                        <thead>
+                                    <thead>
                                         <tr>
                                             <th colSpan="5">Calls</th>
-                                            <th>Shared price {sharedPrice}</th>
+                                            <th>Shared price {detailsData?.listing?.lastPrice}</th>
 
                                             <th colSpan="5">Puts</th>
                                         </tr>
@@ -492,24 +569,52 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {calls.map((call, index) => {
-                                            const put = puts[index] || {};
-                                            return (
-                                                <tr key={index}>
-                                                    <td>{call.lastPrice || ""}</td>
-                                                    <td>{call.bid || ""}</td>
-                                                    <td>{call.ask || ""}</td>
-                                                    <td>{call.impliedVol || ""}</td>
-                                                    <td>{call.openInterest || ""}</td>
-                                                    <td className={styles.strike}>{call.strikePrice || put.strikePrice || ""}</td>
-                                                    <td>{put.lastPrice || ""}</td>
-                                                    <td>{put.bid || ""}</td>
-                                                    <td>{put.ask || ""}</td>
-                                                    <td>{put.impliedVol || ""}</td>
-                                                    <td>{put.openInterest || ""}</td>
-                                                </tr>
-                                            );
-                                        })}
+                                        {(() => {
+                                            const callMap = {};
+                                            const putMap = {};
+
+                                            calls.forEach(call => {
+                                                callMap[call.StrikePrice] = call;
+                                            });
+
+                                            puts.forEach(put => {
+                                                putMap[put.StrikePrice] = put;
+                                            });
+
+
+                                            //Get a sorted list of unique strike prices
+                                            const allStrikes = Array.from(new Set([
+                                                ...calls.map(c => c.StrikePrice),
+                                                ...puts.map(p => p.StrikePrice)
+                                            ])).sort((a, b) => a - b);
+
+
+                                            return allStrikes.map((strike, index) => {
+                                                const call = callMap[strike] || {};
+                                                const put = putMap[strike] || {};
+
+                                                return (
+                                                    <tr key={index}>
+                                                        {/* Calls side */}
+                                                        <td>{call.lastPrice ?? '-'}</td>
+                                                        <td>{call.bid ?? '-'}</td>
+                                                        <td>{call.ask ?? '-'}</td>
+                                                        <td>{put.ImpliedVol ? put.ImpliedVol.toFixed(2) : '-'}</td>
+                                                        <td>{call.OpenInterest ?? '-'}</td>
+
+                                                        {/* Strike price */}
+                                                        <td>{strike}</td>
+
+                                                        {/* Puts side */}
+                                                        <td>{put.lastPrice ?? '-'}</td>
+                                                        <td>{put.bid ?? '-'}</td>
+                                                        <td>{put.ask ?? '-'}</td>
+                                                        <td>{put.ImpliedVol ? put.ImpliedVol.toFixed(2) : '-'}</td>
+                                                        <td>{put.OpenInterest ?? '-'}</td>
+                                                    </tr>
+                                                );
+                                            });
+                                        })()}
                                         </tbody>
                                     </table>
 

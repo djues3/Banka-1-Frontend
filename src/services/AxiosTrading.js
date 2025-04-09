@@ -14,11 +14,11 @@ apiTrading.interceptors.request.use(
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
 
-        console.log(
-            `${config.method.toUpperCase()} ${
-                config.url
-            } - Token: ${token.substring(0, 20)}...`
-        );
+        // console.log(
+        //     `${config.method.toUpperCase()} ${
+        //         config.url
+        //     } - Token: ${token.substring(0, 20)}...`
+        // );
       }
       return config;
     },
@@ -247,6 +247,16 @@ export const fetchStockPriceByDate = async (ticker, date) => {
 export const fetchFirstStockPrice = async (ticker) => {
   try {
     const response = await apiTrading.get(`/stocks/${ticker}/history/first`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching the first stock price:", error);
+    throw error;
+  }
+};
+
+export const fetchOptions = async (ticker) => {
+  try {
+    const response = await apiTrading.get(`/options/symbol/${ticker}`);
     return response.data;
   } catch (error) {
     console.error("Error while fetching the first stock price:", error);
