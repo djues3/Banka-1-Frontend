@@ -66,7 +66,7 @@ const ActiveOffersPage = () => {
       await rejectOffer(offerId);
       await loadOffers();
     } catch (error) {
-      console.error("Greška pri prihvatanju ponude:", error);
+      console.error("Greška pri odbijanju ponude:", error);
     }
   };
 

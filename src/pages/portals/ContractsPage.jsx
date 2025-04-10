@@ -21,22 +21,21 @@ const ContractsPage = () => {
   const [filter, setFilter] = useState("valid");
   const [userId, setUserId] = useState(null);
 
+  const fetchContracts = async () => {
+    try {
+      const res = await getContracts();
+      setContracts(res.data || []);
+    } catch (error) {
+      console.error("Greška pri učitavanju ugovora:", error);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       const decoded = jwtDecode(token);
       setUserId(decoded.id);
     }
-
-    const fetchContracts = async () => {
-      try {
-        const res = await getContracts();
-        setContracts(res.data || []);
-      } catch (error) {
-        console.error("Greška pri učitavanju ugovora:", error);
-      }
-    };
-
     fetchContracts();
   }, []);
 
@@ -49,6 +48,7 @@ const ContractsPage = () => {
   const handleExecute = async (id) => {
     try {
       await executeOffers(id);
+      await fetchContracts();
       window.location.reload();
     } catch (error) {
       console.error("Greška pri izvršavanju ugovora:", error);
@@ -158,6 +158,7 @@ const ContractsPage = () => {
 
           {renderContracts("As buyer", buyerContracts, true, "buyer")}
           {renderContracts("As seller", sellerContracts, false, "seller")}
+
         </Box>
       </Box>
   );
