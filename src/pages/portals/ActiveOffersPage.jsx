@@ -10,7 +10,7 @@ import {
   Chip,
   Toolbar,
 } from "@mui/material";
-import { getActiveOffers, acceptOffer } from "../../services/AxiosTrading";
+import {getActiveOffers, acceptOffer, rejectOffer} from "../../services/AxiosTrading";
 import CounterOfferModal from "../../components/common/CounterOfferModal";
 import { jwtDecode } from "jwt-decode";
 import Sidebar from "../../components/mainComponents/Sidebar";
@@ -55,6 +55,15 @@ const ActiveOffersPage = () => {
   const handleAcceptOffer = async (offerId) => {
     try {
       await acceptOffer(offerId);
+      await loadOffers();
+    } catch (error) {
+      console.error("Greška pri prihvatanju ponude:", error);
+    }
+  };
+
+  const handleRejectOffer = async (offerId) => {
+    try {
+      await rejectOffer(offerId);
       await loadOffers();
     } catch (error) {
       console.error("Greška pri prihvatanju ponude:", error);
@@ -138,7 +147,7 @@ const ActiveOffersPage = () => {
                                 variant="outlined"
                                 color="error"
                                 disabled={!canInteract}
-                                onClick={() => console.log("Cancel offer clicked")}
+                                onClick={() => handleRejectOffer(offer.ID)}
                             >
                               Cancel Offer
                             </Button>
