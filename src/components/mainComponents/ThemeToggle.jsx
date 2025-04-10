@@ -99,7 +99,7 @@ const ThemeToggle = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([
-    { text: 'Hello! I\'m BankBot, your banking assistant. How can I help you today?', isUser: false }
+    { text: 'Hello! I\'m BankBot 🤖, your banking assistant. How can I help you today?', isUser: false }
   ]);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);

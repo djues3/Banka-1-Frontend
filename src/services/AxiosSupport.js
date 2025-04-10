@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiSupport = axios.create({
-  baseURL: `${process.env.REACT_APP_NOTIFICATION_API_URL || 'http://localhost:8000'}`,
+  baseURL: `${process.env.REACT_APP_SUPPORT_API_URL || 'http://localhost:8000'}`,
   headers: {
     "Content-Type": "application/json",
   },
@@ -27,7 +27,7 @@ apiSupport.interceptors.request.use(
 // Messages work as a OneShot, meaning that the bot will not remember previous messages 
 export const sendChatMessage = async (message) => {
   try {
-    const response = await apiSupport.post("/chat", {
+    const response = await apiSupport.post("/chat/", {
       message: message
     });
     return response.data.response;
@@ -36,5 +36,4 @@ export const sendChatMessage = async (message) => {
     throw error;
   }
 };
-
 export default apiSupport;
