@@ -1,8 +1,16 @@
 import React from 'react';
 import styles from '../../styles/CreditCardDisplay.module.css';
 import Switch from '@mui/material/Switch';
+import { jwtDecode } from "jwt-decode";
 
 const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark' }) => {
+    const token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    let isClient = false;
+    if(decodedToken.position === "NONE"){
+        isClient = true;
+    }
+
     const formatCardNumber = (number) => {
         return number.replace(/(.{4})/g, '$1 ').trim();
     };
@@ -50,13 +58,19 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
                         e.stopPropagation();
                     }}
                 >
-                    <Switch
-                        checked={card.active}
-                        onChange={() => onActiveToggle(card)}
-                        className={styles.activeSwitch}
-                        disabled={!card.active}
-                    />
-                    <span>{card.active ? "Active" : "Deactivated"}</span>
+
+
+                    {!isClient && (
+                        <div>
+                            <Switch
+                                checked={card.active}
+                                className={styles.activeSwitch}
+                                disabled={!card.active}
+                            />
+                            <span>{card.active ? "Active" : "Deactivated"}</span>
+                        </div>
+                    )}
+
                 </div>
             </div>
         </div>

@@ -222,6 +222,25 @@ export const fetchFuture = async (ticker) => {
   }
 };
 
+export const fetchFutureHistory = async (ticker) => {
+  try {
+    const response = await apiTrading.get(`/future/${ticker}/history`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching future history:", error);
+    throw error;
+  }
+};
+export const fetchForexHistory = async (ticker) => {
+  try {
+    const response = await apiTrading.get(`/forex/${ticker}/history`);
+    return response.data;
+  } catch (error) {
+    console.error("Error while fetching forex history:", error);
+    throw error;
+  }
+};
+
 
 export const fetchStockPriceByMonth = async (ticker) => {
   try {

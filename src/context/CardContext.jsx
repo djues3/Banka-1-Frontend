@@ -43,8 +43,15 @@ export const CardProvider = ({ children }) => {
         let errorMessage =
             error.response?.data?.error || "Greška prilikom kreiranja kartice. Pokušajte ponovo.";
 
-
         toast.error(errorMessage );
+
+        if(error.response?.data?.error ==="Privatni racun moze biti povezan sa najvise dve kartice!"){
+
+          toast.error("Molimo Vas da deaktivirate jednu od postojećih kartica pre pokušaja dodavanja nove.")
+        }
+
+
+
         // toast.error("Greška prilikom kreiranja kartice. Pokušajte ponovo.");
       }
       return false;
