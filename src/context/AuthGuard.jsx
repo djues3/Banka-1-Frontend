@@ -12,8 +12,9 @@ const AuthGuard = ({ allowedPositions, children }) => {
         return <Loader />;
     }
 
+
     if (!isLoggedIn || !token || !userInfo) {
-        return <Navigate to="/login" replace />;
+        return <Navigate to="/" replace />;
     }
 
     // try {

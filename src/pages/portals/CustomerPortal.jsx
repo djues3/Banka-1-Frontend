@@ -28,7 +28,6 @@ const CustomerPortal = () => {
         address: "",
         birthDate: "",
         gender: "MALE",
-        // password: ""
     });
 
     const columns = [

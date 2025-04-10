@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import {publicPaths} from "../routesConfig";
 
 const AuthContext = createContext();
 
@@ -10,12 +11,17 @@ export const AuthProvider = ({ children }) => {
     const [authLoaded, setAuthLoaded] = useState(false);
     const [redirectTo, setRedirectTo] = useState(null);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const token = localStorage.getItem("token");
 
         if (!token) {
-            logout();
+            if (!publicPaths.includes(location.pathname)) {
+                logout();
+            } else {
+                setAuthLoaded(true);
+            }
             return;
         }
 
@@ -34,7 +40,7 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setAuthLoaded(true);
         }
-    }, []);
+    }, [location.pathname]);
 
     useEffect(() => {
         if (redirectTo) {
@@ -60,7 +66,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = (redirectPath = "/login") => {
+    const logout = (redirectPath = "/") => {
         localStorage.removeItem("token");
         setIsLoggedIn(false);
         setUserInfo(null);

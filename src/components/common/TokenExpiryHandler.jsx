@@ -64,8 +64,7 @@ const TokenExpiryHandler = () => {
 
     const handleLoginRedirect = () => {
         setOpen(false);
-        // logout();
-        navigate('/login');
+        logout('/');
     };
 
     return (
