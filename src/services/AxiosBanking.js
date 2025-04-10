@@ -385,31 +385,27 @@ export const fetchAccountsId1 = async (id) => {
   }
 };
 
-export const fetchRecipientsForFast = async (accountId) => {
+export const fetchRecipientsForFast = async (userId) => {
   try {
-    console.log("AccountId = " + accountId);
-    const response = await apiBanking.get(`/receiver/${accountId}`);
+    console.log("Fetching fast recipients for userId = " + userId);
+    const response = await apiBanking.get(`/receiver/user/${userId}`);
 
-    // Logujemo celu strukturu odgovora
     console.log("Response data:", response.data);
 
-    // Proveravamo da li postoji 'receivers' unutar 'data'
     const receivers = response.data?.data?.receivers;
 
     if (Array.isArray(receivers)) {
-      const reversedReceivers = receivers.reverse();
-
-      // Vraćamo prve tri osobe nakon obrtanja niza
-      return reversedReceivers.slice(0, 3);
+      return receivers.slice(0, 3); // Vraćamo samo top 3
     } else {
       console.error("Response data is not an array:", response.data);
-      return []; // Ako nije niz, vraćamo prazan niz
+      return [];
     }
   } catch (error) {
     console.error("Error fetching recipients:", error);
     throw error;
   }
 };
+
 
 export const fetchUserLoans = async () => {
   try {
@@ -744,5 +740,16 @@ export const previewForeignExchangeTransfer = async (fromCurrency, toCurrency, a
 //     throw error;
 //   }
 // };
+
+export const fetchAllRecipientsForUser = async (userId) => {
+  try {
+    const response = await apiBanking.get(`/receiver/user/${userId}`);
+    return response.data.data.receivers;
+  } catch (error) {
+    console.error("Error fetching all recipients for user:", error);
+    throw error;
+  }
+};
+
 
 export default apiBanking;

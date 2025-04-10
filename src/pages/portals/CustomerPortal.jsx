@@ -129,6 +129,25 @@ const CustomerPortal = () => {
         return strLog; // Return as-is if not in expected format
     };
 
+
+    const convertBirthDateToISO = (birthDate) => {
+        if (!birthDate) return '';
+    
+        // Ako je već u ISO formatu (yyyy-MM-dd), sve ok
+        if (/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) {
+            return birthDate;
+        }
+    
+        // Ako je u formatu dd-MM-yyyy, konvertuj ga
+        if (/^\d{2}-\d{2}-\d{4}$/.test(birthDate)) {
+            const [day, month, year] = birthDate.split("-");
+            return `${year}-${month}-${day}`;
+        }
+    
+        return birthDate; // fallback
+    };
+    
+
     // Handle the row click event to open the edit modal with the customer data pre-filled in the form fields
     const handleRowClick = async (row) => {
         try {
@@ -145,9 +164,17 @@ const CustomerPortal = () => {
                 email: customerData.email,
                 phoneNumber: customerData.phoneNumber,
                 address: customerData.address,
-                birthDate: formatLogDate(customerData.birthDate),
+                // birthDate: convertToBackendFormat(customerData.birthDate),
+                birthDate: convertBirthDateToISO(customerData.birthDate),
+
+                // birthDate: customerData.birthDate,
+
                 gender: customerData.gender
             };
+
+            console.log("Dobijen birthDate:", customerData.birthDate);
+            console.log("Konvertovan za input:", convertBirthDateToISO(customerData.birthDate));
+
             // Set the selected customer data and open the edit modal with the data pre-filled in the form fields
             setSelectedCustomer(cleanCustomerData);
             setIsEditModalOpen(true);
@@ -156,12 +183,26 @@ const CustomerPortal = () => {
         }
     };
 
+    const convertToBackendFormat = (isoDate) => {
+        if (!isoDate) return '';
+        
+        const parts = isoDate.split('-');
+        if (parts.length === 3) {
+            const [year, month, day] = parts;
+            return `${day}-${month}-${year}`;
+        }
+    
+        return isoDate;
+    };
+    
+
     // Handle the save event when the user clicks the save button in the edit modal formm
     const handleSaveCustomer = async (updatedCustomerData) => {
         if (!validateCustomerData(updatedCustomerData)) return;
         try {
 
-            updatedCustomerData.birthDate = transformDateForApi(updatedCustomerData.birthDate);
+            // updatedCustomerData.birthDate = transformDateForApi(updatedCustomerData.birthDate);
+            // console.log(updatedCustomerData.birthDate);
 
             // Update the customer data and show a success message
             await updateCustomer(updatedCustomerData.id, updatedCustomerData);
@@ -174,27 +215,22 @@ const CustomerPortal = () => {
     };
 
     const transformDateForApi = (dateString) => {
-        // Skip if empty
         if (!dateString) return null;
-
+    
         try {
-            // Expecting "DD-MM-YYYY" => split by '-'
             const [day, month, year] = dateString.split('-');
-
-            // Validate we got three parts
             if (!day || !month || !year) return null;
-
-            // Construct "YYYYMMDD" and parse it as a number
-            const resultString = `${year}${month}${day}`; // "20020302"
-
-            // Optionally add further checks for valid day/month/year ranges
-            return Number(resultString);
-
+    
+            return `${year}-${month}-${day}`; // Obrnut redosled: YYYY-MM-DD
         } catch (error) {
             console.error('Error converting date:', error);
             return null;
         }
     };
+
+    
+    
+    
 
     // Add create customer handler
     const handleCreateCustomer = async (customerData) => {

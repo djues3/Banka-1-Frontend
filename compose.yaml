@@ -57,7 +57,7 @@ services:
       - THC_PATH=/actuator/health
       - SERVER_PORT=8080
       - "SPRING_PROFILES_ACTIVE="
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://notification-db:5432/notification_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://notification-db:5432/notification_db?useUnicode=true&characterEncoding=UTF-8
       - SPRING_DATASOURCE_USERNAME=notification_user
       - SPRING_DATASOURCE_PASSWORD=notification_password
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
@@ -66,6 +66,7 @@ services:
       - SPRING_ACTIVEMQ_BROKER_URL=tcp://message-broker:61616?jms.prefetchPolicy.all=1&jms.redeliveryPolicy.maximumRedeliveries=0
       #    If you want colored output, uncomment the following line:
       - SPRING_OUTPUT_ANSI_ENABLED=always
+      - SPRING_SQL_INIT_ENCODING=UTF-8
     healthcheck:
       test: ["CMD", "/workspace/health-check"]
       interval: 10s
@@ -104,7 +105,7 @@ services:
       - THC_PORT=8082
       - THC_PATH=/actuator/health
       - "SPRING_PROFILES_ACTIVE="
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://banking-db:5432/banking_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://banking-db:5432/banking_db?useUnicode=true&characterEncoding=UTF-8
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
       - SPRING_DATASOURCE_USERNAME=banking_service_user
       - SPRING_DATASOURCE_PASSWORD=banking_service_password
@@ -114,6 +115,7 @@ services:
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=INFO
       #    If you want colored output, uncomment the following line:
       - SPRING_OUTPUT_ANSI_ENABLED=always
+      - SPRING_SQL_INIT_ENCODING=UTF-8
     healthcheck:
       test: ["CMD", "/workspace/health-check"]
       interval: 10s
@@ -166,6 +168,7 @@ services:
       #    If you want colored output, uncomment the following line:
       - SPRING_OUTPUT_ANSI_ENABLED=always
       - FRONTEND_URL=https://localhost
+      - SPRING_SQL_INIT_ENCODING=UTF-8
     healthcheck:
       test: ["CMD", "/workspace/health-check"]
       interval: 10s
@@ -202,7 +205,7 @@ services:
       - trading-net
       - broker-net
     environment:
-      - POSTGRES_DSN=postgres://trading_service_user:trading_service_password@trading-db:5432/trading_db?sslmode=disable
+      - POSTGRES_DSN=postgres://trading_service_user:trading_service_password@trading-db:5432/trading_db?sslmode=disable&useUnicode=true&characterEncoding=UTF-8
       - USER_SERVICE=http://user-service:8081
       - BANKING_SERVICE=http://banking-service:8082
       - MESSAGE_BROKER_NETWORK=tcp
@@ -228,6 +231,14 @@ services:
       POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
       LANG: en_US.utf8
       LC_ALL: en_US.utf8
+  support-service:
+    image: "harbor.k8s.elab.rs/banka-1/support-service:latest"
+    ports:
+      - "8000:8000"
+    environment:
+      # Create your own API key https://aistudio.google.com/app/apikey
+#      - GOOGLE_API=<YOUR_KEY_GOES_HERE>
+      - LOG_LEVEL=debug
 
 networks:
   broker-net: null

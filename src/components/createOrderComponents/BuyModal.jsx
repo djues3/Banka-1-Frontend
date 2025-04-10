@@ -82,11 +82,17 @@ const BuyModal = ({ open, onClose, security }) => {
 
 
 
-    //kolicina ne moze da bude manja od 1
     const handleQuantityChange = (event) => {
-        const value = parseInt(event.target.value, 10);
-        if (!isNaN(value) && value >= 1) {
+        const value = event.target.value;
+
+        if (value === '') {
             setQuantity(value);
+            return;
+        }
+
+        const numericValue = parseInt(value, 10);
+        if (!isNaN(numericValue)) {
+            setQuantity(numericValue);
         }
     };
 
@@ -171,11 +177,15 @@ const BuyModal = ({ open, onClose, security }) => {
                                 type="number"
                                 value={quantity}
                                 onChange={handleQuantityChange}
+                                onBlur={() => {
+                                    if (!quantity || quantity < 1) {
+                                        setQuantity(1);
+                                    }
+                                }}
                                 inputProps={{ min: 1 }}
                                 fullWidth
                                 sx={{ mt: 2 }}
                                 variant="standard"
-
                             />
 
                             {/* Limit Value */}

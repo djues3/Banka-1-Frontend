@@ -110,6 +110,7 @@ const CardDetailsModal = ({ open, onClose, card }) => {
             <Link sx={{ml:10}} onClick={() => setLimitModalOpen(true)} className="modal-link">Change card limit</Link>
           </DialogActions>
 
+
           <DialogActions sx={{justifyContent: "center", alignItems: "center"}}>
               <Link
                   className="modal-link"

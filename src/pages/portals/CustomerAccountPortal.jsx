@@ -71,7 +71,7 @@ const CustomerAccountPortal = () =>{
                     <Box sx={{ display: "flex", flexDirection: "row", gap: 3, mt: 4 }}>
                         {/* Leva strana - FastPayments */}
                         <Box sx={{ flex: 1 }}>
-                            <FastPayments accountId={selectedAccountId} />
+                            <FastPayments  />
                         </Box>
 
                         {/* Desna strana - RecentTransactions */}
