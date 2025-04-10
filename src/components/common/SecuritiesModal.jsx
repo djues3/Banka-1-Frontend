@@ -8,29 +8,27 @@ import Dialog from "@mui/material/Dialog";
 import {createRecipientt} from "../../services/AxiosBanking";
 import {
     fetchFirstStockPrice,
-    fetchForex, fetchFuture, fetchOptions,
+    fetchForex, fetchForexHistory, fetchFuture, fetchFutureHistory, fetchOptions,
     fetchStock, fetchStockPriceByDate,
     fetchStockPriceByMonth
 } from "../../services/AxiosTrading";
 function SecuritiesModal({ isOpen, onClose, ticker, type }) {
 
+    //Details
     const [security, setSecurity] = useState([]);
-    // const [options, setOptions] = useState({});
-
-
     const [detailsData, setDetailsData] = useState({});
 
 
+    //option chain
     const [options, setOptions] = useState({});
     const [settlementDates, setSettlementDates] = useState([]);
     const [selectedDate, setSelectedDate] = useState(null);
     const [calls, setCalls] = useState([]);
     const [puts, setPuts] = useState([]);
-    const [sharedPrice, setSharedPrice] = useState(0);
+    const [maxOptionCount, setMaxOptionCount] = useState(0);
+    const [selectedOptionCount, setSelectedOptionCount] = useState(0);
 
-
-
-
+    //history
     const [stockDataWeek, setStockDataWeek] = useState({});
     const [stockDataMonth, setStockDataMonth] = useState([]);
     const [stockDataYear, setStockDataYear] = useState({});
@@ -38,7 +36,7 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
     const [stockDataStart, setStockDataStart] = useState({});
     const [stockData, setStockData] = useState({});
 
-    const [selectedValue, setSelectedValue] = useState(1);
+
 
 
     const getCurrentDate = () => {
@@ -143,40 +141,62 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
 
 
     const fillStockData = async () => {
-        const data = await fetchStockPriceByMonth(ticker)
-        setStockDataMonth(data);
 
-        console.log(data)
+        if(type === "Stock") {
 
-        const filteredData = data.filter(item => {
-            const currentDate = new Date(); // Get the current date
-            const targetDate = new Date(item.date); // Convert string in `date` field to Date object
+            const data = await fetchStockPriceByMonth(ticker)
+            setStockDataMonth(data);
 
-            // Calculate the difference in days
-            const differenceInTime = Math.abs(currentDate - targetDate);
-            const differenceInDays = differenceInTime / (1000 * 60 * 60 * 24);
+            console.log(data)
 
-            return differenceInDays <= 7; // Keep only if within 7 days
-        });
-        setStockDataWeek(filteredData);
+            const filteredData = data.filter(item => {
+                const currentDate = new Date(); // Get the current date
+                const targetDate = new Date(item.date); // Convert string in `date` field to Date object
 
-        const firstPrice = await fetchFirstStockPrice(ticker);
-        const date = new Date(firstPrice.data.date);
-        const formattedFirstDate = date.toISOString().split("T")[0]; // "YYYY-MM-DD"
+                // Calculate the difference in days
+                const differenceInTime = Math.abs(currentDate - targetDate);
+                const differenceInDays = differenceInTime / (1000 * 60 * 60 * 24);
 
-        console.log("formattedFirstDate price = " ,formattedFirstDate);
+                return differenceInDays <= 7; // Keep only if within 7 days
+            });
+            setStockDataWeek(filteredData);
 
-        console.log("current date: ", getCurrentDate())
-        console.log("last 12 months: ", getFirstDatesOfLast12Months())
-        console.log("last 5 years: ", getFirstDatesOfLast5Years())
-        console.log("from the start: ", getFirstDatesFromYearToCurrent("03/15/2022"))
+            const firstPrice = await fetchFirstStockPrice(ticker);
+            const date = new Date(firstPrice.data.date);
+            const formattedFirstDate = date.toISOString().split("T")[0]; // "YYYY-MM-DD"
+
+            console.log("formattedFirstDate price = ", formattedFirstDate);
+
+            console.log("current date: ", getCurrentDate())
+            console.log("last 12 months: ", getFirstDatesOfLast12Months())
+            console.log("last 5 years: ", getFirstDatesOfLast5Years())
+            console.log("from the start: ", getFirstDatesFromYearToCurrent("03/15/2022"))
 
 
-        let newStockData = [];
+            let newStockData = [];
 
-        fetchStockData(getFirstDatesOfLast12Months,null, setStockDataYear);
-        fetchStockData(getFirstDatesOfLast5Years,null, setStockDataFiveYears);
-        fetchStockData(getFirstDatesFromYearToCurrent,formattedFirstDate, setStockDataStart);
+            fetchStockData(getFirstDatesOfLast12Months, null, setStockDataYear);
+            fetchStockData(getFirstDatesOfLast5Years, null, setStockDataFiveYears);
+            fetchStockData(getFirstDatesFromYearToCurrent, formattedFirstDate, setStockDataStart);
+
+        }else if (type === "Future"){
+            const respone = await fetchFutureHistory(ticker);
+            const newStockData =[{
+                price: respone.data[0].Price,
+                date: respone.data[0].SnapshotDate
+            }]
+            setStockData(newStockData)
+            console.log(respone)
+        }else if (type === "Forex"){
+
+            const respone = await fetchForexHistory(ticker);
+            const newStockData =[{
+                price: respone.data[0].Price,
+                date: respone.data[0].SnapshotDate
+            }]
+            setStockData(newStockData)
+            console.log(respone)
+        }
 
 
 
@@ -218,18 +238,19 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
     const loadOptions = async () => {
         try {
             const data = await fetchOptions(ticker);
-            console.log( "Ucitane ocpije ==  ",data.data)
-            // setOptions(data);
+            console.log(data.data)
+
+
             const { details, listing } = data.data;
 
             const groupedBySettlementAndType = {};
 
             details.forEach((detail, index) => {
                 const settlementDate = detail.SettlementDate;
-                const optionType = detail.OptionType.toLowerCase(); // "call" or "put"
+                const optionType = detail.OptionType.toLowerCase();
                 const combined = {
                     ...detail,
-                    ...listing[index], // merge corresponding listing entry
+                    ...listing[index],
                 };
 
                 if (!groupedBySettlementAndType[settlementDate]) {
@@ -244,42 +265,12 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
 
             const dates = Object.keys(groupedBySettlementAndType).sort()
 
-            console.log("Grupisane po datumu i tipu == ",groupedBySettlementAndType);
+
+
+
             setOptions(groupedBySettlementAndType);
             setSettlementDates(dates);
             setSelectedDate(dates[0] ?? null);
-
-
-
-
-
-
-
-
-
-
-
-            // const options1 = [
-            //     { optionType: "call", lastPrice: 120, bid: 118, ask: 122, impliedVol: 25.3, openInterest: 500, strikePrice: 100 },
-            //     { optionType: "put", lastPrice: 10, bid: 9, ask: 11, impliedVol: 28.1, openInterest: 450, strikePrice: 100 },
-            //
-            //     { optionType: "call", lastPrice: 95, bid: 93, ask: 97, impliedVol: 22.8, openInterest: 600, strikePrice: 90 },
-            //     { optionType: "put", lastPrice: 15, bid: 14, ask: 16, impliedVol: 30.5, openInterest: 550, strikePrice: 90 },
-            //
-            //     { optionType: "call", lastPrice: 75, bid: 73, ask: 77, impliedVol: 21.1, openInterest: 700, strikePrice: 80 },
-            //     { optionType: "put", lastPrice: 20, bid: 19, ask: 21, impliedVol: 33.2, openInterest: 650, strikePrice: 80 },
-            //
-            //     { optionType: "call", lastPrice: 50, bid: 48, ask: 52, impliedVol: 19.4, openInterest: 800, strikePrice: 70 },
-            //     { optionType: "put", lastPrice: 30, bid: 29, ask: 31, impliedVol: 35.0, openInterest: 750, strikePrice: 70 },
-            //
-            //     { optionType: "call", lastPrice: 30, bid: 28, ask: 32, impliedVol: 18.5, openInterest: 900, strikePrice: 60 },
-            //     { optionType: "put", lastPrice: 45, bid: 44, ask: 46, impliedVol: 38.2, openInterest: 850, strikePrice: 60 },
-            // ];
-            // console.log("options: ", options1)
-
-            setSharedPrice(80);
-
-
 
         } catch (error) {
             console.error("Error loading options:", error);
@@ -288,32 +279,48 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
 
     useEffect(() => {
         if (selectedDate && options[selectedDate]) {
-            setCalls(options[selectedDate].call || []);
-            setPuts(options[selectedDate].put || []);
-        } else {
-            setCalls([]);
-            setPuts([]);
+            console.log("Duzina Calls / Duzina puts ",options[selectedDate].call.length , "/", options[selectedDate].put.length)
+
+            if(options[selectedDate].call.length > options[selectedDate].put.length){
+                setMaxOptionCount(Math.ceil(options[selectedDate].call.length / 2))
+                setSelectedOptionCount(Math.ceil(options[selectedDate].call.length / 2) )
+            }else {
+                setMaxOptionCount(Math.ceil(options[selectedDate].put.length / 2))
+                setSelectedOptionCount(Math.ceil(options[selectedDate].put.length / 2))
+            }
+
+
+
         }
     }, [selectedDate, options]);
 
-    // useEffect(() => {
-    //     if (options.length > 0) {
-    //         console.log("Updated options:", options);
-    //         splitOptions();
-    //     }
-    // }, [options]); // Runs when options change
-    //
-    // const splitOptions = () => {
-    //     const sortedOptions = [...options].sort((a, b) => a.strikePrice - b.strikePrice);
-    //     const newCalls = sortedOptions.filter(item => item.optionType === "call");
-    //     const newPuts = sortedOptions.filter(item => item.optionType === "put");
-    //
-    //     console.log("Calls:", newCalls);
-    //     console.log("Puts:", newPuts);
-    //
-    //     setCalls(newCalls);
-    //     setPuts(newPuts);
-    // };
+
+    useEffect(() => {
+        if(selectedDate && options[selectedDate]){
+            const allCalls = options[selectedDate].call || [];
+            const allPuts = options[selectedDate].put || [];
+            const sharedPrice = detailsData?.listing?.lastPrice
+
+
+            const sortedCalls = allCalls
+                .slice()
+                .sort((a, b) => Math.abs(a.StrikePrice - sharedPrice) - Math.abs(b.StrikePrice - sharedPrice))
+                .slice(0, selectedOptionCount * 2)
+                .sort((a, b) => a.StrikePrice - b.StrikePrice);
+
+            const sortedPuts = allPuts
+                .slice()
+                .sort((a, b) => Math.abs(a.StrikePrice - sharedPrice) - Math.abs(b.StrikePrice - sharedPrice))
+                .slice(0, selectedOptionCount * 2)
+                .sort((a, b) => a.StrikePrice - b.StrikePrice);
+
+            setCalls(sortedCalls);
+            setPuts(sortedPuts);
+        }else{
+            setCalls([]);
+            setPuts([]);
+        }
+    }, [selectedOptionCount]);
 
 
 
@@ -336,18 +343,17 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
         }
 
         loadDetails();
+        fillStockData();
 
         if(type === "Stock"){
-            fillStockData();
-            loadOptions();
 
+            loadOptions();
         }
 
 
     }, [isOpen,ticker]);
 
     if (!isOpen) return null;
-
 
 
 
@@ -386,20 +392,6 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
                                             <TableCell>Bid: {detailsData?.listing?.bid}</TableCell>
                                         </TableRow>
 
-                                        {/*<TableRow>*/}
-                                        {/*    /!*<TableCell colSpan={2}></TableCell>*!/*/}
-                                        {/*    <TableCell>*/}
-                                        {/*        Last refresh:*/}
-                                        {/*        {detailsData?.listing?.last_refresh*/}
-                                        {/*            ? new Date(detailsData.listing.last_refresh)*/}
-                                        {/*                .toISOString()*/}
-                                        {/*                .split("T")*/}
-                                        {/*                .join(" ")*/}
-                                        {/*                .slice(0, 19)*/}
-                                        {/*            : "N/A"}*/}
-                                        {/*    </TableCell>*/}
-                                        {/*</TableRow>*/}
-
                                     </TableBody>
                                 </Table>
                             </TableContainer>
@@ -419,7 +411,6 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
                                 </Table>
                             </TableContainer>
 
-                            {/*<h2 className="text-2xl font-bold text-center mb-4"></h2>*/}
                             <br/>
 
                             <TableContainer component={Paper}>
@@ -464,39 +455,38 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
                             </TableContainer>
                             <br/>
 
+                            <h2 className="text-2xl font-bold text-center mb-4">Stock Price</h2>
+                            <br/>
+
+                            <ResponsiveContainer width="90%" height="70%">
+                                <LineChart data={stockData}>
+                                    <XAxis
+                                        dataKey="date"
+
+                                        tickFormatter={(date) => new Date(date).toLocaleDateString("en-US", {
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit"
+                                        })}
+                                    />
+                                    <YAxis
+                                        dataKey={stockData[0]?.price ? "price" : (stockData[0]?.close ? "close" : "")}
+
+                                    />
+                                    <Tooltip/>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#ccc"/>
+                                    <Line type="monotone" dataKey="price" stroke="#16a34a" strokeWidth={3}
+                                          dot={{r: 5}}/>
+                                    <Line type="monotone" dataKey="close" stroke="#16a34a" strokeWidth={3}
+                                          dot={{r: 5}}/>
+
+
+                                </LineChart>
+                            </ResponsiveContainer>
+
                             {type === "Stock" && (
 
                                 <div style={{height: "400px", width: "100%"}}>
-
-
-                                    <h2 className="text-2xl font-bold text-center mb-4">Stock Price</h2>
-                                    <br/>
-
-                                    <ResponsiveContainer width="90%" height="70%">
-                                        <LineChart data={stockData}>
-                                            <XAxis
-                                                dataKey="date"
-
-                                                tickFormatter={(date) => new Date(date).toLocaleDateString("en-US", {
-                                                    year: "numeric",
-                                                    month: "2-digit",
-                                                    day: "2-digit"
-                                                })}
-                                            />
-                                            <YAxis
-                                                dataKey={stockData[0]?.price ? "price" : (stockData[0]?.close ? "close" : "")}
-
-                                            />
-                                            <Tooltip/>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#ccc"/>
-                                            <Line type="monotone" dataKey="price" stroke="#16a34a" strokeWidth={3}
-                                                  dot={{r: 5}}/>
-                                            <Line type="monotone" dataKey="close" stroke="#16a34a" strokeWidth={3}
-                                                  dot={{r: 5}}/>
-
-
-                                        </LineChart>
-                                    </ResponsiveContainer>
 
 
                                     <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
@@ -513,44 +503,40 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
                                     <br/>
 
 
-                                    {/*<select*/}
-                                    {/*    id="optionCount"*/}
-                                    {/*    value={selectedValue}*/}
-                                    {/*    onChange={(e) => setSelectedValue(Number(e.target.value))}*/}
-                                    {/*    className="mb-4 p-2 border rounded"*/}
-                                    {/*>*/}
-                                    {/*    {calls.map((_, index) => (*/}
-                                    {/*        <option key={index + 1} value={index + 1}>*/}
-                                    {/*            {index + 1}*/}
-                                    {/*        </option>*/}
-                                    {/*    ))}*/}
-                                    {/*</select>*/}
+                                    <label htmlFor="settlementDate">Settlement Date: </label>
+                                    <select
+                                        value={selectedDate}
+                                        onChange={(e) => setSelectedDate(e.target.value)}
+                                    >
+                                        {settlementDates.map((date) => (
+                                            <option key={date} value={date}>
+                                                {date}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <br/>
 
+                                    <label htmlFor="optionCount">Number of options: </label>
+                                    <select
+                                        id="optionCount"
+                                        value={selectedOptionCount}
+                                        onChange={(e) => setSelectedOptionCount(Number(e.target.value))}
+                                        className="mb-4 p-2 border rounded"
+                                    >
 
-
-                                    {selectedDate && (
-                                        <>
-                                            <label htmlFor="settlementDate">Settlement Date:  </label>
-                                            <select
-                                                value={selectedDate}
-                                                onChange={(e) => setSelectedDate(e.target.value)}
-                                            >
-                                                {settlementDates.map((date) => (
-                                                    <option key={date} value={date}>
-                                                        {date}
-                                                    </option>
-                                                ))}
-                                            </select>
-
-                                        </>
-                                    )}
+                                        {Array.from({length: maxOptionCount}, (_, i) => (
+                                            <option key={i + 1} value={i + 1}>
+                                                {i + 1}
+                                            </option>
+                                        ))}
+                                    </select>
 
 
                                     <table className={styles.optionChainTable}>
-                                    <thead>
+                                        <thead>
                                         <tr>
                                             <th colSpan="5">Calls</th>
-                                            <th>Shared price {detailsData?.listing?.lastPrice}</th>
+                                            <th style={{backgroundColor: '#3d3d3d', color: 'white'}}></th>
 
                                             <th colSpan="5">Puts</th>
                                         </tr>
@@ -582,37 +568,90 @@ function SecuritiesModal({ isOpen, onClose, ticker, type }) {
                                             });
 
 
-                                            //Get a sorted list of unique strike prices
                                             const allStrikes = Array.from(new Set([
                                                 ...calls.map(c => c.StrikePrice),
                                                 ...puts.map(p => p.StrikePrice)
                                             ])).sort((a, b) => a - b);
 
 
+                                            let sharedRowInserted = false;
+
                                             return allStrikes.map((strike, index) => {
                                                 const call = callMap[strike] || {};
                                                 const put = putMap[strike] || {};
 
-                                                return (
-                                                    <tr key={index}>
-                                                        {/* Calls side */}
-                                                        <td>{call.lastPrice ?? '-'}</td>
-                                                        <td>{call.bid ?? '-'}</td>
-                                                        <td>{call.ask ?? '-'}</td>
-                                                        <td>{put.ImpliedVol ? put.ImpliedVol.toFixed(2) : '-'}</td>
-                                                        <td>{call.OpenInterest ?? '-'}</td>
+                                                const rows = [];
 
-                                                        {/* Strike price */}
-                                                        <td>{strike}</td>
+                                                if (!sharedRowInserted && strike > detailsData?.listing?.lastPrice) {
+                                                    sharedRowInserted = true;
 
-                                                        {/* Puts side */}
-                                                        <td>{put.lastPrice ?? '-'}</td>
-                                                        <td>{put.bid ?? '-'}</td>
-                                                        <td>{put.ask ?? '-'}</td>
-                                                        <td>{put.ImpliedVol ? put.ImpliedVol.toFixed(2) : '-'}</td>
-                                                        <td>{put.OpenInterest ?? '-'}</td>
-                                                    </tr>
-                                                );
+
+                                                    rows.push(
+                                                        <tr key={`shared-${index}`} style={{fontWeight: 'bold'}}>
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                            <td style={{backgroundColor: 'gray'}}>{detailsData?.listing?.lastPrice}</td>
+                                                            {/* Shared price */}
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                            <td style={{backgroundColor: 'gray'}}>-</td>
+                                                        </tr>
+                                                    );
+                                                }
+
+
+                                                if (!sharedRowInserted) {
+                                                    rows.push(
+                                                        <tr key={index}>
+
+                                                            <td style={{backgroundColor: 'green'}}>{call.lastPrice ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'green'}}>{call.bid ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'green'}}>{call.ask ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'green'}}>{call.ImpliedVol ? call.ImpliedVol.toFixed(5) : '-'}</td>
+                                                            <td style={{backgroundColor: 'green'}}>{call.OpenInterest ?? '-'}</td>
+
+
+                                                            <td style={{backgroundColor: 'gray'}}>{strike}</td>
+
+                                                            <td style={{backgroundColor: 'red'}}>{put.lastPrice ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'red'}}>{put.bid ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'red'}}>{put.ask ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'red'}}>{put.ImpliedVol ? put.ImpliedVol.toFixed(5) : '-'}</td>
+                                                            <td style={{backgroundColor: 'red'}}>{put.OpenInterest ?? '-'}</td>
+                                                        </tr>
+                                                    );
+                                                }
+
+
+                                                if (sharedRowInserted) {
+                                                    rows.push(
+                                                        <tr key={`after-shared-${index}`}>
+
+                                                            <td style={{backgroundColor: 'red'}}>{call.lastPrice ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'red'}}>{call.bid ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'red'}}>{call.ask ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'red'}}>{call.ImpliedVol ? call.ImpliedVol.toFixed(5) : '-'}</td>
+                                                            <td style={{backgroundColor: 'red'}}>{call.OpenInterest ?? '-'}</td>
+
+
+                                                            <td style={{backgroundColor: 'gray'}}>{strike}</td>
+
+
+                                                            <td style={{backgroundColor: 'green'}}>{put.lastPrice ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'green'}}>{put.bid ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'green'}}>{put.ask ?? '-'}</td>
+                                                            <td style={{backgroundColor: 'green'}}>{put.ImpliedVol ? put.ImpliedVol.toFixed(5) : '-'}</td>
+                                                            <td style={{backgroundColor: 'green'}}>{put.OpenInterest ?? '-'}</td>
+                                                        </tr>
+                                                    );
+                                                }
+
+                                                return rows;
                                             });
                                         })()}
                                         </tbody>
