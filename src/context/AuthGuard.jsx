@@ -1,20 +1,26 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import {useAuth} from "./AuthContext";
+import Loader from "../components/common/Loader";
 
 const AuthGuard = ({ allowedPositions, children }) => {
+    const { isLoggedIn, userInfo, authLoaded } = useAuth();
     const token = localStorage.getItem("token");
 
-    if (!token) {
+
+    if (!authLoaded) {
+        return <Loader />;
+    }
+
+    if (!isLoggedIn || !token || !userInfo) {
         return <Navigate to="/login" replace />;
     }
 
-    try {
-        const decodedToken = jwtDecode(token);
-        const isAdmin = decodedToken.isAdmin || false; // Boolean
-        const rawDepartment = decodedToken.department || null;
+    // try {
+        const isAdmin = userInfo.isAdmin || false; // Boolean
+        const rawDepartment = userInfo.department || null;
         const userDepartment = (rawDepartment === "AGENT" || rawDepartment === "SUPERVISOR") ? rawDepartment : null; // "SUPERVISOR", "AGENT"
-        const userPosition = decodedToken.position || null; // "WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN", "NONE"
+        const userPosition = userInfo.position || null; // "WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN", "NONE"
 
         // Determine if the user is employee based on department or position
         const isEmployed = userDepartment !== null || (userPosition && userPosition !== "NONE");
@@ -64,11 +70,6 @@ const AuthGuard = ({ allowedPositions, children }) => {
         if (isCustomer) {
 
             // If trying to access Employee-only page, deny access
-            {/*
-            if (allowedPositions.some(pos => ["WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN"].includes(pos))) {
-                return <Navigate to="/customer-home" replace />;
-            }
-            */}
             if(!allowedPositions.includes("NONE")){
                 return <Navigate to="/customer-home" replace />;
             }
@@ -79,21 +80,21 @@ const AuthGuard = ({ allowedPositions, children }) => {
 
         // If User is not Employee and is not Customer
         return <Navigate to="/login" replace />;
-    } catch (error) {
-        console.error("Invalid token", error);
-
-        try {
-            const decodedToken = jwtDecode(token);
-            const isEmployed = decodedToken.department !== null || (decodedToken.position && decodedToken.position !== "NONE");
-
-            // Remote User to home page if he tries to access page that is forbidden
-            return isEmployed ? <Navigate to="/employee-home" replace /> : <Navigate to="/customer-home" replace />;
-        } catch {
-
-            // Token totally invalid, login again
-            return <Navigate to="/login" replace />;
-        }
-    }
+    // } catch (error) {
+    //     console.error("Invalid token", error);
+    //
+    //     try {
+    //         const decodedToken = jwtDecode(token);
+    //         const isEmployed = decodedToken.department !== null || (decodedToken.position && decodedToken.position !== "NONE");
+    //
+    //         // Remote User to home page if he tries to access page that is forbidden
+    //         return isEmployed ? <Navigate to="/employee-home" replace /> : <Navigate to="/customer-home" replace />;
+    //     } catch {
+    //
+    //         // Token totally invalid, login again
+    //         return <Navigate to="/login" replace />;
+    //     }
+    // }
 };
 
 export default AuthGuard;

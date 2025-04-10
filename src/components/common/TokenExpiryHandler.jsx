@@ -9,11 +9,13 @@ import {
     DialogActions,
     Button
 } from '@mui/material';
+import { useAuth } from '../../context/AuthContext';
 
 const TokenExpiryHandler = () => {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     const timeoutRef = useRef(null);
+    const { isLoggedIn, logout } = useAuth();
 
     const scheduleExpiryCheck = () => {
         const token = localStorage.getItem('token');
@@ -39,6 +41,7 @@ const TokenExpiryHandler = () => {
     };
 
     useEffect(() => {
+    if (isLoggedIn){
         scheduleExpiryCheck();
         const onStorage = (e) => {
             if (e.key === 'token') {
@@ -56,10 +59,12 @@ const TokenExpiryHandler = () => {
             }
             window.removeEventListener('storage', onStorage);
         };
-    }, []);
+    }
+    }, [isLoggedIn]);
 
     const handleLoginRedirect = () => {
         setOpen(false);
+        // logout();
         navigate('/login');
     };
 
