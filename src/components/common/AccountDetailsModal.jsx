@@ -92,33 +92,6 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
                             Limit Change
                         </Link>
                     </Grid>
-                    <Grid item xs={6} textAlign="right">
-                        <Link
-                            component={RouterLink}
-                            to="/new-payment-portal"
-                            sx={{
-                                color: theme.palette.primary.main,
-                                textDecoration: "none",
-                                fontSize: "0.9rem",
-                                "&:hover": { textDecoration: "underline" }
-                            }}
-                        >
-                            New Payment
-                        </Link>
-                        <br />
-                        <Link
-                            component={RouterLink}
-                            to="/cards-portal"
-                            sx={{
-                                color: theme.palette.primary.main,
-                                textDecoration: "none",
-                                fontSize: "0.9rem",
-                                "&:hover": { textDecoration: "underline" }
-                            }}
-                        >
-                            New Card
-                        </Link>
-                    </Grid>
                 </Grid>
             </DialogContent>
             <DialogActions sx={{ justifyContent: "center" }}>

@@ -11,8 +11,10 @@ import {
     TableContainer,
     Box
 } from "@mui/material";
-import TransactionDetailsModal from "./TransactionDetailsModal";
+
 import { fetchAccountsTransactions } from "../../services/transactionService";
+import TransactionList from "../transactionTable/TransactionList";
+import TransactionDetailsModal from "../transactionTable/TransactionDetailsModal";
 
 const RecentTransactions = ({ accountId }) => {
     const [open, setOpen] = useState(false);
@@ -147,11 +149,14 @@ const RecentTransactions = ({ accountId }) => {
                 </TableContainer>
             )}
 
-            <TransactionDetailsModal
-                open={open}
-                onClose={handleClose}
-                transaction={selectedTransaction}
-            />
+            {selectedTransaction && (
+                <TransactionDetailsModal
+                    open={Boolean(selectedTransaction)}
+                    onClose={() => setSelectedTransaction(null)}
+                    transaction={selectedTransaction}
+                />
+            )}
+
         </Box>
     );
 };

@@ -40,6 +40,7 @@ import OtcTradingPortal from "./pages/portals/OtcTradingPortal";
 import ActiveOffersPage from "./pages/portals/ActiveOffersPage";
 import ContractsPage from "./pages/portals/ContractsPage";
 import { AuthProvider } from "./context/AuthContext";
+import RecipientOverviewPage from "./pages/portals/RecipientOverviewPage";
 
 function App() {
   return (
@@ -189,7 +190,7 @@ function App() {
             } />
             <Route path="/receiver-portal" element={
               <AuthGuard allowedPositions={["NONE"]}>
-                <ReceiversPortal />
+                <RecipientOverviewPage />
               </AuthGuard>
             } />
             <Route path="/transactions-page" element={

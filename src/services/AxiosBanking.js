@@ -752,4 +752,43 @@ export const fetchAllRecipientsForUser = async (userId) => {
 };
 
 
+export const fetchAllData = async (setCards, setLoading, setError) => {
+  setLoading(true);
+  setError(null);
+  try {
+    const userId = getUserIdFromToken();
+    if (!userId) {
+      setError("User ID not found.");
+      setLoading(false);
+      return;
+    }
+
+    const accounts = await fetchAccountsForUser(userId);
+    if (!Array.isArray(accounts) || accounts.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    const cardPromises = accounts.map(async (account) => {
+      try {
+        const res = await fetchUserCards(account.id);
+        const cards = res.data?.cards || [];
+        return cards.filter(card => card.active).map(card => ({ ...card, account }));
+      } catch {
+        return [];
+      }
+    });
+
+    const result = await Promise.all(cardPromises);
+    console.log("Sve kartice = ", result);
+    setCards(result.flat());
+  } catch (err) {
+    console.error(err);
+    setError("Failed to load cards");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 export default apiBanking;

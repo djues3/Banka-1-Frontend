@@ -18,6 +18,8 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import "../../styles/AccountCard.css";
 import AccountDetailsModal from "../common/AccountDetailsModal";
 import {useNavigate} from "react-router-dom";
+import CreateCardModal from "../common/CreateCardModal";
+import {fetchAllData} from "../../services/AxiosBanking";
 
 const AccountCard = ({ account, isSelected, onClick }) => {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -25,6 +27,7 @@ const AccountCard = ({ account, isSelected, onClick }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState(null);
     const navigate = useNavigate();
+    const [modalOpen, setModalOpen] = useState(false);
 
 
     const isDarkMode = theme.palette.mode === "dark";
@@ -51,6 +54,7 @@ const AccountCard = ({ account, isSelected, onClick }) => {
             .toLowerCase()                           // sve mala slova
             .replace(/\b\w/g, char => char.toUpperCase()); // svako prvo slovo u reči veliko
     };
+
 
     return (
         <Card
@@ -111,8 +115,8 @@ const AccountCard = ({ account, isSelected, onClick }) => {
             </CardContent>
 
             <CardActions sx={{ display: "flex", justifyContent: "space-between", px: 2, pb: 2 }}>
-                <IconButton color="primary">
-                    <AddIcon />
+                <IconButton>
+
                 </IconButton>
                 <Button
                     variant="contained"
@@ -140,7 +144,9 @@ const AccountCard = ({ account, isSelected, onClick }) => {
                 onClose={() => setIsModalOpen(false)}
                 account={selectedAccount}
             />
+
         </Card>
+
     );
 };
 
