@@ -116,7 +116,7 @@ const ContractsPage = () => {
                             {new Date(contract.SettlementAt).toLocaleDateString()}
                           </Typography>
 
-                          {!expired && showExecute && (
+                          {!expired && showExecute && !contract.IsExercised && (
                               <Box sx={{ mt: 2 }}>
                                 <Button
                                     variant="contained"
