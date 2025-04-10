@@ -54,7 +54,7 @@ const CardsPage = () => {
                 try {
                     const res = await fetchUserCards(account.id);
                     const cards = res.data?.cards || [];
-                    return cards.map(card => ({ ...card, account }));
+                    return cards.filter(card => card.active).map(card => ({ ...card, account }));
                 } catch {
                     return [];
                 }

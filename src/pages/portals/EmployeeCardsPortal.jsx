@@ -15,7 +15,8 @@ import {
   blockCard,
   changingAccountStatus,
   deactivateCard,
-  fetchCardsByAccountId
+  fetchCardsByAccountId,
+  updateCardStatus
 } from '../../services/AxiosBanking';
 import { toast } from 'react-toastify';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -49,9 +50,20 @@ const EmployeeCardsPortal = () => {
 
     try {
       const newStatus = !row.active;
+      // First deactivate the card
       await deactivateCard(row.id, newStatus);
+      
+      // If we're deactivating the card, also block it
+      if (!newStatus) {
+        await updateCardStatus(row.id, true);
+      }
+      
       setCards(prev =>
-        prev.map(r => (r.id === row.id ? { ...r, active: newStatus } : r))
+        prev.map(r => (r.id === row.id ? { 
+          ...r, 
+          active: newStatus,
+          blocked: !newStatus // Set blocked to true when deactivating
+        } : r))
       );
       toast.success("Card deactivated successfully");
     } catch (error) {

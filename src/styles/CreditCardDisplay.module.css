@@ -158,3 +158,10 @@
         gap: 4px;
     }
 }
+
+.deactivated {
+    opacity: 0.4;
+    filter: grayscale(100%);
+    pointer-events: none; /* opcionalno – sprečava klikove */
+  }
+  

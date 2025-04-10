@@ -11,7 +11,7 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
 
 
     return (
-        <div className={`${styles.creditCard} ${styles[theme]} ${card.blocked ? styles.blocked : ''}`}>
+        <div className={`${styles.creditCard} ${styles[theme]} ${card.blocked ? styles.blocked : ''} ${!card.active ? styles.deactivated : ''}`}>
             <div className={styles.cardTop}>
                 <div className={styles.chip} />
                 <div className={styles.brand}>VISA</div>
@@ -52,6 +52,7 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
                 >
                     <Switch
                         checked={card.active}
+                        onChange={() => onActiveToggle(card)}
                         className={styles.activeSwitch}
                         disabled={!card.active}
                     />
