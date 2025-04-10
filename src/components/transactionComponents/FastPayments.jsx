@@ -8,7 +8,7 @@ import {
     getUserIdFromToken
 } from "../../services/AxiosBanking";
 
-const FastPayments = ({ accountId }) => {
+const FastPayments = () => {
     const navigate = useNavigate();
     const [openModal, setOpenModal] = useState(false);
     const [recipient, setRecipient] = useState({ name: "", accountNumber: "" });
@@ -20,56 +20,23 @@ const FastPayments = ({ accountId }) => {
     useEffect(() => {
         const userId = getUserIdFromToken();
         if (userId) {
-            const fetchRecipients1 = async () => {
+            const fetchTopRecipients = async () => {
                 try {
                     setLoading(true);
-                    const data = await fetchRecipientsForFast(accountId);
-
-                    if (!data || data.length === 0) {
-                        const mockRecipients = [
-                            {
-                                id: 101,
-                                ownerAccountId: accountId,
-                                accountNumber: "111122223333",
-                                firstName: "Mocka",
-                                lastName: "Milić",
-                                address: "Test adresa 1"
-                            },
-                            {
-                                id: 102,
-                                ownerAccountId: accountId,
-                                accountNumber: "222233334444",
-                                firstName: "Testko",
-                                lastName: "Todorović",
-                                address: "Test adresa 2"
-                            },
-                            {
-                                id: 103,
-                                ownerAccountId: accountId,
-                                accountNumber: "333344445555",
-                                firstName: "Jovana",
-                                lastName: "Mockić",
-                                address: "Test adresa 3"
-                            }
-                        ];
-
-                        setRecipientList(mockRecipients);
-
-                    } else {
-                        setRecipientList(data.receivers || []);
-                    }
+                    const data = await fetchRecipientsForFast(userId);
+                    setRecipientList(data);
                 } catch (err) {
                     setError("Failed to load recipients.");
                 } finally {
                     setLoading(false);
                 }
             };
-            fetchRecipients1();
+            fetchTopRecipients();
         } else {
             setError("User ID not found.");
             setLoading(false);
         }
-    }, [accountId]);
+    }, []);
 
     const handleAddRecipient = async () => {
         if (!recipient.name || !recipient.accountNumber) {
@@ -84,14 +51,15 @@ const FastPayments = ({ accountId }) => {
         }
 
         const newRecipient = {
-            ownerAccountId: accountId,
+            ownerAccountId: null, // više nije vezan za račun
             accountNumber: recipient.accountNumber,
-            fullName: recipient.name
+            fullName: recipient.name,
+            address: recipient.address || ""
         };
 
         try {
             await createRecipientt(newRecipient);
-            const updatedRecipients = await fetchRecipientsForFast(accountId);
+            const updatedRecipients = await fetchRecipientsForFast(userId);
             setRecipientList(updatedRecipients);
             setOpenModal(false);
             setRecipient({ name: "", accountNumber: "" });
@@ -101,19 +69,19 @@ const FastPayments = ({ accountId }) => {
         }
     };
 
-    const getInitials = (firstName, lastName) => {
-        const first = firstName?.trim()?.charAt(0)?.toUpperCase() || "";
-        const last = lastName?.trim()?.charAt(0)?.toUpperCase() || "";
+    const getInitials = (fullName) => {
+        const parts = fullName?.trim()?.split(" ");
+        const first = parts?.[0]?.charAt(0)?.toUpperCase() || "";
+        const last = parts?.[1]?.charAt(0)?.toUpperCase() || "";
         return first + last;
     };
-
 
     return (
         <Box sx={{
             width: "max-content",
             borderRadius: 4,
             padding: 3,
-            paddingLeft:"50px",
+            paddingLeft: "50px",
             bgcolor: "transparent",
             backdropFilter: "none",
             textAlign: "left",
@@ -123,7 +91,7 @@ const FastPayments = ({ accountId }) => {
                 Fast Payments
             </Typography>
 
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, ml: "auto", mr: "auto", width: "fit-content" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
                 {loading ? (
                     Array.from({ length: 3 }).map((_, i) => (
                         <Box key={i} sx={{ display: "flex", gap: 2 }}>
@@ -137,7 +105,6 @@ const FastPayments = ({ accountId }) => {
                             key={index}
                             sx={{ display: "flex", alignItems: "center", gap: 2 }}
                         >
-
                             <IconButton
                                 onClick={() => navigate("/new-payment-portal", { state: { recipient } })}
                                 sx={{
@@ -152,16 +119,14 @@ const FastPayments = ({ accountId }) => {
                                         backgroundColor: "#6244d5"
                                     }
                                 }}
-
                                 onMouseEnter={() => setHoveredIndex(index)}
                                 onMouseLeave={() => setHoveredIndex(null)}
                             >
-                                {getInitials(recipient.firstName, recipient.lastName)}
-
+                                {getInitials(recipient.fullName)}
                             </IconButton>
 
                             <Fade in={hoveredIndex === index}>
-                                <Typography>{recipient.firstName} {recipient.lastName}</Typography>
+                                <Typography>{recipient.fullName}</Typography>
                             </Fade>
                         </Box>
                     ))
