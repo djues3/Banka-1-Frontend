@@ -14,7 +14,7 @@ import CreateCardModal from "../../components/common/CreateCardModal";
 import CreditCardDisplay from "../../components/common/CreditCardDisplay";
 import CardDetailsModal from "../../components/common/CardDetailsModal";
 import {
-    fetchAccountsForUser,
+    fetchAccountsForUser, fetchAllData,
     fetchUserCards,
     getUserIdFromToken, updateCardStatus
 } from "../../services/AxiosBanking";
@@ -30,46 +30,46 @@ const CardsPage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetchAllData();
+        fetchAllData(setCards, setLoading, setError);
     }, []);
 
-    const fetchAllData = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const userId = getUserIdFromToken();
-            if (!userId) {
-                setError("User ID not found.");
-                setLoading(false);
-                return;
-            }
-
-            const accounts = await fetchAccountsForUser(userId);
-            if (!Array.isArray(accounts) || accounts.length === 0) {
-                setLoading(false);
-                return;
-            }
-
-            const cardPromises = accounts.map(async (account) => {
-                try {
-                    const res = await fetchUserCards(account.id);
-                    const cards = res.data?.cards || [];
-                    return cards.filter(card => card.active).map(card => ({ ...card, account }));
-                } catch {
-                    return [];
-                }
-            });
-
-            const result = await Promise.all(cardPromises);
-            console.log("Sve kartice = ", result);
-            setCards(result.flat());
-        } catch (err) {
-            console.error(err);
-            setError("Failed to load cards");
-        } finally {
-            setLoading(false);
-        }
-    };
+    // const fetchAllData = async () => {
+    //     setLoading(true);
+    //     setError(null);
+    //     try {
+    //         const userId = getUserIdFromToken();
+    //         if (!userId) {
+    //             setError("User ID not found.");
+    //             setLoading(false);
+    //             return;
+    //         }
+    //
+    //         const accounts = await fetchAccountsForUser(userId);
+    //         if (!Array.isArray(accounts) || accounts.length === 0) {
+    //             setLoading(false);
+    //             return;
+    //         }
+    //
+    //         const cardPromises = accounts.map(async (account) => {
+    //             try {
+    //                 const res = await fetchUserCards(account.id);
+    //                 const cards = res.data?.cards || [];
+    //                 return cards.filter(card => card.active).map(card => ({ ...card, account }));
+    //             } catch {
+    //                 return [];
+    //             }
+    //         });
+    //
+    //         const result = await Promise.all(cardPromises);
+    //         console.log("Sve kartice = ", result);
+    //         setCards(result.flat());
+    //     } catch (err) {
+    //         console.error(err);
+    //         setError("Failed to load cards");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     const handlePrev = () => {
         if (!cards.length) return;
@@ -103,7 +103,8 @@ const CardsPage = () => {
                 console.error("Error blocking card:", error);
             }
         }
-        fetchAllData();
+        await fetchAllData(setCards, setLoading, setError);
+
 
     };
 
@@ -259,7 +260,7 @@ const CardsPage = () => {
                 onClose={() => setModalOpen(false)}
                 onSave={async (wasCreated) => {
                     if (wasCreated) {
-                        await fetchAllData();
+                        await fetchAllData(setCards, setLoading, setError);
                     }
                 }}
             />
@@ -267,11 +268,9 @@ const CardsPage = () => {
             <CardDetailsModal
                 open={detailsModalOpen}
                 onClose={() => {
-                    setDetailsModalOpen(false)
-                    fetchAllData()
-                }
-
-            }
+                    setDetailsModalOpen(false);
+                    fetchAllData(setCards, setLoading, setError);
+                }}
                 card={cards[currentIndex]}
             />
             <ToastContainer position="bottom-right"/>

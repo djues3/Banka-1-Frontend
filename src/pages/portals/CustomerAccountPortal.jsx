@@ -77,6 +77,7 @@ const CustomerAccountPortal = () =>{
                         {/* Desna strana - RecentTransactions */}
                         <Box sx={{ flex: 2 }}>
                             <RecentTransactions accountId={selectedAccountId} />
+
                         </Box>
                     </Box>
                 </Box>
