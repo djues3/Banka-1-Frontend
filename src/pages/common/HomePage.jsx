@@ -9,13 +9,11 @@ import {
     CssBaseline,
     Grid,
     Card,
-    CardActionArea,
-    CardContent
+    CardActionArea
 } from '@mui/material';
 import LogoutButton from '../../components/common/LogoutButton';
 
 // ICONS
-import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import ReceiptIcon from '@mui/icons-material/Receipt';
@@ -32,6 +30,10 @@ import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import BusinessIcon from '@mui/icons-material/Business';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import CorporateFareIcon from '@mui/icons-material/CorporateFare';
+import PriceCheckIcon from '@mui/icons-material/PriceCheck';
 
 const HomePage = () => {
     const [roleMessage, setRoleMessage] = useState('');
@@ -39,53 +41,67 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem('token');
         if (token) {
             try {
                 const decodedToken = jwtDecode(token);
-                const { isAdmin, isEmployed, department, position } = decodedToken;
+                const isAdmin = decodedToken.isAdmin;
+                const isEmployed = decodedToken.isEmployed;
+                const department = decodedToken.department || null;
+                const position = decodedToken.position || null;
 
                 const items = [];
-
                 const addCard = (label, route, icon) =>
                     items.push({ label, route, icon });
 
+                // Admin
                 if (isAdmin) {
                     setRoleMessage('Welcome to the Admin Dashboard');
                     addCard('Employees', '/employee-portal', PeopleIcon);
+                    addCard('Customers', '/customer-portal', PeopleIcon);
+                    addCard('Bank Accounts', '/employee-bank-accounts-portal', AccountBalanceIcon);
+                    addCard('All Loans', '/all-loans-employee', ReceiptIcon);
+                    addCard('Pending Loans', '/pending-loans-employee', AttachMoneyIcon);
+                    addCard('Companies', '/companies-portal', CorporateFareIcon);
                 }
 
-                if (isEmployed && department === 'SUPERVISOR') {
+                // Supervisor
+                else if (isEmployed && department === 'SUPERVISOR') {
                     setRoleMessage('Welcome to the Supervisor Dashboard');
-                    addCard('Home', '/employee-home', HomeIcon);
                     addCard('Actuarial Management', '/actuarial-management-portal', CompareArrowsIcon);
-                    addCard('Actuarial Performance', '/actuarial-performance-portal', ReceiptIcon);
+                    addCard('Actuarial Performance', '/actuarial-performance-portal', PriceCheckIcon);
                     addCard('Portfolio', '/portfolio-page', LibraryBooksIcon);
                     addCard('Important Files', '/actuary-buying-portal', FolderIcon);
                     addCard('Orders', '/view-order-portal', ShoppingCartIcon);
                     addCard('Tax Tracking', '/tax-tracking-portal', BarChartIcon);
-                } else if (isEmployed && department === 'AGENT') {
+                }
+
+                // Agent
+                else if (isEmployed && department === 'AGENT') {
                     setRoleMessage('Welcome to the Agent Dashboard');
-                    addCard('Home', '/employee-home', HomeIcon);
                     addCard('Portfolio', '/portfolio-page', LibraryBooksIcon);
                     addCard('Important Files', '/actuary-buying-portal', FolderIcon);
-                } else if (isEmployed && department !== 'AGENT' && department !== 'SUPERVISOR') {
+                }
+
+                // Regular Employee
+                else if (isEmployed && department !== 'AGENT' && department !== 'SUPERVISOR') {
                     setRoleMessage('Welcome to the Employee Dashboard');
-                    addCard('Home', '/employee-home', HomeIcon);
                     addCard('Customers', '/customer-portal', PeopleIcon);
                     addCard('Bank Accounts', '/employee-bank-accounts-portal', AccountBalanceIcon);
                     addCard('All Loans', '/all-loans-employee', ReceiptIcon);
-                    addCard('Pending Loans', '/pending-loans-employee', PaymentIcon);
+                    addCard('Pending Loans', '/pending-loans-employee', AttachMoneyIcon);
                     addCard('Companies', '/companies-portal', BusinessIcon);
-                } else if (position === 'NONE') {
+                }
+
+                // Customer
+                else if (position === 'NONE') {
                     setRoleMessage('Welcome to the Customer Dashboard');
-                    addCard('Home', '/customer-home', HomeIcon);
                     addCard('Accounts', '/accounts-portal', AccountBalanceIcon);
                     addCard('New Payment', '/new-payment-portal', PaymentIcon);
                     addCard('Transfer', '/internal-transfer-portal', CompareArrowsIcon);
                     addCard('Payment Receivers', '/receiver-portal', PersonAddIcon);
                     addCard('Payment Overview', '/transactions-page', ReceiptIcon);
-                    addCard('Exchange Rates', '/exchange-rates', CurrencyExchangeIcon);
+                    addCard('Exchange Rates', '/exchange-rates', MonetizationOnIcon);
                     addCard('Currency Converter', '/currency-converter', CompareArrowsIcon);
                     addCard('Cards', '/cards-portal', CreditCardIcon);
                     addCard('Loans', '/loans-portal', CurrencyExchangeIcon);
@@ -94,15 +110,9 @@ const HomePage = () => {
                     addCard('OTC Trading', '/otc-trading-portal', ShoppingCartIcon);
                     addCard('OTC Offers', '/otc-active-offers', GavelIcon);
                     addCard('OTC Contracts', '/otc-contracts', HandshakeIcon);
-                } else {
-                    setRoleMessage('Unauthorized Access');
                 }
 
-                const filteredItems = items.filter(
-                    item => item.route !== '/employee-home' && item.route !== '/customer-home'
-                );
-
-                setCards(filteredItems);
+                setCards(items);
             } catch (error) {
                 console.error('Invalid token', error);
             }
@@ -112,23 +122,18 @@ const HomePage = () => {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
             <CssBaseline />
-
-            {/* AppBar */}
             <AppBar position="fixed">
                 <Toolbar>
-                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
-
-                    </Typography>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}></Typography>
                     <LogoutButton />
                 </Toolbar>
             </AppBar>
 
-            {/* Main content */}
             <Box sx={{ flexGrow: 1, padding: 3, marginTop: '80px' }}>
-                <Typography variant="h4" gutterBottom>
+                <Typography variant="h4" align="center" gutterBottom>
                     {roleMessage}
                 </Typography>
-                <Typography variant="body1" gutterBottom>
+                <Typography variant="body1" align="center" gutterBottom>
                     Please select a section below.
                 </Typography>
 

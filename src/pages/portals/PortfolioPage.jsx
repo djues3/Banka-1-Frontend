@@ -142,7 +142,7 @@ const PortfolioPage = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {portfolioData.length > 0 ? (
+              {portfolioData && portfolioData.length > 0 ? (
                 portfolioData
                   .filter((row) => selectedTab === 0 || row.public > 0)
                   .map((row, index) => (

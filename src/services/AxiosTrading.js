@@ -355,6 +355,15 @@ export const executeOffers = async (offer_id) => {
   }
 };
 
+export const rejectOffer = async (offer_id) => {
+  try {
+    return await apiTrading.put(`/otctrade/offer/${offer_id}/reject`);
+  } catch (error) {
+    console.error("Greška prihvatanju ugovora:", error);
+    throw error;
+  }
+};
+
 
 
 export default apiTrading;
