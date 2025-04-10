@@ -40,7 +40,7 @@ const PublicSecuritiesTable = () => {
                     id: i,
                     ...item.security,
                     availableQuantity: item.security.availableQuantity || 0,
-                    portfolioId: item.id // dodaj portfolioId ovde
+                    portfolioId: item.id 
                 }));
                 setSecurities(mapped);
             } catch (error) {
