@@ -205,7 +205,7 @@ services:
       - trading-net
       - broker-net
     environment:
-      - POSTGRES_DSN=postgres://trading_service_user:trading_service_password@trading-db:5432/trading_db?sslmode=disable&useUnicode=true&characterEncoding=UTF-8
+      - POSTGRES_DSN=postgres://trading_service_user:trading_service_password@trading-db:5432/trading_db?sslmode=disable
       - USER_SERVICE=http://user-service:8081
       - BANKING_SERVICE=http://banking-service:8082
       - MESSAGE_BROKER_NETWORK=tcp
