@@ -20,14 +20,14 @@ const TaxTrackingTable = () => {
             const taxData = await fetchTaxData();
             const enrichedData = await Promise.all(
                 taxData.map(async (tax) => {
-                    const userData = tax.isActuary
+                    const userData = tax.is_actuary
                         ? await fetchEmployeeById(tax.user_id)
                         : await fetchCustomerById(tax.user_id);
 
                     return {
                         id: tax.user_id,
-                        firstName: userData.firstName,
-                        lastName: userData.lastName,
+                        firstName: userData.data.firstName,
+                        lastName: userData.data.lastName,
                         type: tax.is_actuary ? "Actuary" : "Client",
                         taxAmount: tax.tax_amount,
                         isPaid: tax.is_paid
