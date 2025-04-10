@@ -39,14 +39,16 @@ import ActuarialPerformancePortal from "./pages/portals/ActuarialPerformancePort
 import OtcTradingPortal from "./pages/portals/OtcTradingPortal"; 
 import ActiveOffersPage from "./pages/portals/ActiveOffersPage";
 import ContractsPage from "./pages/portals/ContractsPage";
-
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   return (
-    <ThemeProvider>
-      <CardProvider>
-        <CssBaseline />
-        <BrowserRouter>
+  <BrowserRouter>
+    <AuthProvider>
+      <ThemeProvider>
+        <CardProvider>
+          <CssBaseline />
+
             <TokenExpiryHandler/>
           <Routes>
             {/* Public Routes */}
@@ -228,9 +230,10 @@ function App() {
 
           </Routes>
           <ThemeToggle />
-        </BrowserRouter>
-      </CardProvider>
-    </ThemeProvider>
+        </CardProvider>
+      </ThemeProvider>
+    </AuthProvider>
+  </BrowserRouter>
   );
 }
 

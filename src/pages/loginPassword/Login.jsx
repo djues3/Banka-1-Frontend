@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import {  Link as RouterLink } from 'react-router-dom';
 import { loginUser } from '../../services/AxiosUser';
 import { useTheme } from '@mui/material/styles';
 import { IconButton } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import styles from '../../styles/Login.module.css';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
 
 const pageVariants = {
     initial: { opacity: 0, y: 30 },
@@ -15,23 +15,20 @@ const pageVariants = {
 };
 
 const Login = () => {
-    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const theme = useTheme();
     const isDarkMode = theme.palette.mode === 'dark';
+    const { login } = useAuth();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             const response = await loginUser(email, password);
             const token = response.data.token;
-            localStorage.setItem('token', token);
-            const decodedToken = jwtDecode(token);
 
-            if (decodedToken.isEmployed) navigate('/employee-home');
-            else navigate('/customer-home');
+            login(token);
         } catch (error) {
             console.log(error);
             alert('Invalid email or password');

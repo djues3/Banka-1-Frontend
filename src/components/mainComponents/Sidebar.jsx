@@ -29,7 +29,6 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "../common/LogoutButton";
-import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { Collapse } from "@mui/material";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
@@ -39,6 +38,7 @@ import {LibraryBooks, FolderTwoTone, CorporateFare, BarChart, ShoppingCart} from
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import GavelIcon from "@mui/icons-material/Gavel";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+import {useAuth} from "../../context/AuthContext";
 
 
 const drawerWidth = 240;
@@ -80,30 +80,16 @@ export default function Sidebar() {
   const [showExchangeMenu, setShowExchangeMenu] = useState(false);
   const [showOtcMenu, setShowOtcMenu] = useState(false);
   const navigate = useNavigate();
+  const { userInfo } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        console.log("Decoded Token:", decodedToken);
-
-        setPosition(decodedToken.position || "NONE"); // Default to "NONE" (Customer)
-        setDepartment(decodedToken.department || null); // Can be "SUPERVISOR", "AGENT"
-        setIsAdmin(decodedToken.isAdmin);
-        setIsEmployed(decodedToken.isEmployed);
-
-        console.log(
-            "Set position:", decodedToken.position,
-            "Department:", decodedToken.department,
-            "Admin status:", decodedToken.isAdmin,
-            "Employed:", decodedToken.isEmployed
-        );
-      } catch (error) {
-        console.error("Invalid token", error);
-      }
+    if (userInfo) {
+      setPosition(userInfo.position || "NONE");
+      setDepartment(userInfo.department || null);
+      setIsAdmin(userInfo.isAdmin || false);
+      setIsEmployed(userInfo.isEmployed || false);
     }
-  }, []);
+  }, [userInfo]);
 
   // Function to open/close the sidebar
   const handleDrawerOpen = () => setOpen(true);

@@ -3,16 +3,17 @@ import { AlertDialog } from '@base-ui-components/react/alert-dialog';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../services/AxiosUser';
 import { useTheme } from '@mui/material/styles';
+import {useAuth} from "../../context/AuthContext";
 
 const LogoutButton = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     try {
       await logoutUser();
-      localStorage.removeItem('token');
-      navigate('/');
+      logout('/');
     } catch (error) {
       console.error("Error during logout:", error);
       localStorage.removeItem('token');
