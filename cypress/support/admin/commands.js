@@ -34,7 +34,7 @@ Cypress.Commands.add('login', (email = 'admin@admin.com', password = 'admin123')
   cy.get('input[name="email"]').should('be.visible').clear().type(email);
   cy.get('input[name="password"]').should('be.visible').clear().type(password);
   cy.get('button[type="submit"]').should('be.visible').click();
-  
+
   // Wait for redirection to dashboard or home after login
   cy.url().should('not.include', '/login');
 });
@@ -46,7 +46,7 @@ Cypress.Commands.add('logout', () => {
   // Then click logout option
   cy.contains('Logout').should('be.visible').click();
   cy.contains('Continue').should('be.visible').click();
-  
+
   // Verify we're redirected to login page
   cy.url().should('include', '/');
 });
@@ -63,8 +63,7 @@ Cypress.Commands.add('verifyLoggedIn', () => {
  * Add a new employee
  */
 Cypress.Commands.add('addEmployee', () => {
-  cy.get('button[aria-label="open drawer"]').should('be.visible').click();
-  cy.contains('Employees').should('be.visible').click();
+  cy.get(':nth-child(1) > .MuiPaper-root > .MuiButtonBase-root').click();
   cy.contains('Add Employee').should('be.visible').click();
 
   const randomString = () => Math.random().toString(36).substring(2, 8);
@@ -76,7 +75,7 @@ Cypress.Commands.add('addEmployee', () => {
   cy.get('input[name="username"]').should('be.visible').type(`user_${randomString()}`);
   cy.get('input[name="email"]').should('be.visible').type(randomEmail());
 
-  cy.get('input[name="phoneNumber"]').should('be.visible').type("+381611302112");
+  cy.get('input[name="phoneNumber"]').should('be.visible').type("+38164371245");
   cy.get('input[name="address"]').should('be.visible').type('Georgi Dimitrova 12');
   cy.get('input[name="birthDate"]').should('be.visible').type('1995-01-01');
 
@@ -87,8 +86,7 @@ Cypress.Commands.add('addEmployee', () => {
  * Block an employee
  */
 Cypress.Commands.add('blockEmployee', () => {
-  cy.get('button[aria-label="open drawer"]').should('be.visible').click();
-  cy.contains('Employees').should('be.visible').click();
+  cy.get(':nth-child(1) > .MuiPaper-root > .MuiButtonBase-root').click();
 
   cy.get('[data-rowindex="3"]').should('be.visible').within(() => {
     // Find the switch input inside the "active" cell
@@ -100,8 +98,7 @@ Cypress.Commands.add('blockEmployee', () => {
  * Change customer details
  */
 Cypress.Commands.add('changeCustomerDetails', () => {
-  cy.get('button[aria-label="open drawer"]').should('be.visible').click();
-  cy.contains('Customers').should('be.visible').click();
+  cy.get(':nth-child(2) > .MuiPaper-root > .MuiButtonBase-root').click();
 
   cy.get('[data-rowindex="3"]').should('be.visible').dblclick();
   cy.get('input[name="firstName"]').should('be.visible').clear().type('Joca');
@@ -112,36 +109,35 @@ Cypress.Commands.add('changeCustomerDetails', () => {
  * Add a new account
  */
 Cypress.Commands.add('CreateAccount', () => {
-  cy.get('button[aria-label="open drawer"]').should('be.visible').click();
-  cy.contains('Employee Bank Accounts').should('be.visible').click();
+  cy.get(':nth-child(3) > .MuiPaper-root > .MuiButtonBase-root').click()
 
   cy.contains('Add').should('be.visible').click();
 
-  cy.contains('Choose the account you want to create') 
-    .parent()
-    .find('[role="combobox"]')
-    .should('be.visible')
-    .click();
+  cy.contains('Choose the account you want to create')
+      .parent()
+      .find('[role="combobox"]')
+      .should('be.visible')
+      .click();
 
   // Select the first option from the list
   cy.get('[role="listbox"] [role="option"]').eq(1).should('be.visible').click();
 
-  cy.contains('Choose the type of account you want to create') 
-    .parent()
-    .find('[role="combobox"]')
-    .should('be.visible')
-    .click();
+  cy.contains('Choose the type of account you want to create')
+      .parent()
+      .find('[role="combobox"]')
+      .should('be.visible')
+      .click();
 
   // Select the first option from the list
   cy.get('[role="listbox"] [role="option"]').eq(1).should('be.visible').click();
-  
+
   cy.contains('Continue').should('be.visible').click();
 
-  cy.contains('Choose a customer') 
-    .parent()
-    .find('[role="combobox"]')
-    .should('be.visible')
-    .click();
+  cy.contains('Choose a customer')
+      .parent()
+      .find('[role="combobox"]')
+      .should('be.visible')
+      .click();
 
   // Select the first option from the list
   cy.get('[role="listbox"] [role="option"]').eq(1).should('be.visible').click();
@@ -152,26 +148,21 @@ Cypress.Commands.add('CreateAccount', () => {
 });
 
 Cypress.Commands.add('denyLoan', () => {
-  cy.get('button[aria-label="open drawer"]').should('be.visible').click();
-  cy.contains('Loans').should('be.visible').click();
-  cy.contains('Pending Loans').should('be.visible').click();
+  cy.get(':nth-child(5) > .MuiPaper-root > .MuiButtonBase-root').click();
+  cy.get(':nth-child(5) > .MuiPaper-root > .MuiCardActions-root > [style="background-color: rgb(211, 47, 47); color: rgb(255, 255, 255); padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: background-color 0.3s;"]').click();
 
-  cy.get('[data-rowindex="0"]').should('be.visible').within(() => {
-    cy.contains('Deny').should('be.visible').click();
-  });
 });
 
 Cypress.Commands.add('blockCard', () => {
-  cy.get('button[aria-label="open drawer"]').should('be.visible').click();
-  cy.contains('Employee Bank Accounts').should('be.visible').click();
+  cy.get(':nth-child(3) > .MuiPaper-root > .MuiButtonBase-root').click();
   cy.get('.MuiDataGrid-row--firstVisible > [data-field="accountNumber"]').dblclick();
   cy.get(':nth-child(1) > .MuiSwitch-root > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
-  });
+});
 
+/*
 Cypress.Commands.add('CreateForeignBusinessAccount', () => {
   // Do forme
-  cy.get('button[aria-label="open drawer"]').should('be.visible').click();
-  cy.contains('Employee Bank Accounts').should('be.visible').click();
+  cy.get(':nth-child(3) > .MuiPaper-root > .MuiButtonBase-root').click()
   cy.contains('Add').should('be.visible').click();
 
   // Odabir FOREIGN CURRENCY racuna
@@ -198,7 +189,6 @@ Cypress.Commands.add('CreateForeignBusinessAccount', () => {
 
   cy.get('input[type="number"]').first().should('be.visible').clear().type('99999');
 
-
   // Kreiranje novog korisnika
   cy.contains('Create New Customer').click();
 
@@ -218,7 +208,6 @@ Cypress.Commands.add('CreateForeignBusinessAccount', () => {
 
   cy.contains('Save').click();
 
-  
   // Sada se automatski otvara firma forma
   cy.get('.MuiDialogContent-root > :nth-child(7)').should('be.visible').click();
   cy.get('input[name="name"]').type('Firma D.O.O.');
@@ -236,5 +225,5 @@ Cypress.Commands.add('CreateForeignBusinessAccount', () => {
   cy.get('.MuiDialogActions-root > .MuiButton-contained').contains("Confirm").click();
 
   // Proveri da li se vrati na pocetnu stranicu
-  
 });
+*/
