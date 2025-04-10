@@ -1,18 +1,20 @@
-import {Container} from "@mui/material";
+import { Container, Typography } from "@mui/material";
 import SecuritiesTable from "../../../components/securititesBuyingComponents/SecuritiesTable";
 import React from "react";
 import Sidebar from "../../../components/mainComponents/Sidebar";
 
-const ClientSecuritiesBuyingPortal = () =>{
+const ClientSecuritiesBuyingPortal = () => {
+    return (
+        <Container sx={{ pt: "80px", px: "20px" }}>
+            <Sidebar />
 
-    return(
-        <Container sx={{ padding: "20px" }}>
+            <Typography variant="h4" gutterBottom>
+                Client Securities Buying Portal
+            </Typography>
 
-            <Sidebar></Sidebar>
-            Client Securities Buying Portal
             <SecuritiesTable role="client" />
         </Container>
+    );
+};
 
-    )
-}
-export default ClientSecuritiesBuyingPortal;
+export default ClientSecuritiesBuyingPortal

@@ -22,7 +22,7 @@ const TransactionList = ({ transactions = [] }) => {
             {transactions.length === 0 ? (
                 <Typography
                     sx={{
-                        color: isDarkMode ? "#fff" : "#333",
+                        color: isDarkMode ? "#fff" : "#212128",
                         textAlign: "center",
                         padding: 2
                     }}
@@ -34,24 +34,24 @@ const TransactionList = ({ transactions = [] }) => {
                     sx={{
                         width: "100%",
                         borderCollapse: "collapse",
-                        backgroundColor: isDarkMode ? "#131318" : "#f9f9f9"
+                        backgroundColor: isDarkMode ? "#212128" : "#f9f9f9"
                     }}
                 >
                     <TableHead>
                         <TableRow>
                             <TableCell
-                                sx={{ color: isDarkMode ? "#fff" : "#000", fontWeight: "bold" }}
+                                sx={{ color: isDarkMode ? "#fff" : "#212128", fontWeight: "bold" }}
                             >
                                 Sender
                             </TableCell>
                             <TableCell
-                                sx={{ color: isDarkMode ? "#fff" : "#000", fontWeight: "bold" }}
+                                sx={{ color: isDarkMode ? "#fff" : "#212128", fontWeight: "bold" }}
                             >
                                 Status
                             </TableCell>
                             <TableCell
                                 sx={{
-                                    color: isDarkMode ? "#fff" : "#000",
+                                    color: isDarkMode ? "#fff" : "#212128",
                                     fontWeight: "bold",
                                     textAlign: "right"
                                 }}
