@@ -66,6 +66,7 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
                                 checked={card.active}
                                 className={styles.activeSwitch}
                                 disabled={!card.active}
+                                onChange={() => onActiveToggle(card)}
                             />
                             <span>{card.active ? "Active" : "Deactivated"}</span>
                         </div>
