@@ -81,7 +81,7 @@ const AccountsPortal = () => {
                     accountNumber: row.accountNumber,
                     balance: row.balance,
                     reservedBalance: row.reservedBalance,
-                    type: row.type,
+                    type: row.type?.replace("FOREIGN_CURRENCY", "FOREIGN CURRENCY"),
                     currencyType: row.currencyType,
                     subtype: row.subtype,
                     createdDate: new Date(row.createdDate).toLocaleDateString(),

@@ -46,10 +46,11 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
                         <TextField
                             fullWidth
                             label="Type"
-                            value={`${account?.type}` || ""}
+                            value={account?.type?.replace("FOREIGN_CURRENCY", "FOREIGN CURRENCY") || ""}
                             disabled
                         />
                     </Grid>
+
                     <Grid item xs={12} sm={6}>
                         <TextField
                             fullWidth
