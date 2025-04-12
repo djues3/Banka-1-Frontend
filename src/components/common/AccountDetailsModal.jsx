@@ -54,7 +54,7 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
                         <TextField
                             fullWidth
                             label="Limit"
-                            value={`${account?.dailyLimit} RSD`}
+                            value={`${account?.dailyLimit} ${account?.currencyType}`}
                             disabled
                         />
                     </Grid>
@@ -62,7 +62,7 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
                         <TextField
                             fullWidth
                             label="Reserved"
-                            value={`${account?.reservedBalance} RSD`}
+                            value={`${account?.reservedBalance} ${account?.currencyType}`}
                             disabled
                         />
                     </Grid>
@@ -70,7 +70,7 @@ const AccountDetailsModal = ({ open, onClose, account }) => {
                         <TextField
                             fullWidth
                             label="Balance"
-                            value={`${account?.balance} RSD`}
+                            value={`${account?.balance} ${account?.currencyType}`}
                             disabled
                         />
                     </Grid>
