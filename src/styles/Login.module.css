@@ -29,13 +29,13 @@
 }
 
 .left h1 {
-    font-size: 1.43rem;
+    font-size: 1.93rem;
     font-weight: bold;
     margin-bottom: 0.88rem;
 }
 
 .left p {
-    font-size: 0.83rem;
+    font-size: 1.03rem;
     opacity: 0.85;
 }
 
@@ -56,10 +56,10 @@
 /* ===== Card ===== */
 .card {
     width: 100%;
-    max-width: 319px;
-    padding: 1.32rem;
-    border-radius: 8.8px;
-    box-shadow: 0 4.4px 15.4px rgba(0, 0, 0, 0.12);
+    max-width: 380px;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
     background-color: #FFFFFF;
     color: #000;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -72,17 +72,15 @@
 }
 
 .title {
-    font-size: 1.32rem;
-    font-weight: 600;
-    margin-bottom: 0.99rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 1.2rem;
     text-align: center;
 }
 
 .label {
-    font-size: 0.83rem;
-    margin-bottom: 4.4px;
-    display: block;
-    color: #444;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 .label.dark {
@@ -98,30 +96,31 @@
 
 .input {
     width: 100%;
-    padding: 6.6px 11px;
-    font-size: 0.77rem;
-    border-radius: 6.6px;
-    border: 1px solid #C8C5D0;
-    background-color: #FFFFFF;
-    color: #000;
-    box-sizing: border-box;
+    padding: 8px 4px;
+    font-size: 1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    outline: none;
+    color: inherit;
+    box-shadow: none;
+    position: relative;
 }
 
 .input.dark {
-    background-color: #2a2a2a;
-    border-color: #47464F;
+    border-bottom: 2px solid #666;
+    background: none;
     color: #E4E1E9;
 }
 
 .input:focus {
-    outline: none;
-    border-color: #595992;
-    box-shadow: 0 0 0 2.2px rgba(89, 89, 146, 0.2);
+    border-bottom: 2px solid #595992;
+    box-shadow: none;
 }
 
 .input.dark:focus {
-    border-color: #C2C1FF;
-    box-shadow: 0 0 0 2.2px rgba(194, 193, 255, 0.2);
+    border-bottom: 2px solid #C2C1FF;
+    box-shadow: none;
 }
 
 /* ===== Buttons & Links ===== */
@@ -135,9 +134,9 @@
     background-color: #595992;
     color: #FFFFFF;
     border: none;
-    padding: 6.6px 17.6px;
+    padding: 10px 24px;
     border-radius: 6.6px;
-    font-size: 0.83rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -192,7 +191,7 @@
 }
 
 .left img {
-    max-width: 77%;
+    max-width: 87%;
     height: auto;
     margin-bottom: 22px;
     transition: all 0.3s ease;
@@ -203,4 +202,13 @@
         max-width: 44%;
         margin-bottom: 17.6px;
     }
+}
+.input.dark:-webkit-autofill,
+.input.dark:-webkit-autofill:hover,
+.input.dark:-webkit-autofill:focus,
+.input.dark:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #1e1e1e inset !important;
+    -webkit-text-fill-color: #E4E1E9 !important;
+    background-color: transparent !important;
+    transition: background-color 5000s ease-in-out 0s;
 }
