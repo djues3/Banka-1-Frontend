@@ -66,27 +66,35 @@ const CheckEquivalency = () => {
 
             // Handle different response formats
             if (fromCurrency === toCurrency || fromCurrency === "RSD" || toCurrency === "RSD") {
+                if (!conversionResult || conversionResult.convertedAmount === undefined) {
+                    throw new Error("Invalid conversion result from backend (missing fields)");
+                }
+
                 setResult({
                     originalAmount: numericAmount,
-                    convertedAmount: conversionResult.convertedAmount.toFixed(2),
-                    commission: conversionResult.provision.toFixed(2),
-                    finalAmount: conversionResult.finalAmount.toFixed(2),
-                    exchangeRate: conversionResult.exchangeRate.toFixed(6),
-                    fromCurrency: fromCurrency,
-                    toCurrency: toCurrency
+                    convertedAmount: Number(conversionResult.convertedAmount).toFixed(2),
+                    commission: Number(conversionResult.provision).toFixed(2),
+                    finalAmount: Number(conversionResult.finalAmount).toFixed(2),
+                    exchangeRate: Number(conversionResult.exchangeRate).toFixed(6),
+                    fromCurrency,
+                    toCurrency
                 });
             } else {
-                // Handle foreign exchange response
+                if (!conversionResult || conversionResult.firstExchangeRate === undefined || conversionResult.finalAmount === undefined) {
+                    throw new Error("Invalid conversion result for foreign exchange.");
+                }
+
                 setResult({
                     originalAmount: numericAmount,
-                    firstExchangeRate: conversionResult.firstExchangeRate.toFixed(6),
-                    secondExchangeRate: conversionResult.secondExchangeRate.toFixed(6),
-                    provision: conversionResult.provision.toFixed(2),
-                    finalAmount: conversionResult.finalAmount.toFixed(2),
-                    fromCurrency: fromCurrency,
-                    toCurrency: toCurrency
+                    firstExchangeRate: Number(conversionResult.firstExchangeRate).toFixed(6),
+                    secondExchangeRate: Number(conversionResult.secondExchangeRate).toFixed(6),
+                    provision: Number(conversionResult.provision).toFixed(2),
+                    finalAmount: Number(conversionResult.finalAmount).toFixed(2),
+                    fromCurrency,
+                    toCurrency
                 });
             }
+
         } catch (err) {
             setError('Failed to convert currency. Please try again later.');
             console.error('Error converting currency:', err);

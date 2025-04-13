@@ -9,23 +9,23 @@ const apiBanking = axios.create({
 });
 
 apiBanking.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    (config) => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
 
-      // For debugging - remove in production
-      console.log(
-        `${config.method.toUpperCase()} ${
-          config.url
-        } - Token: ${token.substring(0, 20)}...`
-      );
+        // For debugging - remove in production
+        console.log(
+            `${config.method.toUpperCase()} ${
+                config.url
+            } - Token: ${token.substring(0, 20)}...`
+        );
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
 );
 
 export const getUserIdFromToken = () => {
@@ -121,9 +121,9 @@ export const fetchRecipients = async (accountId) => {
 };
 
 export const updateRecipient = async (
-  accountId,
-  recipientId,
-  recipientData
+    accountId,
+    recipientId,
+    recipientData
 ) => {
   try {
     const newRecipientData = {
@@ -132,8 +132,8 @@ export const updateRecipient = async (
       fullName: recipientData.fullName,
     };
     const response = await apiBanking.put(
-      `/receiver/${recipientId}`,
-      newRecipientData
+        `/receiver/${recipientId}`,
+        newRecipientData
     );
     return response.data;
   } catch (error) {
@@ -173,11 +173,11 @@ export const fetchUserCards = async (accountId) => {
 
 //Create a card
 export const createCard = async (
-  accountId,
-  cardType,
-  cardBrand = "VISA",
-  authorizedPerson = null,
-  company = null
+    accountId,
+    cardType,
+    cardBrand = "VISA",
+    authorizedPerson = null,
+    company = null
 ) => {
   try {
     const requestBody = {
@@ -234,13 +234,13 @@ export const changeCardLimit = async (cardId, newLimit) => {
 export const updateCardStatus = async (cardId, status) => {
   try {
     const response = await apiBanking.post(
-      `/cards/${cardId}`,
-      { status },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
+        `/cards/${cardId}`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
     );
 
     return response.data;
@@ -264,8 +264,8 @@ export const fetchAdminUserCards = async (accountId) => {
 export const updateCardStatusAdmin = async (accountId, cardId, status) => {
   try {
     const response = await apiBanking.post(
-      `/cards/admin/${accountId}?card_id=${cardId}`,
-      { status }
+        `/cards/admin/${accountId}?card_id=${cardId}`,
+        { status }
     );
     return response.data;
   } catch (error) {
@@ -277,7 +277,7 @@ export const updateCardStatusAdmin = async (accountId, cardId, status) => {
 export const fetchAccountsTransactions = async (accountId) => {
   try {
     const response = await apiBanking.get(
-      `/accounts/${accountId}/transactions`
+        `/accounts/${accountId}/transactions`
     );
     return response.data;
   } catch (error) {
@@ -299,8 +299,8 @@ export const fetchCardsByAccountId = async (accountId) => {
 export const updateAccount = async (accountId, ownerId, account) => {
   try {
     const response = await apiBanking.put(
-      `/accounts/user/${ownerId}/${accountId}`,
-      account
+        `/accounts/user/${ownerId}/${accountId}`,
+        account
     );
     return response.data;
   } catch (error) {
@@ -445,8 +445,8 @@ export const createRecipientt = async (recipientData) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error creating recipient:",
-      error.response?.data || error.message
+        "Error creating recipient:",
+        error.response?.data || error.message
     );
     throw error;
   }
@@ -454,8 +454,8 @@ export const createRecipientt = async (recipientData) => {
 export const updateRecipientt = async (recipientId, recipientData) => {
   try {
     console.log(
-      `Updating recipient ID: ${recipientId} with data:`,
-      recipientData
+        `Updating recipient ID: ${recipientId} with data:`,
+        recipientData
     );
 
     if (!recipientId || !recipientData || !recipientData.accountNumber) {
@@ -464,8 +464,8 @@ export const updateRecipientt = async (recipientId, recipientData) => {
     }
 
     const response = await apiBanking.put(
-      `/receiver/${recipientId}`,
-      recipientData
+        `/receiver/${recipientId}`,
+        recipientData
     );
 
     console.log("Recipient update response:", response.data);
@@ -473,8 +473,8 @@ export const updateRecipientt = async (recipientId, recipientData) => {
     return response.data;
   } catch (error) {
     console.error(
-      `Error updating recipient [${recipientId}]:`,
-      error.response?.data || error.message
+        `Error updating recipient [${recipientId}]:`,
+        error.response?.data || error.message
     );
     throw error;
   }
@@ -493,13 +493,13 @@ export const fetchAllLoansForEmployees = async () => {
 export const fetchRemainingInstallments = async (loanId) => {
   try {
     const response = await apiBanking.get(
-      `/loans/${loanId}/remaining_installments`
+        `/loans/${loanId}/remaining_installments`
     );
     return response.data;
   } catch (error) {
     console.error(
-      `Error fetching remaining installments for loan ${loanId}:`,
-      error
+        `Error fetching remaining installments for loan ${loanId}:`,
+        error
     );
     throw error;
   }
@@ -518,8 +518,8 @@ export const fetchAllPendingLoans = async () => {
 export const approveLoan = async (loan_id, approvedLoan) => {
   try {
     const response = await apiBanking.put(
-      `/loans/admin/${loan_id}/approve`,
-      approvedLoan
+        `/loans/admin/${loan_id}/approve`,
+        approvedLoan
     );
     return response;
   } catch (error) {
@@ -531,8 +531,8 @@ export const approveLoan = async (loan_id, approvedLoan) => {
 export const denyLoan = async (loan_id, deniedLoan) => {
   try {
     const response = await apiBanking.put(
-      `/loans/admin/${loan_id}/approve`,
-      deniedLoan
+        `/loans/admin/${loan_id}/approve`,
+        deniedLoan
     );
     return response;
   } catch (error) {
@@ -543,36 +543,36 @@ export const denyLoan = async (loan_id, deniedLoan) => {
 
 // Exchange Rate Functions
 export const fetchExchangeRates = async () => {
-    try {
-        const response = await apiBanking.get('/currency/exchange-rates');
-        
-        // Transform the rates array into an object format expected by convertCurrency
-        const ratesObject = {};
-        
-        // First, find the base rates for RSD
-        const rsdRates = response.data.data.rates.filter(rate => rate.baseCurrency === 'RSD');
-        
-        // Map the rates with RSD as base
-        rsdRates.forEach(rate => {
-            if (rate.targetCurrency === 'RSD') {
-                ratesObject[rate.targetCurrency] = 1;
-            } else {
-                // Invert the rate to show how many RSD are needed for 1 unit of foreign currency
-                ratesObject[rate.targetCurrency] = 1 / rate.exchangeRate;
-            }
-        });
+  try {
+    const response = await apiBanking.get('/currency/exchange-rates');
 
-        return {
-            data: {
-                base: 'RSD',
-                rates: ratesObject,
-                date: response.data.data.rates[0].date
-            }
-        };
-    } catch (error) {
-        console.error('Error fetching exchange rates:', error);
-        throw error;
-    }
+    // Transform the rates array into an object format expected by convertCurrency
+    const ratesObject = {};
+
+    // First, find the base rates for RSD
+    const rsdRates = response.data.data.rates.filter(rate => rate.baseCurrency === 'RSD');
+
+    // Map the rates with RSD as base
+    rsdRates.forEach(rate => {
+      if (rate.targetCurrency === 'RSD') {
+        ratesObject[rate.targetCurrency] = 1;
+      } else {
+        // Invert the rate to show how many RSD are needed for 1 unit of foreign currency
+        ratesObject[rate.targetCurrency] = 1 / rate.exchangeRate;
+      }
+    });
+
+    return {
+      data: {
+        base: 'RSD',
+        rates: ratesObject,
+        date: response.data.data.rates[0].date
+      }
+    };
+  } catch (error) {
+    console.error('Error fetching exchange rates:', error);
+    throw error;
+  }
 };
 
 
@@ -664,7 +664,7 @@ export const createCompany = async (companyData) => {
 export const fetchExchangeRatesForCurrency = async (currency) => {
   try {
     const response = await apiBanking.get(
-      `/currency/exchange-rates/${currency}`
+        `/currency/exchange-rates/${currency}`
     );
     return response.data;
   } catch (error) {
@@ -704,31 +704,31 @@ export const fetchCompany = async (companyID) => {
 };
 
 export const previewExchangeTransfer = async (fromCurrency, toCurrency, amount) => {
-    try {
-        const response = await apiBanking.post('/exchange-transfer/preview', {
-            fromCurrency,
-            toCurrency,
-            amount
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error previewing exchange transfer:', error);
-        throw error;
-    }
+  try {
+    const response = await apiBanking.post('/exchange-transfer/preview', {
+      fromCurrency,
+      toCurrency,
+      amount
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error previewing exchange transfer:', error);
+    throw error;
+  }
 };
 
 export const previewForeignExchangeTransfer = async (fromCurrency, toCurrency, amount) => {
-    try {
-        const response = await apiBanking.post('/exchange-transfer/preview-foreign', {
-            fromCurrency,
-            toCurrency,
-            amount
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error previewing foreign exchange transfer:', error);
-        throw error;
-    }
+  try {
+    const response = await apiBanking.post('/exchange-transfer/preview-foreign', {
+      fromCurrency,
+      toCurrency,
+      amount
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error previewing foreign exchange transfer:', error);
+    throw error;
+  }
 };
 
 // export const getCompanies = async () => {
