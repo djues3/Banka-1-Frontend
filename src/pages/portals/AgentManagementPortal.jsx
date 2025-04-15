@@ -4,10 +4,10 @@ import SearchDataTable from "../../components/tables/SearchDataTable";
 import EditModal from "../../components/common/EditModal";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { getActuaries, getActuaryById, updateActuaryLimit, resetUsedLimit } from "../../services/AxiosTrading";
+import { getAgents, getActuaryById, updateActuaryLimit, resetUsedLimit } from "../../services/AxiosTrading";
 import ResetUsedLimitButton from "../../components/common/ResetUsedLimitButton";
 
-const ActuarialManagementPortal = () => {
+const AgentManagementPortal = () => {
     const [actuaries, setActuaries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -21,12 +21,12 @@ const ActuarialManagementPortal = () => {
     const loadActuaries = async () => {
         try {
             setLoading(true);
-            const data = await getActuaries();
+            const data = await getAgents();
             console.log("data", data);
             setActuaries(data.data);
         } catch (err) {
             console.error(err);
-            setError("Failed to load actuaries data");
+            setError("Failed to load agents data");
         } finally {
             setLoading(false);
         }
@@ -79,9 +79,9 @@ const ActuarialManagementPortal = () => {
         <div>
             <Sidebar />
             <div style={{ padding: '20px', marginTop: '64px' }}>
-                <h2>Actuarial Management Portal</h2>
+                <h2>Agent Management Portal</h2>
                 {loading ? (
-                    <p>Loading actuaries...</p>
+                    <p>Loading agents...</p>
                 ) : error ? (
                     <p>Error: {error}</p>
                 ) : (
@@ -108,4 +108,4 @@ const ActuarialManagementPortal = () => {
     );
 };
 
-export default ActuarialManagementPortal;
+export default AgentManagementPortal;
