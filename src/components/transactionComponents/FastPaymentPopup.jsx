@@ -1,63 +1,75 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   Box,
   Typography,
   TextField,
   Button,
-  Stack,
-  Divider
+  Stack
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { fetchAllRecipientsForUser, getUserIdFromToken } from "../../services/AxiosBanking";
 
-const FastPaymentPopup = ({ open, onClose, onSave }) => {
+const FastPaymentPopup = ({ open, onClose, onSave, recipient, setRecipient, error }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+
   const [form, setForm] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     address: "",
     accountNumber: ""
   });
 
-  const [error, setError] = useState("");
-  const [recipients, setRecipients] = useState([]);
-  
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
+  useEffect(() => {
+    if (recipient) {
+      const nameParts = recipient.fullName?.trim().split(" ") || [];
+      const firstName = recipient.firstName || nameParts[0] || "";
+      const lastName = recipient.lastName || nameParts.slice(1).join(" ") || "";
+
+      setForm({
+        firstName,
+        lastName,
+        address: recipient.address || "",
+        accountNumber: recipient.accountNumber || ""
+      });
+    } else {
+      setForm({
+        firstName: "",
+        lastName: "",
+        address: "",
+        accountNumber: ""
+      });
+    }
+  }, [recipient, open]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const updatedForm = { ...form, [name]: value };
+    setForm(updatedForm);
+
+    if (setRecipient && recipient) {
+      setRecipient({
+        ...recipient,
+        firstName: updatedForm.firstName,
+        lastName: updatedForm.lastName,
+        address: updatedForm.address,
+        accountNumber: updatedForm.accountNumber
+      });
+    }
   };
 
   const handleSave = () => {
-    const { name, address, accountNumber } = form;
-    if (!name.trim() || !address.trim() || !accountNumber.trim()) {
-      setError("All fields are required.");
-      return;
-    }
+    const fullName = `${form.firstName} ${form.lastName}`.trim();
 
-    setError("");
-    onSave(form);
-    setForm({ name: "", address: "", accountNumber: "" });
-    onClose();
-  };
-
-  useEffect(() => {
-    const loadRecipients = async () => {
-      try {
-        const userId = getUserIdFromToken();
-        const data = await fetchAllRecipientsForUser(userId);
-        setRecipients(data || []);
-      } catch (err) {
-        console.error("Failed to load recipients", err);
-        setRecipients([]);
-      }
+    const recipientToSave = {
+      ...recipient,
+      fullName,
+      address: form.address,
+      accountNumber: form.accountNumber
     };
 
-    if (open) {
-      loadRecipients();
-    }
-  }, [open]);
+    onSave(recipientToSave);
+  };
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -65,7 +77,7 @@ const FastPaymentPopup = ({ open, onClose, onSave }) => {
         sx={{
           width: 450,
           backgroundColor: isDarkMode ? "#212128" : "#f0f0f0",
-          color: "#fff",
+          color: isDarkMode ? "#fff" : "#000",
           p: 4,
           borderRadius: 2,
           boxShadow: 24,
@@ -74,18 +86,27 @@ const FastPaymentPopup = ({ open, onClose, onSave }) => {
         }}
       >
         <Typography variant="h6" sx={{ mb: 2 }}>
-          Add fast payment recipient
+          {recipient && recipient.id ? "Edit recipient" : "Add fast payment recipient"}
         </Typography>
 
         <Stack spacing={2}>
           <TextField
-            label="Name"
-            name="name"
-            value={form.name}
+            label="First Name"
+            name="firstName"
+            value={form.firstName}
             onChange={handleChange}
             fullWidth
-            InputLabelProps={{ style: { color: "#ccc" } }}
-            InputProps={{ style: { color: "#fff" } }}
+            InputLabelProps={{ style: { color: isDarkMode ? "#ccc" : "#000" } }}
+            InputProps={{ style: { color: isDarkMode ? "#fff" : "#000" } }}
+          />
+          <TextField
+            label="Last Name"
+            name="lastName"
+            value={form.lastName}
+            onChange={handleChange}
+            fullWidth
+            InputLabelProps={{ style: { color: isDarkMode ? "#ccc" : "#000" } }}
+            InputProps={{ style: { color: isDarkMode ? "#fff" : "#000" } }}
           />
           <TextField
             label="Address"
@@ -93,8 +114,8 @@ const FastPaymentPopup = ({ open, onClose, onSave }) => {
             value={form.address}
             onChange={handleChange}
             fullWidth
-            InputLabelProps={{ style: { color: "#ccc" } }}
-            InputProps={{ style: { color: "#fff" } }}
+            InputLabelProps={{ style: { color: isDarkMode ? "#ccc" : "#000" } }}
+            InputProps={{ style: { color: isDarkMode ? "#fff" : "#000" } }}
           />
           <TextField
             label="Account Number"
@@ -102,8 +123,8 @@ const FastPaymentPopup = ({ open, onClose, onSave }) => {
             value={form.accountNumber}
             onChange={handleChange}
             fullWidth
-            InputLabelProps={{ style: { color: "#ccc" } }}
-            InputProps={{ style: { color: "#fff" } }}
+            InputLabelProps={{ style: { color: isDarkMode ? "#ccc" : "#000" } }}
+            InputProps={{ style: { color: isDarkMode ? "#fff" : "#000" } }}
           />
 
           {error && (
@@ -121,32 +142,6 @@ const FastPaymentPopup = ({ open, onClose, onSave }) => {
             </Button>
           </Box>
         </Stack>
-
-        {/* <Divider sx={{ my: 3, bgcolor: "#444" }} />
-
-        <Typography variant="subtitle1" sx={{ mb: 1 }}>
-          {recipients.length === 0 ? "No saved recipients." : "Saved Recipients"}
-        </Typography>
-
-        <Box sx={{ maxHeight: 180, overflowY: "auto" }}>
-          {recipients.map((r, idx) => (
-            <Box
-              key={idx}
-              sx={{
-                bgcolor: "#2a2a3a",
-                p: 2,
-                mb: 1,
-                borderRadius: 1,
-                border: "1px solid #444"
-              }}
-            >
-              <Typography variant="body1">{r.fullName}</Typography>
-              <Typography variant="body2" sx={{ color: "#aaa" }}>
-                {r.accountNumber} | {r.address}
-              </Typography>
-            </Box>
-          ))}
-        </Box> */}
       </Box>
     </Modal>
   );
