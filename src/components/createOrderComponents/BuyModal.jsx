@@ -30,8 +30,9 @@ const BuyModal = ({ open, onClose, security }) => {
         const getAccounts = async () => {
             try {
                 const response = await fetchAccountsForUser();
+                const activeAccounts = response.filter(acc => acc.status === 'ACTIVE');
 
-                setAccounts(response);
+                setAccounts(activeAccounts);
                 console.log(accounts);
 
             } catch (error) {

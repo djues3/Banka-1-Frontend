@@ -28,6 +28,7 @@ const AccountCard = ({ account, isSelected, onClick }) => {
     const [selectedAccount, setSelectedAccount] = useState(null);
     const navigate = useNavigate();
     const [modalOpen, setModalOpen] = useState(false);
+    const isBlocked = account.status === "BLOCKED";
 
 
     const isDarkMode = theme.palette.mode === "dark";
@@ -59,12 +60,14 @@ const AccountCard = ({ account, isSelected, onClick }) => {
     return (
         <Card
             variant="outlined"
-            onClick={onClick}
+            onClick={isBlocked ? undefined : onClick}
             sx={{
                 border: isSelected ? "4px solid #7256d6" : "1px solid #333",
                 borderRadius: "2.25rem",
                 transition: "all 0.3s ease",
-                cursor: "pointer",
+                cursor: isBlocked ? "not-allowed" : "pointer",
+                opacity: isBlocked ? 0.5 : 1,
+                pointerEvents: isBlocked ? "none" : "auto",
                 minWidth: 280,
                 textAlign: "center",
                 overflow: "hidden",
@@ -75,12 +78,15 @@ const AccountCard = ({ account, isSelected, onClick }) => {
                 boxShadow: "1px 12px 25px rgba(0, 0, 0, 0.78)",
                 transform: isSelected ? "scale(1.015)" : "scale(1)",
                 "&:hover": {
-                    boxShadow: "0px 15px 30px rgba(0, 0, 0, 0.7)",
-                    transform: "scale(1.015)",
-                    background: isDarkMode
-                        ? "linear-gradient(45deg, #aaa, #595992, #595992)"
-                        : "linear-gradient(45deg, #ddd, #bbb, #595992)",
+                    boxShadow: isBlocked ? undefined : "0px 15px 30px rgba(0, 0, 0, 0.7)",
+                    transform: isBlocked ? "scale(1)" : "scale(1.015)",
+                    background: isBlocked
+                        ? undefined
+                        : isDarkMode
+                            ? "linear-gradient(45deg, #aaa, #595992, #595992)"
+                            : "linear-gradient(45deg, #ddd, #bbb, #595992)",
                 },
+
             }}
             className={isSelected ? "selected" : ""}
         >
@@ -105,13 +111,31 @@ const AccountCard = ({ account, isSelected, onClick }) => {
                 }
             />
 
-            <CardContent>
-                <Typography variant="h5" fontWeight="bold">
+            <CardContent sx={{ position: 'relative', paddingTop: '30px' }}>
+                {isBlocked && (
+                    <Typography
+                        variant="body2"
+                        color='#f44336'
+                        fontWeight="bold"
+                        mt={1}
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            textAlign: 'center',
+                            marginBottom: 2,
+                        }}
+                    >
+                        Blocked Account
+                    </Typography>
+                )}                <Typography variant="h5" fontWeight="bold">
                     {account.balance + " " + account.currencyType}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                     {account.accountNumber}
                 </Typography>
+
             </CardContent>
 
             <CardActions sx={{ display: "flex", justifyContent: "space-between", px: 2, pb: 2 }}>
