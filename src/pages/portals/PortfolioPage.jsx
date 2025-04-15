@@ -9,11 +9,11 @@ import {
 } from "../../services/AxiosTrading";
 import ProfitInfoModal from "../../components/common/ProfitInfoModal";
 import TaxInfoModal from "../../components/common/TaxInfoModal";
+import MakePublicModal from "../../components/common/MakePublicModal";
 
 import {
   Box, Typography, Tabs, Tab, Button, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Paper,
-  Dialog, DialogTitle, DialogContent, DialogActions, TextField,
   Snackbar, Alert
 } from "@mui/material";
 
@@ -26,28 +26,23 @@ const PortfolioPage = () => {
   const navigate = useNavigate();
 
   const [selectedTab, setSelectedTab] = useState(0);
-  const [openPopup, setOpenPopup] = useState(false);
-  const [publicCount, setPublicCount] = useState(0);
-  const [selectedIndex, setSelectedIndex] = useState(null);
   const [portfolioData, setPortfolioData] = useState([]);
   const [taxData, setTaxData] = useState([]);
   const [profitModalOpen, setProfitModalOpen] = useState(false); 
   const [taxModalOpen, setTaxModalOpen] = useState(false); 
+  const [makePublicOpen, setMakePublicOpen] = useState(false);
+  const [selectedSecurity, setSelectedSecurity] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const userId = getUserIdFromToken();
 
   useEffect(() => {
     const fetchPortfolio = async () => {
-      if (!userId) {
-        console.error("User ID not found in localStorage");
-        return;
-      }
+      if (!userId) return;
       try {
         const data = await getUserSecurities(userId);
         const tax = await getTaxForUser(userId);
         console.log(data)
-        console.log(tax);
         setPortfolioData(data);
         setTaxData(tax.data);
       } catch (error) {
@@ -58,35 +53,31 @@ const PortfolioPage = () => {
     fetchPortfolio();
   }, [userId]);
 
-  const handleOpenPopup = (index) => {
-    setSelectedIndex(index);
-    setPublicCount(portfolioData[index]?.public ?? 0);
-    setOpenPopup(true);
+  const handleOpenMakePublic = (security) => {
+    setSelectedSecurity(security);
+    setMakePublicOpen(true);
   };
 
-  const handleClosePopup = () => setOpenPopup(false);
+  const handleCloseMakePublic = () => {
+    setMakePublicOpen(false);
+    setSelectedSecurity(null);
+  };
 
-  const handleSavePublicCount = async () => {
-    if (selectedIndex !== null) {
-      try {
-        const updated = [...portfolioData];
-        const security = updated[selectedIndex];
-
-        await updatePublicCount(security.ticker, publicCount);
-        updated[selectedIndex].public = publicCount;
-        setPortfolioData(updated);
-        setShowSuccess(true);
-      } catch (error) {
-        console.error("Failed to update public count", error);
-      }
+  const handleConfirmMakePublic = async (count) => {
+    try {
+      const response = await updatePublicCount(selectedSecurity.portfolio_id, count);
+      const updated = portfolioData.map((sec) =>
+        sec.portfolio_id === selectedSecurity.portfolio_id ? { ...sec, public: count } : sec
+      );
+      console.log(response);
+      setPortfolioData(updated);
+      setShowSuccess(true);
+    } catch (error) {
+      console.error("Failed to update public count", error);
+    } finally {
+      handleCloseMakePublic();
     }
-    setOpenPopup(false);
   };
-
-  const handleOpenProfitModal = () => setProfitModalOpen(true);
-  const handleCloseProfitModal = () => setProfitModalOpen(false);
-  const handleOpenTaxModal = () => setTaxModalOpen(true);
-  const handleCloseTaxModal = () => setTaxModalOpen(false);
 
   const formatDate = (timestamp) => {
     if (!timestamp) return "";
@@ -109,7 +100,7 @@ const PortfolioPage = () => {
         <Typography variant="h5" className={styles.title}>
           My Portfolio
         </Typography>
-
+  
         <Tabs
           value={selectedTab}
           onChange={(_, newValue) => setSelectedTab(newValue)}
@@ -118,14 +109,14 @@ const PortfolioPage = () => {
           <Tab label="All Securities" />
           <Tab label="Public Securities" />
         </Tabs>
-
+  
         <TableContainer
           component={Paper}
           sx={{
             backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
             marginTop: 2,
             borderRadius: 2,
-            boxShadow: "none"
+            boxShadow: "none",
           }}
         >
           <Table>
@@ -138,34 +129,35 @@ const PortfolioPage = () => {
                 <TableCell sx={{ fontWeight: "bold" }}>Profit</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Last Modified</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Public</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Make Public</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Sell</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {portfolioData && portfolioData.length > 0 ? (
                 portfolioData
                   .filter((row) => selectedTab === 0 || row.public > 0)
-                  .map((row, index) => (
-                    <TableRow key={row.ticker + index}>
+                  .map((row) => (
+                    <TableRow key={row.portfolio_id}>
                       <TableCell>{row.type || "Stock"}</TableCell>
                       <TableCell>{row.ticker}</TableCell>
                       <TableCell>{row.amount ?? 0}</TableCell>
                       <TableCell>{row.price?.toFixed(2) ?? "0.00"}</TableCell>
-                      <TableCell
-                        sx={{ color: row.profit >= 0 ? "green" : "red" }}
-                      >
+                      <TableCell sx={{ color: row.profit >= 0 ? "green" : "red" }}>
                         {(row.profit ?? 0).toFixed(2)} RSD
                       </TableCell>
                       <TableCell>{formatDate(row.last_modified)}</TableCell>
-                      <TableCell
-                        sx={{
-                          cursor: "pointer",
-                          color: isDarkMode ? "#F4D03F" : "#333",
-                          textAlign: "center",
-                        }}
-                        onClick={() => handleOpenPopup(index)}
-                      >
-                        {row.public ?? 0}
+                      <TableCell>{row.public ?? 0}</TableCell>
+                      <TableCell>
+                        {row.type === "Stock" && (
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={() => handleOpenMakePublic(row)}
+                          >
+                            Make Public
+                          </Button>
+                        )}
                       </TableCell>
                       <TableCell>
                         <Button
@@ -180,7 +172,7 @@ const PortfolioPage = () => {
                   ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} sx={{ textAlign: "center" }}>
+                  <TableCell colSpan={9} sx={{ textAlign: "center" }}>
                     No securities found
                   </TableCell>
                 </TableRow>
@@ -188,32 +180,23 @@ const PortfolioPage = () => {
             </TableBody>
           </Table>
         </TableContainer>
-
+  
         <Box sx={{ marginTop: 2, display: "flex", gap: 2, justifyContent: "center" }}>
-          <Button variant="contained" color="primary" onClick={handleOpenProfitModal}>
+          <Button variant="contained" color="primary" onClick={() => setProfitModalOpen(true)}>
             Profit Info
           </Button>
-          <Button variant="contained" color="primary" onClick={handleOpenTaxModal}>
+          <Button variant="contained" color="primary" onClick={() => setTaxModalOpen(true)}>
             Tax Info
           </Button>
         </Box>
-
-        <Dialog open={openPopup} onClose={handleClosePopup}>
-          <DialogTitle>Set Number of Public Actions</DialogTitle>
-          <DialogContent>
-            <TextField
-              type="number"
-              fullWidth
-              value={publicCount}
-              onChange={(e) => setPublicCount(Math.max(0, Number(e.target.value)))}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClosePopup} color="secondary">Cancel</Button>
-            <Button onClick={handleSavePublicCount} color="primary">Save</Button>
-          </DialogActions>
-        </Dialog>
-
+  
+        <MakePublicModal
+          open={makePublicOpen}
+          onClose={handleCloseMakePublic}
+          onConfirm={handleConfirmMakePublic}
+          maxAmount={selectedSecurity?.amount ?? 0}
+        />
+  
         <Snackbar
           open={showSuccess}
           autoHideDuration={3000}
@@ -221,23 +204,24 @@ const PortfolioPage = () => {
           anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         >
           <Alert onClose={() => setShowSuccess(false)} severity="success" sx={{ width: '100%' }}>
-            Public count updated successfully!
+            Actions made public successfully!
           </Alert>
         </Snackbar>
-
+  
         <ProfitInfoModal 
           open={profitModalOpen} 
-          onClose={handleCloseProfitModal}
+          onClose={() => setProfitModalOpen(false)}
           portfolioData={portfolioData}
         />
         <TaxInfoModal 
           open={taxModalOpen} 
-          onClose={handleCloseTaxModal} 
+          onClose={() => setTaxModalOpen(false)} 
           taxData={taxData}
         />
       </Box>
     </Box>
   );
+  
 };
 
 export default PortfolioPage;
