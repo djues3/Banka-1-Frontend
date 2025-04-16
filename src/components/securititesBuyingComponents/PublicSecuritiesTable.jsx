@@ -39,7 +39,7 @@ const PublicSecuritiesTable = () => {
                 const mapped = data.map((item, i) => ({
                     id: i,
                     ...item.security,
-                    availableQuantity: item.security.availableQuantity || 0,
+                    public: item.public || 0,
                     portfolioId: item.id 
                 }));
                 setSecurities(mapped);
@@ -131,8 +131,8 @@ const PublicSecuritiesTable = () => {
                 (priceRange.min === "" || sec.lastPrice >= parseFloat(priceRange.min)) &&
                 (priceRange.max === "" || sec.lastPrice <= parseFloat(priceRange.max));
             const matchesVolume =
-                (volumeRange.min === "" || sec.availableQuantity >= parseFloat(volumeRange.min)) &&
-                (volumeRange.max === "" || sec.availableQuantity <= parseFloat(volumeRange.max));
+                (volumeRange.min === "" || sec.public >= parseFloat(volumeRange.min)) &&
+                (volumeRange.max === "" || sec.public <= parseFloat(volumeRange.max));
             const matchesSettlement =
                 settlementDate === "" || sec.settlementDate === settlementDate;
 
@@ -145,7 +145,7 @@ const PublicSecuritiesTable = () => {
         { field: "lastPrice", headerName: "Price", width: 200 },
         { field: "ask", headerName: "Ask", width: 200 },
         { field: "bid", headerName: "Bid", width: 200 },
-        { field: "availableQuantity", headerName: "Volume", width: 100 },
+        { field: "public", headerName: "Volume", width: 100 },
         {
             field: "actions",
             headerName: "Actions",

@@ -47,10 +47,11 @@ const PortfolioPage = () => {
       if (!userId) return;
       try {
         const data = await getUserSecurities(userId);
-        const tax = await getTaxForUser(userId);
+        console.log("data od securites: ", data);
+        // const tax = await getTaxForUser(userId);
         console.log(data)
         setPortfolioData(data);
-        setTaxData(tax.data);
+        // setTaxData(tax.data);
       } catch (error) {
         console.error("Error fetching user securities:", error);
       }
@@ -170,13 +171,19 @@ const PortfolioPage = () => {
               <TableRow>
                 <TableCell sx={{ fontWeight: "bold" }}>Security</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Symbol</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
+                {selectedTab === 0 && (
+                  <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
+                )}
                 <TableCell sx={{ fontWeight: "bold" }}>Purchase Price</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Profit</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Last Modified</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Public</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Make Public</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Sell</TableCell>
+                {selectedTab === 0 && (
+                  <>
+                    <TableCell sx={{ fontWeight: "bold" }}>Make Public</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Sell</TableCell>
+                  </>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -187,41 +194,42 @@ const PortfolioPage = () => {
                     <TableRow key={row.portfolio_id}>
                       <TableCell>{row.type || "Stock"}</TableCell>
                       <TableCell>{row.ticker}</TableCell>
-                      <TableCell>{row.amount ?? 0}</TableCell>
+
+                      {selectedTab === 0 && (
+                        <TableCell>{row.amount ?? 0}</TableCell>
+                      )}
+
                       <TableCell>{row.price?.toFixed(2) ?? "0.00"}</TableCell>
                       <TableCell sx={{ color: row.profit >= 0 ? "green" : "red" }}>
                         {(row.profit ?? 0).toFixed(2)} RSD
                       </TableCell>
                       <TableCell>{formatDate(row.last_modified)}</TableCell>
                       <TableCell>{row.public ?? 0}</TableCell>
-                      <TableCell>
-                        {row.type === "Stock" && (
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            onClick={() => handleOpenMakePublic(row)}
-                          >
-                            Make Public
-                          </Button>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {/*<Button*/}
-                        {/*  size="small"*/}
-                        {/*  variant="contained"*/}
-                        {/*  onClick={() => navigate(`/create-order?ticker=${row.ticker}`)}*/}
-                        {/*>*/}
-                        {/*  SELL*/}
-                        {/*</Button>*/}
-                        <Button
-                            size="small"
-                            variant="contained"
-                            onClick={() => handleSellClick(row)}
 
-                        >
-                          Sell
-                        </Button>
-                      </TableCell>
+                      {selectedTab === 0 && (
+                        <>
+                          <TableCell>
+                            {row.type === "Stock" && (
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                onClick={() => handleOpenMakePublic(row)}
+                              >
+                                Make Public
+                              </Button>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              onClick={() => handleSellClick(row)}
+                            >
+                              Sell
+                            </Button>
+                          </TableCell>
+                        </>
+                      )}
                     </TableRow>
                   ))
               ) : (
@@ -279,11 +287,11 @@ const PortfolioPage = () => {
           onClose={() => setProfitModalOpen(false)}
           portfolioData={portfolioData}
         />
-        <TaxInfoModal 
+        {/* <TaxInfoModal 
           open={taxModalOpen} 
           onClose={() => setTaxModalOpen(false)} 
           taxData={taxData}
-        />
+        /> */}
       </Box>
     </Box>
 
