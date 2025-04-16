@@ -171,7 +171,7 @@ const TransactionsPage = () => {
                     >
                         {accounts.map((option) => (
                             <MenuItem key={option.id} value={option.id}>
-                                {option.accountNumber} ({option.currency})
+                                {option.accountNumber}
                             </MenuItem>
                         ))}
                     </TextField>

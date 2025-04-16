@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { DataGrid } from "@mui/x-data-grid";
 import { Button, TextField, MenuItem } from "@mui/material";
-import {fetchTaxData, runTax} from "../../services/AxiosTrading";
-import {fetchCustomerById, fetchEmployeeById} from "../../services/AxiosUser";
+import { fetchTaxData, runTax } from "../../services/AxiosTrading";
+import { fetchCustomerById, fetchEmployeeById } from "../../services/AxiosUser";
+import DataTable from "../tables/DataTable";
 
 const TaxTrackingTable = () => {
     const [taxRecords, setTaxRecords] = useState([]);
@@ -63,7 +63,6 @@ const TaxTrackingTable = () => {
             flex: 1,
             renderCell: (params) => (params.row.isPaid ? "Yes" : "No"),
         },
-
     ];
 
     const handleRunTax = async () => {
@@ -76,15 +75,14 @@ const TaxTrackingTable = () => {
     };
 
     return (
-        <div style={{ height: 400, width: "100%" }}>
-            <div style={{marginBottom: 16, display: "flex", alignItems: "center", gap: "10px"}}>
+        <div style={{ width: "100%" }}>
+            <div style={{ marginBottom: 16, display: "flex", alignItems: "center", gap: "10px" }}>
                 <TextField
                     label="First Name"
                     variant="outlined"
                     size="small"
                     value={firstNameFilter}
                     onChange={(e) => setFirstNameFilter(e.target.value)}
-                    style={{ marginRight: 10 }}
                 />
                 <TextField
                     label="Last Name"
@@ -92,7 +90,6 @@ const TaxTrackingTable = () => {
                     size="small"
                     value={lastNameFilter}
                     onChange={(e) => setLastNameFilter(e.target.value)}
-                    style={{ marginRight: 10 }}
                 />
                 <TextField
                     select
@@ -111,7 +108,8 @@ const TaxTrackingTable = () => {
                     Run Tax
                 </Button>
             </div>
-            <DataGrid rows={filteredRecords} columns={columns} pageSize={5} />
+
+            <DataTable rows={filteredRecords} columns={columns} checkboxSelection={false} />
         </div>
     );
 };
