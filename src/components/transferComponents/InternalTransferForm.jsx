@@ -33,7 +33,8 @@ const InternalTransferForm = () => {
         const getAccounts = async () => {
             try {
                 const response = await fetchAccountsForUser();
-                setAccounts(response);
+                const activeAccounts = response.filter(acc => acc.status === 'ACTIVE');
+                setAccounts(activeAccounts);
             } catch (error) {
                 console.error("Error fetching accounts:", error);
             }
