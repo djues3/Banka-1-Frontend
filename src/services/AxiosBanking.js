@@ -120,43 +120,41 @@ export const fetchRecipients = async (accountId) => {
   }
 };
 
-export const updateRecipient = async (
-    accountId,
-    recipientId,
-    recipientData
-) => {
+export const updateRecipient = async (recipientId, recipientData) => {
   try {
-    const newRecipientData = {
-      ownerAccountId: accountId,
+    const requestBody = {
+      fullName: `${recipientData.firstName} ${recipientData.lastName}`.trim(),
+      address: recipientData.address || "",
       accountNumber: recipientData.accountNumber,
-      fullName: recipientData.fullName,
+      ownerAccountId: recipientData.ownerAccountId // OBAVEZNO ako backend to očekuje
     };
-    const response = await apiBanking.put(
-        `/receiver/${recipientId}`,
-        newRecipientData
-    );
+
+    console.log("Sending update request to /receiver/" + recipientId, requestBody);
+
+    const response = await apiBanking.put(`/receiver/${recipientId}`, requestBody);
     return response.data;
   } catch (error) {
-    console.error(`Error updating recipient ${recipientId}:`, error);
+    console.error(`Error updating recipient [${recipientId}]:`, error.response?.data || error.message);
     throw error;
   }
 };
 
-export const createRecipient = async (accountId, recipientData) => {
+
+export const createRecipient = async (recipientData) => {
   try {
-    const newReceiverData = {
-      ownerAccountId: accountId,
+    const response = await apiBanking.post("/receiver", {
+      ownerAccountId: Number(recipientData.ownerAccountId),
       accountNumber: recipientData.accountNumber,
       fullName: recipientData.fullName,
-    };
-
-    const response = await apiBanking.post(`/receiver`, newReceiverData);
+      address: recipientData.address || "",
+    });
     return response.data;
   } catch (error) {
-    console.error("Error creating receivers:", error);
+    console.error("Error creating recipient:", error);
     throw error;
   }
 };
+
 
 // Fetch cards linked to an account
 export const fetchUserCards = async (accountId) => {
@@ -385,10 +383,10 @@ export const fetchAccountsId1 = async (id) => {
   }
 };
 
-export const fetchRecipientsForFast = async (userId) => {
+export const fetchRecipientsForFast = async (customerId) => {
   try {
-    console.log("Fetching fast recipients for userId = " + userId);
-    const response = await apiBanking.get(`/receiver/user/${userId}`);
+    console.log("Fetching fast recipients for customerId = " + customerId);
+    const response = await apiBanking.get(`/receiver/${customerId}`);
 
     console.log("Response data:", response.data);
 
@@ -740,16 +738,17 @@ export const previewForeignExchangeTransfer = async (fromCurrency, toCurrency, a
 //     throw error;
 //   }
 // };
-
-export const fetchAllRecipientsForUser = async (userId) => {
+export const fetchAllRecipientsForUser = async (customerId) => {
   try {
-    const response = await apiBanking.get(`/receiver/user/${userId}`);
-    return response.data.data.receivers;
+    const response = await apiBanking.get(`/receiver/${customerId}`);
+    return response.data?.data?.receivers || [];
   } catch (error) {
-    console.error("Error fetching all recipients for user:", error);
+    console.error("Error fetching recipients for customer:", error);
     throw error;
   }
 };
+
+
 
 
 export const fetchAllData = async (setCards, setLoading, setError) => {

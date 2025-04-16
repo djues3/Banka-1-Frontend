@@ -9,9 +9,10 @@ import {
   CircularProgress
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { fetchAllRecipientsForUser, getUserIdFromToken } from "../../services/AxiosBanking";
-
-
+import {
+  fetchAllRecipientsForUser,
+  getUserIdFromToken
+} from "../../services/AxiosBanking";
 
 const AddFastPayment = ({ open, onClose, onSelectRecipient }) => {
   const [recipients, setRecipients] = useState([]);
@@ -26,9 +27,10 @@ const AddFastPayment = ({ open, onClose, onSelectRecipient }) => {
 
       try {
         const data = await fetchAllRecipientsForUser(userId);
-        setRecipients(data);
+        setRecipients(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to fetch recipients:", err);
+        setRecipients([]);
       } finally {
         setLoading(false);
       }
@@ -50,10 +52,12 @@ const AddFastPayment = ({ open, onClose, onSelectRecipient }) => {
           marginTop: "10%",
           backgroundColor: isDarkMode ? "#212128" : "#f0f0f0",
           borderRadius: 2,
-          color: "white"
+          color: isDarkMode ? "white" : "black",
+          maxHeight: "80vh",
+          overflowY: "auto"
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2,  textAlign: "center" }}>
+        <Typography variant="h6" sx={{ mb: 2, textAlign: "center" }}>
           {recipients.length === 0 ? "No saved recipients found." : "Select recipient:"}
         </Typography>
 
@@ -65,7 +69,7 @@ const AddFastPayment = ({ open, onClose, onSelectRecipient }) => {
           <List>
             {recipients.map((recipient, index) => (
               <ListItem
-                key={index}
+                key={recipient.id || index}
                 button
                 onClick={() => {
                   onSelectRecipient(recipient);
@@ -73,8 +77,8 @@ const AddFastPayment = ({ open, onClose, onSelectRecipient }) => {
                 }}
               >
                 <ListItemText
-                  primary={recipient.fullName}
-                  secondary={`${recipient.accountNumber} | ${recipient.address}`}
+                  primary={recipient.fullName || "Unnamed"}
+                  secondary={`${recipient.accountNumber || "N/A"} | ${recipient.address || "No address"}`}
                 />
               </ListItem>
             ))}
