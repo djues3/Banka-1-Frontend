@@ -312,13 +312,14 @@ export const runTax = async () => {
   }
 };
 
-export const updatePublicCount = async (ticker, publicCount) => {
+export const updatePublicCount = async (portfolio_id, publicCount) => {
   try {
-    const response = await apiTrading.put("/securities/public-count", {
-      ticker,
-      publicCount
+    const response = await apiTrading.put("/securities/public-count", 
+    {
+      portfolio_id: portfolio_id,
+      public: publicCount
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.error("Error updating public count:", error);
     throw error;
