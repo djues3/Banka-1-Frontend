@@ -67,7 +67,7 @@ const HomePage = () => {
                 // Supervisor
                 else if (isEmployed && department === 'SUPERVISOR') {
                     setRoleMessage('Welcome to the Supervisor Dashboard');
-                    addCard('Actuarial Management', '/actuarial-management-portal', CompareArrowsIcon);
+                    addCard('Agent Management', '/agent-management-portal', CompareArrowsIcon);
                     addCard('Actuarial Performance', '/actuarial-performance-portal', PriceCheckIcon);
                     addCard('Portfolio', '/portfolio-page', LibraryBooksIcon);
                     addCard('Important Files', '/actuary-buying-portal', FolderIcon);

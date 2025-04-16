@@ -27,7 +27,7 @@ import AllLoansEmployeePortal from "./pages/portals/AllLoansEmployeePortal";
 import PendingLoansEmployeePortal from "./pages/portals/PendingLoansEmployeePortal";
 import ExchangeRateList from "./pages/exchange/ExchangeRateList";
 import CheckEquivalency from "./pages/exchange/CheckEquivalency";
-import ActuarialManagementPortal from "./pages/portals/ActuarialManagementPortal";
+import AgentManagementPortal from "./pages/portals/AgentManagementPortal";
 import PortfolioPage from "./pages/portals/PortfolioPage";
 import ActuarySecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ActuarySecuritiesBuyingPortal";
 import ClientSecuritiesBuyingPortal from "./pages/portals/securitiesBuyingPortal/ClientSecuritiesBuyingPortal";
@@ -114,10 +114,10 @@ function App() {
               }
             />
             <Route
-              path="/actuarial-management-portal"
+              path="/agent-management-portal"
               element={
                 <AuthGuard allowedPositions={["SUPERVISOR"]}>
-                  <ActuarialManagementPortal />
+                  <AgentManagementPortal />
                 </AuthGuard>
               }
             />

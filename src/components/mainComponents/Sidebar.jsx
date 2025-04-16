@@ -273,9 +273,9 @@ export default function Sidebar() {
                     <ListItemText primary="Home" />
                   </ListItemButton>
                   <ListItem disablePadding>
-                    <ListItemButton onClick={() => handleNavigation('/actuarial-management-portal')}>
+                    <ListItemButton onClick={() => handleNavigation('/agent-management-portal')}>
                       <ListItemIcon><CompareArrowsIcon /></ListItemIcon>
-                      <ListItemText primary="Actuarial Management" />
+                      <ListItemText primary="Agent Management" />
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding>
