@@ -7,92 +7,119 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  Button
+  Button,
+  IconButton,
 } from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
 import Sidebar from "../../components/mainComponents/Sidebar";
 import { useNavigate } from "react-router-dom";
 import {
   fetchAllRecipientsForUser,
-  createRecipientt,
-  getUserIdFromToken
+  createRecipient,
+  updateRecipientt,
+  deleteRecipient,
+  getUserIdFromToken,
+  fetchAccountsForUser,
 } from "../../services/AxiosBanking";
 import FastPaymentPopup from "../../components/transactionComponents/FastPaymentPopup";
 
 const RecipientOverviewPage = () => {
   const [recipients, setRecipients] = useState([]);
-  const [showNewRecipientModal, setShowNewRecipientModal] = useState(false);
-  const [newRecipient, setNewRecipient] = useState({
-    name: "",
+  const [showRecipientModal, setShowRecipientModal] = useState(false);
+  const [recipientForm, setRecipientForm] = useState({
+    firstName: "",
+    lastName: "",
     address: "",
-    accountNumber: ""
+    accountNumber: "",
   });
+  const [editingRecipientId, setEditingRecipientId] = useState(null);
   const [error, setError] = useState("");
+  const [ownerAccountId, setOwnerAccountId] = useState(null);
 
   const navigate = useNavigate();
 
   const loadRecipients = async () => {
-    const mockRecipients = [
-      {
-        id: "mock1",
-        firstName: "Ana",
-        lastName: "Petrović",
-        accountNumber: "123456789012345678",
-        address: "Bulevar Kralja Aleksandra 73",
-        userId: 101
-      },
-      {
-        id: "mock2",
-        firstName: "Marko",
-        lastName: "Jovanović",
-        accountNumber: "876543210987654321",
-        address: "Cara Dušana 25",
-        userId: 102
-      }
-    ];
-
-    setRecipients(mockRecipients);
-
-    // ZA PRAVI FETCH
-    /*
     const userId = getUserIdFromToken();
     if (!userId) return;
     try {
+      const accounts = await fetchAccountsForUser();
+      if (accounts.length > 0) setOwnerAccountId(accounts[0].id);
+
       const data = await fetchAllRecipientsForUser(userId);
-      setRecipients(data);
+      setRecipients(data || []);
     } catch (error) {
       console.error("Failed to fetch recipients:", error);
     }
-    */
   };
 
   useEffect(() => {
     loadRecipients();
   }, []);
 
-  const handleAddRecipient = async () => {
+  const handleSave = async () => {
     if (
-      !newRecipient.name.trim() ||
-      !newRecipient.address.trim() ||
-      !newRecipient.accountNumber.trim()
+      !recipientForm.firstName.trim() ||
+      !recipientForm.lastName.trim() ||
+      !recipientForm.accountNumber.trim()
     ) {
       setError("All fields are required.");
       return;
     }
 
     try {
-      await createRecipientt({
-        fullName: newRecipient.name,
-        address: newRecipient.address,
-        accountNumber: newRecipient.accountNumber,
-        ownerAccountId: null
+      const fullName = `${recipientForm.firstName} ${recipientForm.lastName}`.trim();
+      const dataToSend = {
+        ...recipientForm,
+        fullName,
+      };
+
+      if (editingRecipientId) {
+        await updateRecipientt(editingRecipientId, dataToSend);
+      } else {
+        await createRecipient({
+          ...dataToSend,
+          ownerAccountId,
+        });
+      }
+
+      setShowRecipientModal(false);
+      setRecipientForm({
+        firstName: "",
+        lastName: "",
+        address: "",
+        accountNumber: "",
       });
-      setShowNewRecipientModal(false);
-      setNewRecipient({ name: "", address: "", accountNumber: "" });
+      setEditingRecipientId(null);
       setError("");
       loadRecipients();
     } catch (err) {
-      console.error("Failed to add recipient:", err);
-      setError("Failed to add recipient.");
+      console.error("Error saving recipient:", err);
+      setError("Failed to save recipient.");
+    }
+  };
+
+  const handleEdit = (recipient) => {
+    const nameParts = recipient.fullName?.trim().split(" ") || [];
+    const firstName = recipient.firstName || nameParts[0] || "";
+    const lastName = recipient.lastName || nameParts.slice(1).join(" ") || "";
+
+    setRecipientForm({
+      firstName,
+      lastName,
+      address: recipient.address || "",
+      accountNumber: recipient.accountNumber || "",
+    });
+
+    setEditingRecipientId(recipient.id);
+    setShowRecipientModal(true);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteRecipient(id);
+      loadRecipients();
+    } catch (err) {
+      console.error("Failed to delete recipient:", err);
     }
   };
 
@@ -104,7 +131,16 @@ const RecipientOverviewPage = () => {
           <Typography variant="h5">Saved recipients</Typography>
           <Button
             variant="outlined"
-            onClick={() => setShowNewRecipientModal(true)}
+            onClick={() => {
+              setEditingRecipientId(null);
+              setRecipientForm({
+                firstName: "",
+                lastName: "",
+                address: "",
+                accountNumber: "",
+              });
+              setShowRecipientModal(true);
+            }}
             sx={{
               borderColor: "#aab4f8",
               color: "#aab4f8",
@@ -112,9 +148,9 @@ const RecipientOverviewPage = () => {
               "&:hover": {
                 backgroundColor: "rgba(170, 180, 248, 0.1)",
                 borderColor: "#aab4f8",
-                color: "#aab4f8"
+                color: "#aab4f8",
               },
-              textTransform: "none"
+              textTransform: "none",
             }}
           >
             New recipient
@@ -129,24 +165,33 @@ const RecipientOverviewPage = () => {
           ) : (
             <List>
               {recipients.map((recipient, index) => (
-                <React.Fragment key={recipient.id || index}>
+                <React.Fragment key={recipient.id}>
                   <ListItem
                     secondaryAction={
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={() =>
-                          navigate("/new-payment-portal", {
-                            state: { recipient }
-                          })
-                        }
-                      >
-                        New Payment
-                      </Button>
+                      <Box>
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          sx={{ mr: 1 }}
+                          onClick={() =>
+                            navigate("/new-payment-portal", {
+                              state: { recipient },
+                            })
+                          }
+                        >
+                          New Payment
+                        </Button>
+                        <IconButton onClick={() => handleEdit(recipient)}>
+                          <Edit />
+                        </IconButton>
+                        <IconButton onClick={() => handleDelete(recipient.id)}>
+                          <Delete />
+                        </IconButton>
+                      </Box>
                     }
                   >
                     <ListItemText
-                      primary={`${recipient.firstName} ${recipient.lastName}`}
+                      primary={`${recipient.firstName || ""} ${recipient.lastName || ""}`.trim()}
                       secondary={
                         <>
                           <div>Account Number: {recipient.accountNumber}</div>
@@ -163,11 +208,11 @@ const RecipientOverviewPage = () => {
         </Paper>
 
         <FastPaymentPopup
-          open={showNewRecipientModal}
-          onClose={() => setShowNewRecipientModal(false)}
-          onSave={handleAddRecipient}
-          recipient={newRecipient}
-          setRecipient={setNewRecipient}
+          open={showRecipientModal}
+          onClose={() => setShowRecipientModal(false)}
+          onSave={handleSave}
+          recipient={recipientForm}
+          setRecipient={setRecipientForm}
           error={error}
         />
       </Box>

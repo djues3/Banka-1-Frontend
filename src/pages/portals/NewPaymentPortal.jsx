@@ -10,7 +10,7 @@ import { createRecipientt } from "../../services/AxiosBanking";
 import { getPaymentCodes } from "../../services/AxiosBanking";
 import { Autocomplete, TextField, Button, IconButton } from "@mui/material";
 import { jwtDecode } from "jwt-decode";
-import VerificationModal from "../../components/transferComponents/VerificationModal";
+import OtpModal from "../../components/transferComponents/OtpModal";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
 import AddFastPayment from "../../components/transactionComponents/AddFastPayment";
 
@@ -136,7 +136,8 @@ const NewPaymentPortal = () => {
     const loadAccounts = async () => {
         try {
             const data = await fetchAccountsForUser(userId);
-            setAccounts(data);
+            const activeAccounts = data.filter(acc => acc.status === 'ACTIVE');
+            setAccounts(activeAccounts);
         } catch (err) {
             console.error("Failed to fetch accounts:", err);
         }
@@ -409,7 +410,7 @@ const NewPaymentPortal = () => {
                 </form>
 
                 <ToastContainer position="bottom-right" />
-                <VerificationModal open={showModal} onClose={handleCancel} onConfirm={handleVerificationConfirm} />
+                <OtpModal open={showModal} onClose={handleCancel} onConfirm={handleVerificationConfirm} />
                 <PaymentResultModal open={openModal} onClose={() => setOpenModal(false)} success={isSuccess} paymentMessage={paymentMessage} onConfirm={handleConfirm} />
                 <AddFastPayment open={fastPaymentOpen} onClose={() => setFastPaymentOpen(false)} onSelectRecipient={handleFastPaymentSelect} />
                 </div>

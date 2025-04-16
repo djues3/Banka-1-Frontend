@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/mainComponents/Sidebar";
 import { getUserIdFromToken } from "../../services/AxiosBanking";
 import {
+  createOrder,
   getTaxForUser,
   getUserSecurities,
   updatePublicCount,
@@ -19,6 +20,8 @@ import {
 
 import { useTheme } from "@mui/material/styles";
 import styles from "../../styles/Transactions.module.css";
+import SellModal from "../../components/common/SellModal";
+import {toast, ToastContainer} from "react-toastify";
 
 const PortfolioPage = () => {
   const theme = useTheme();
@@ -33,6 +36,9 @@ const PortfolioPage = () => {
   const [makePublicOpen, setMakePublicOpen] = useState(false);
   const [selectedSecurity, setSelectedSecurity] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSellModalOpen, setIsSellModalOpen] = useState(false);
+  const [availableSecurities, setAvailableSecurities] = useState(0);
+  const [selectedSellSecurity, setselectedSellSecurity] = useState("");
 
   const userId = getUserIdFromToken();
 
@@ -69,7 +75,6 @@ const PortfolioPage = () => {
       const updated = portfolioData.map((sec) =>
         sec.portfolio_id === selectedSecurity.portfolio_id ? { ...sec, public: count } : sec
       );
-      console.log(response);
       setPortfolioData(updated);
       setShowSuccess(true);
     } catch (error) {
@@ -83,6 +88,47 @@ const PortfolioPage = () => {
     if (!timestamp) return "";
     const date = new Date(timestamp * 1000);
     return date.toLocaleDateString("sr-RS");
+  };
+
+  const handleSellClick = (security) => {
+    setIsSellModalOpen(true);
+    // setAvailableSecurities(security.amount)
+    setselectedSellSecurity(security)
+  };
+
+  const handleClose = () => {
+    setIsSellModalOpen(false);
+    setAvailableSecurities("")
+
+  };
+
+  const handleConfirmSell = async (amount, selectedAccount, userId, selectedSecurity) => {
+    console.log("Selling amount:", amount + " to account: ", selectedAccount);
+
+    const postRequest = {
+      user_id: userId,
+      account_id: selectedAccount,
+      security_id: selectedSecurity.securityId,
+      quantity: amount,
+      contract_size: 1,
+      direction: "sell",
+      limit_price_per_unit: null,
+      stop_price_per_unit: null,
+      aon: false,
+      margin: false
+    }
+
+    console.log(postRequest)
+    try {
+      const result = await createOrder(postRequest);
+      console.log("Order created successfully:", result);
+    } catch (error) {
+      toast.error("Error creating order.", { autoClose: 3000 });
+
+    }
+
+
+    // handleClose();
   };
 
   return (
@@ -160,19 +206,27 @@ const PortfolioPage = () => {
                         )}
                       </TableCell>
                       <TableCell>
+                        {/*<Button*/}
+                        {/*  size="small"*/}
+                        {/*  variant="contained"*/}
+                        {/*  onClick={() => navigate(`/create-order?ticker=${row.ticker}`)}*/}
+                        {/*>*/}
+                        {/*  SELL*/}
+                        {/*</Button>*/}
                         <Button
-                          size="small"
-                          variant="contained"
-                          onClick={() => navigate(`/create-order?ticker=${row.ticker}`)}
+                            size="small"
+                            variant="contained"
+                            onClick={() => handleSellClick(row)}
+
                         >
-                          SELL
+                          Sell
                         </Button>
                       </TableCell>
                     </TableRow>
                   ))
               ) : (
-                <TableRow>
-                  <TableCell colSpan={9} sx={{ textAlign: "center" }}>
+                  <TableRow>
+                    <TableCell colSpan={9} sx={{textAlign: "center" }}>
                     No securities found
                   </TableCell>
                 </TableRow>
@@ -196,6 +250,8 @@ const PortfolioPage = () => {
           onConfirm={handleConfirmMakePublic}
           maxAmount={selectedSecurity?.amount ?? 0}
         />
+
+
   
         <Snackbar
           open={showSuccess}
@@ -208,6 +264,16 @@ const PortfolioPage = () => {
           </Alert>
         </Snackbar>
   
+        <SellModal
+            isOpen={isSellModalOpen}
+            onSave={handleConfirmSell}
+            onClose={handleClose}
+            selectedSecurity={selectedSellSecurity}
+
+        />
+        <ToastContainer position={"bottom-right"}></ToastContainer>
+
+
         <ProfitInfoModal 
           open={profitModalOpen} 
           onClose={() => setProfitModalOpen(false)}
@@ -220,6 +286,7 @@ const PortfolioPage = () => {
         />
       </Box>
     </Box>
+
   );
   
 };

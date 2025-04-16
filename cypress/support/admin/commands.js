@@ -30,7 +30,7 @@
  * @param {string} password - User's password
  */
 Cypress.Commands.add('login', (email = 'admin@admin.com', password = 'admin123') => {
-  cy.visit('/login');
+  cy.visit('/login')
   cy.get('input[name="email"]').should('be.visible').clear().type(email);
   cy.get('input[name="password"]').should('be.visible').clear().type(password);
   cy.get('button[type="submit"]').should('be.visible').click();
@@ -156,10 +156,10 @@ Cypress.Commands.add('denyLoan', () => {
 Cypress.Commands.add('blockCard', () => {
   cy.get(':nth-child(3) > .MuiPaper-root > .MuiButtonBase-root').click();
   cy.get('.MuiDataGrid-row--firstVisible > [data-field="accountNumber"]').dblclick();
-  cy.get(':nth-child(1) > .MuiSwitch-root > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
+  cy.get('.CreditCardDisplay_cardButtons__KX7PW > :nth-child(1) > .MuiSwitch-root > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
 });
 
-/*
+
 Cypress.Commands.add('CreateForeignBusinessAccount', () => {
   // Do forme
   cy.get(':nth-child(3) > .MuiPaper-root > .MuiButtonBase-root').click()
@@ -222,8 +222,11 @@ Cypress.Commands.add('CreateForeignBusinessAccount', () => {
   cy.get('[role="listbox"] [role="option"]').contains('42.2').click();
   cy.contains('Save').click();
 
+  cy.get('.css-1cr99xm-MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select').click();
+  cy.get('[data-value="4"]').click();
+  cy.get('.MuiButton-text').click();
+
   cy.get('.MuiDialogActions-root > .MuiButton-contained').contains("Confirm").click();
 
   // Proveri da li se vrati na pocetnu stranicu
 });
-*/

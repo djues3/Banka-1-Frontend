@@ -46,6 +46,16 @@ export const getActuarialProfits = async () => {
   }
 };
 
+export const getAgents = async () => {
+  try {
+    const response = await apiTrading.get("/actuaries/agents");
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching actuaries:", error);
+    throw error;
+  }
+};
+
 
 export const getActuaryById = async (id) => {
   try {
