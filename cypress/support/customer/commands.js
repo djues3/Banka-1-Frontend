@@ -50,7 +50,7 @@ Cypress.Commands.add('limitChange', () => {
     cy.contains("Account Details").should('be.visible');
     //Limit change is clicked
     cy.contains("Limit Change").click();
-    cy.get('input[type="number"]').clear().type('1000');
+    cy.get(':nth-child(1) > .MuiGrid-container > :nth-child(2)').clear().type('1000');
     cy.contains("SAVE").click();
     
 })
