@@ -24,7 +24,7 @@ docker compose up -d --pull always
 ```
 Or if using podman
 ```<bash>
-podman compose up -d --pull always
+podman compose up -d --pull-always
 ```
 ### Third start the local development server:
 ```<bash>
