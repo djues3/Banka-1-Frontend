@@ -162,7 +162,7 @@ Cypress.Commands.add('approveLoan', () => {
 Cypress.Commands.add('blockCard', () => {
   cy.get(':nth-child(3) > .MuiPaper-root > .MuiButtonBase-root').click();
   cy.get('.MuiDataGrid-row--firstVisible > [data-field="accountNumber"]').dblclick();
-  cy.get('.CreditCardDisplay_cardButtons__KX7PW > :nth-child(1) > .MuiSwitch-root > .MuiButtonBase-root > .PrivateSwitchBase-input').click();
+  cy.get('.CreditCardDisplay_cardButtons__tmf8U > :nth-child(1) > .MuiSwitch-root > .MuiButtonBase-root > .PrivateSwitchBase-input').click()
 });
 
 
