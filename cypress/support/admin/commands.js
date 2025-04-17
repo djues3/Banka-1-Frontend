@@ -153,6 +153,12 @@ Cypress.Commands.add('denyLoan', () => {
 
 });
 
+Cypress.Commands.add('approveLoan', () => {
+  cy.get(':nth-child(5) > .MuiPaper-root > .MuiButtonBase-root').click();
+  cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > [style="background-color: rgb(76, 175, 80); color: rgb(255, 255, 255); padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: background-color 0.3s;"]').click();
+
+});
+
 Cypress.Commands.add('blockCard', () => {
   cy.get(':nth-child(3) > .MuiPaper-root > .MuiButtonBase-root').click();
   cy.get('.MuiDataGrid-row--firstVisible > [data-field="accountNumber"]').dblclick();
