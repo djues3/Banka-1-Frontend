@@ -16,7 +16,19 @@ const ResetUsedLimitButton = ({ actuarId, onAction }) => {
     return (
         <button
             onClick={handleReset}
-            style={{ backgroundColor: "red", color: "white", padding: "5px 10px", border: "none", cursor: "pointer" }}
+            style={{
+                backgroundColor: "#D32F2F",
+                color: "#fff",
+                padding: "6px 14px",
+                border: "none",
+                borderRadius: "20px",
+                cursor: "pointer",
+                fontWeight: "600",
+                fontSize: "0.85rem",
+                transition: "background-color 0.3s ease",
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#e06666")}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#D32F2F")}
         >
             Reset Used Limit
         </button>

@@ -8,8 +8,16 @@ import {
   Stack
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { getUserIdFromToken } from "../../services/AxiosBanking";
 
-const FastPaymentPopup = ({ open, onClose, onSave, recipient, setRecipient, error }) => {
+const FastPaymentPopup = ({
+  open,
+  onClose,
+  onSave,
+  recipient,
+  setRecipient,
+  error
+}) => {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
@@ -60,13 +68,19 @@ const FastPaymentPopup = ({ open, onClose, onSave, recipient, setRecipient, erro
 
   const handleSave = () => {
     const fullName = `${form.firstName} ${form.lastName}`.trim();
+    const rawId = getUserIdFromToken();
+    const customerId = Number(rawId);
 
     const recipientToSave = {
-      ...recipient,
+      ...(recipient?.id ? { id: recipient.id } : {}),
+      customerId,
       fullName,
       address: form.address,
       accountNumber: form.accountNumber
     };
+
+    console.log("Recipient to save:", recipientToSave);
+    console.log("Type of customerId:", typeof recipientToSave.customerId);
 
     onSave(recipientToSave);
   };
