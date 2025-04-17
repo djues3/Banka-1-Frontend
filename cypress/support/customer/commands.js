@@ -75,6 +75,81 @@ Cypress.Commands.add('createCard', () => {
     cy.contains("Confirm").click()
 })
 
+Cypress.Commands.add('pay', () => {
+  //Opens hamburger and 
+  cy.get('.swiper-slide-active > .MuiBox-root > .MuiPaper-root > .MuiCardActions-root > .MuiButton-root').click();
+
+  cy.get('#accountSelect').select(1);
+
+  cy.get('.MuiAutocomplete-root > .MuiFormControl-root > .MuiInputBase-root').type('Jovan');
+
+  cy.get('.recipient-account > input').type('111000100000000110');
+
+  cy.get('.payment-purpose > input').type('Test payment');
+
+  cy.get('.amount-wrapper > input').type('1000');
+
+  cy.get('.adress > input').type('Test address');
+
+  cy.get('.reference-number > input').type('123');
+
+  cy.get('.reference-row > .MuiButtonBase-root').click();
+
+  cy.get('#verification-modal-title').should('be.visible');
+
+  cy.get('.MuiButton-outlined').click();
+
+  cy.get('[style="display: flex; justify-content: flex-end; padding: 16px;"] > button').click();
+
+  cy.get('[style="flex: 1 1 0%; padding: 8px 16px; border-radius: 8px; background-color: rgb(244, 67, 54); color: rgb(255, 255, 255); border: none; cursor: pointer; font-weight: 600;"]').click();
+
+})
+
+Cypress.Commands.add('assist', () => {
+  //Opens hamburger and 
+  cy.get('.css-cvcdt5-MuiButtonBase-root-MuiIconButton-root').click();
+
+  
+
+  cy.get('.css-1np12t0 > .MuiPaper-root').should('be.visible');
+
+  cy.get('.css-aa5w9d > .MuiButtonBase-root').click();
+})
+
+Cypress.Commands.add('card', () => {
+  cy.get('button[aria-label="open drawer"]').click();
+
+  cy.get(':nth-child(5) > .MuiButtonBase-root').click();
+
+  cy.get('.css-1wk2x82 > .MuiButtonBase-root').click();
+
+  cy.get(':nth-child(2) > .MuiInputBase-root > .MuiSelect-select').click();
+
+  cy.contains('111000100011000101').click();
+
+  cy.get(':nth-child(4) > .MuiInputBase-root > .MuiSelect-select').click();
+  cy.contains('Visa').click();
+  cy.get('.css-nbc8x7 > .MuiBox-root > .MuiButton-containedPrimary').click();
+})
+
+Cypress.Commands.add('sec', () => {
+  cy.get('button[aria-label="open drawer"]').click();
+
+  cy.get(':nth-child(7) > .MuiButtonBase-root').click();
+
+  cy.get('.MuiDataGrid-row--firstVisible > [data-field="actions"] > .MuiButtonBase-root').click();
+
+  cy.get('.css-1gsycar > :nth-child(4) > .MuiFormControl-root').type('43434');
+
+  cy.get(':nth-child(5) > .MuiFormControl-root').type('4343');
+
+  cy.get('.css-1gsycar > .css-wb57ya-MuiFormControl-root-MuiTextField-root').click();
+
+  cy.contains('111000100011000101').click();
+
+  cy.get('.css-1d1jiby > .MuiButton-contained').click();
+  cy.get('.css-1gsycar > .MuiBox-root > .MuiButton-contained').click();
+})
 
 Cypress.Commands.add('applyLoan', () => {
     //Fill the form 
