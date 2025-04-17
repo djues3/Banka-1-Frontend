@@ -226,7 +226,7 @@ export default function Sidebar() {
                   <ListItem disablePadding>
                     <ListItemButton onClick={() => handleNavigation('/client-buying-portal')}>
                       <ListItemIcon><FolderTwoTone /></ListItemIcon>
-                      <ListItemText primary="Important Files" />
+                      <ListItemText primary="Securities Buying Portal" />
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding>
@@ -293,7 +293,7 @@ export default function Sidebar() {
                   <ListItem disablePadding>
                     <ListItemButton onClick={() => handleNavigation('/actuary-buying-portal')}>
                       <ListItemIcon><FolderTwoTone /></ListItemIcon>
-                      <ListItemText primary="Important Files" />
+                      <ListItemText primary="Securities Buying Portal" />
                     </ListItemButton>
                   </ListItem>
                   <ListItem disablePadding>

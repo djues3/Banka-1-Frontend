@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
     Typography,
@@ -122,6 +123,7 @@ const PendingLoansEmployeePortal = () => {
                                             <Typography variant="body2"><strong>Installments:</strong> {loan.numberOfInstallments}</Typography>
                                             <Typography variant="body2"><strong>Account:</strong> {loan.accountNumber}</Typography>
                                             <Typography variant="body2"><strong>Next Payment:</strong> {loan.nextPaymentDate}</Typography>
+                                            <Typography variant="body2"><strong>Purpose:</strong> {loan.loanReason}</Typography> {/* 👈 Dodato */}
                                         </CardContent>
                                         <CardActions sx={{ justifyContent: "space-between", px: 2, pb: 2 }}>
                                             <ApproveLoanButton
