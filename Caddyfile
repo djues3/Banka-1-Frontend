@@ -4,32 +4,31 @@
 
 localhost {
 	handle_path /api/user/* {
-		reverse_proxy 172.26.105.210:8081
+		reverse_proxy host.docker.internal:8081
 	}
 
 	handle_path /api/banking/* {
-		reverse_proxy 172.26.105.210:8082
+		reverse_proxy host.docker.internal:8082
 	}
 
 	handle_path /api/trading/* {
-	  reverse_proxy 172.26.105.210:3000
+	  reverse_proxy host.docker.internal:3000
 	}
 
 	handle_path /api/notification/* {
-    	  reverse_proxy 172.26.105.210:8083
   }
 
   handle_path /api/support/* {
-    reverse_proxy 172.26.105.210:8000
+    reverse_proxy host.docker.internal:8000
   }
 
   @websockets {
     header Connection *Upgrade*
     header Upgrade websocket
   }
-	reverse_proxy @websockets 172.26.105.210:4200
+	reverse_proxy @websockets host.docker.internal:4200
 	handle {
 		# Frontend
-		reverse_proxy 172.26.105.210:4200
+		reverse_proxy host.docker.internal:4200
 	}
 }
