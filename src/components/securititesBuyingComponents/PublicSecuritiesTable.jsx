@@ -12,6 +12,7 @@ import { fetchPublicSecurities } from "../../services/AxiosTrading";
 import DataTable from "../tables/DataTable";
 import SecuritiesModal from "../common/SecuritiesModal";
 import MakeOfferModal from "../common/MakeOfferModal";
+import {ToastContainer} from "react-toastify";
 
 const PublicSecuritiesTable = () => {
     const [securities, setSecurities] = useState([]);
@@ -183,19 +184,10 @@ const PublicSecuritiesTable = () => {
                 </IconButton>
             </Box>
 
-            <ButtonGroup sx={{ mb: 3 }}>
-                {["stock", "future", "forex", "option", "all"].map(type => (
-                    <Button
-                        key={type}
-                        variant={selectedType === type ? "contained" : "outlined"}
-                        onClick={() => setSelectedType(type)}
-                    >
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </Button>
-                ))}
-            </ButtonGroup>
+            {/*</ButtonGroup>*/}
 
             <DataTable rows={filteredSecurities} columns={columns} checkboxSelection={false} />
+            <ToastContainer position={"bottom-right"}></ToastContainer>
 
             <SecuritiesModal
                 isOpen={isDetailsModalOpen}
