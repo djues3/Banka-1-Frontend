@@ -15,6 +15,7 @@ import {
 import { getContracts, executeOffers } from "../../services/AxiosTrading";
 import { jwtDecode } from "jwt-decode";
 import Sidebar from "../../components/mainComponents/Sidebar";
+import {toast, ToastContainer} from "react-toastify";
 
 const ContractsPage = () => {
   const [contracts, setContracts] = useState([]);
@@ -48,9 +49,11 @@ const ContractsPage = () => {
   const handleExecute = async (id) => {
     try {
       await executeOffers(id);
+      toast.success("Successfully executed order.")
       await fetchContracts();
       window.location.reload();
     } catch (error) {
+      toast.error(error);
       console.error("Greška pri izvršavanju ugovora:", error);
     }
   };
@@ -160,6 +163,7 @@ const ContractsPage = () => {
           {renderContracts("As seller", sellerContracts, false, "seller")}
 
         </Box>
+        <ToastContainer position="bottom-right"/>
       </Box>
   );
 };
