@@ -20,10 +20,10 @@ import {
   createRecipientt,
   updateRecipientt,
   deleteRecipient,
-  getUserIdFromToken,
   fetchAccountsForUser,
 } from "../../services/AxiosBanking";
 import FastPaymentPopup from "../../components/transactionComponents/FastPaymentPopup";
+import {useAuth} from "../../context/AuthContext";
 
 const RecipientOverviewPage = () => {
   const [recipients, setRecipients] = useState([]);
@@ -39,9 +39,9 @@ const RecipientOverviewPage = () => {
   const [ownerAccountId, setOwnerAccountId] = useState(null);
 
   const navigate = useNavigate();
-
+  const {userInfo } = useAuth();
+  const userId = userInfo.id;
   const loadRecipients = async () => {
-    const userId = getUserIdFromToken();
     if (!userId) return;
     try {
       const accounts = await fetchAccountsForUser();

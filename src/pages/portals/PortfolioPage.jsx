@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/mainComponents/Sidebar";
-import { getUserIdFromToken } from "../../services/AxiosBanking";
 import {
   createOrder,
   getTaxForUser,
@@ -22,6 +21,7 @@ import { useTheme } from "@mui/material/styles";
 import styles from "../../styles/Transactions.module.css";
 import SellModal from "../../components/common/SellModal";
 import {toast, ToastContainer} from "react-toastify";
+import {useAuth} from "../../context/AuthContext";
 
 const PortfolioPage = () => {
   const theme = useTheme();
@@ -39,8 +39,8 @@ const PortfolioPage = () => {
   const [isSellModalOpen, setIsSellModalOpen] = useState(false);
   const [availableSecurities, setAvailableSecurities] = useState(0);
   const [selectedSellSecurity, setselectedSellSecurity] = useState("");
-
-  const userId = getUserIdFromToken();
+  const {userInfo } = useAuth();
+  const userId = userInfo.id;
 
   useEffect(() => {
     const fetchPortfolio = async () => {

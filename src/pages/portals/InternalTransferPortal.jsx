@@ -1,7 +1,6 @@
 import React from 'react';
 import Sidebar from "../../components/mainComponents/Sidebar";
 import InternalTransferForm from "../../components/transferComponents/InternalTransferForm";
-import {jwtDecode} from "jwt-decode";
 
 const InternalTransferPortal = () => {
 

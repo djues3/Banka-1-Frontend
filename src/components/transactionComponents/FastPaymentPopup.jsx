@@ -8,7 +8,7 @@ import {
   Stack
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { getUserIdFromToken } from "../../services/AxiosBanking";
+import {useAuth} from "../../context/AuthContext";
 
 const FastPaymentPopup = ({
   open,
@@ -27,6 +27,9 @@ const FastPaymentPopup = ({
     address: "",
     accountNumber: ""
   });
+
+  const {userInfo } = useAuth();
+  const userId = userInfo.id;
 
   useEffect(() => {
     if (!open) return;
@@ -63,8 +66,7 @@ const FastPaymentPopup = ({
 
   const handleSave = () => {
     const fullName = `${form.firstName} ${form.lastName}`.trim();
-    const rawId = getUserIdFromToken();
-    const customerId = Number(rawId);
+    const customerId = Number(userId);
 
     const recipientToSave = {
       ...(recipient?.id ? { id: recipient.id } : {}),

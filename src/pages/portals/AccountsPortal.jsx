@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import Sidebar from "../../components/mainComponents/Sidebar";
 import DataTable from "../../components/tables/DataTable";
 import AccountTransactionsList from "../../components/lists/AccountTransactionLists";
-import {
-    fetchAccounts,
-    fetchAccountsForUser
-} from "../../services/AxiosBanking";
+import {fetchAccountsForUser} from "../../services/AxiosBanking";
 import AccountButton from "../../components/common/AccountButton";
-import { jwtDecode } from "jwt-decode";
-import { fetchCustomerById } from "../../services/AxiosUser";
+import {fetchCustomerById} from "../../services/AxiosUser";
 import {useAuth} from "../../context/AuthContext";
 
 const AccountsPortal = () => {
@@ -59,7 +55,7 @@ const AccountsPortal = () => {
     useEffect(() => {
         const loadAccounts = async () => {
             try {
-                const filteredAccounts = await fetchAccountsForUser();
+                const filteredAccounts = await fetchAccountsForUser(userInfo.id);
                 console.log("filtered accounts = ", filteredAccounts);
                 let ownerName = "";
                 if (Array.isArray(filteredAccounts) && filteredAccounts.length > 0) {

@@ -11,18 +11,19 @@ import {
 import { useTheme } from "@mui/material/styles";
 import {
   fetchAllRecipientsForUser,
-  getUserIdFromToken
 } from "../../services/AxiosBanking";
+import {useAuth} from "../../context/AuthContext";
 
 const AddFastPayment = ({ open, onClose, onSelectRecipient }) => {
   const [recipients, setRecipients] = useState([]);
   const [loading, setLoading] = useState(true);
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
+  const {userInfo } = useAuth();
+  const userId = userInfo.id;
 
   useEffect(() => {
     const loadRecipients = async () => {
-      const userId = getUserIdFromToken();
       if (!userId) return;
 
       try {
