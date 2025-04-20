@@ -9,6 +9,7 @@ import {
     Typography
 } from "@mui/material";
 import { createOffer } from "../../services/AxiosTrading";
+import {toast} from "react-toastify";
 
 const MakeOfferModal = ({ open, onClose, security }) => {
     const portfolioId = security?.portfolioId;
@@ -25,6 +26,14 @@ const MakeOfferModal = ({ open, onClose, security }) => {
     }, [open]);
 
     const handleMakeOffer = async () => {
+
+        if(quantity > security.public || quantity <= 0){
+            toast.error("Insufficient quantity")
+            return;
+        }
+
+        console.log(security)
+
         const payload = {
             portfolio_id: portfolioId,
             quantity: parseInt(quantity),
@@ -35,11 +44,13 @@ const MakeOfferModal = ({ open, onClose, security }) => {
 
         try {
             const response = await createOffer(payload);
+            toast.success("Offer successfull")
             console.log("Uspešno poslata ponuda:", response.data);
             onClose();
         } catch (error) {
             console.error("Greška pri slanju ponude:", error);
-            alert("Greška pri slanju ponude.");
+            toast.error("Error while making offer")
+            // alert("Greška pri slanju ponude.");
         }
     };
 
