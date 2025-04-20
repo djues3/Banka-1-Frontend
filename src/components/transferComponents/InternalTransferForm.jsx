@@ -226,7 +226,13 @@ const InternalTransferForm = () => {
                 </Box>
             </Box>
 
-            <Modal open={showModal} onClose={onClose}>
+            <Modal
+                open={showModal}
+                onClose={(event, reason) => {
+                if (reason && reason === "backdropClick") return;
+                onClose();
+                }}
+            >
                 <Box sx={{
                     p: 4,
                     bgcolor: theme.palette.background.paper,

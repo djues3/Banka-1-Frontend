@@ -17,7 +17,10 @@ const VerificationModal = ({ open, onClose, onConfirm }) => {
     return (
         <Modal
             open={open}
-            onClose={onClose}
+            onClose={(event, reason) => {
+                if (reason && reason === "backdropClick") return;
+                onClose();
+            }}
             aria-labelledby="verification-modal-title"
             aria-describedby="verification-modal-description"
         >
