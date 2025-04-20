@@ -7,25 +7,6 @@ const apiTrading = axios.create({
   },
 });
 
-apiTrading.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-
-        console.log(
-            `${config.method.toUpperCase()} ${
-                config.url
-            } - Token: ${token.substring(0, 20)}...`
-        );
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-);
-
 export const getBankProfits = async () => {
   try {
     const response = await apiTrading.get("/bank/profits");

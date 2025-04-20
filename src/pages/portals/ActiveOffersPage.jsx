@@ -14,12 +14,15 @@ import {getActiveOffers, acceptOffer, rejectOffer} from "../../services/AxiosTra
 import CounterOfferModal from "../../components/common/CounterOfferModal";
 import { jwtDecode } from "jwt-decode";
 import Sidebar from "../../components/mainComponents/Sidebar";
+import {useAuth} from "../../context/AuthContext";
 
 const ActiveOffersPage = () => {
   const [offers, setOffers] = useState([]);
   const [userId, setUserId] = useState(null);
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
+  const userInfo = useAuth()
+
 
   const loadOffers = async () => {
     try {
@@ -31,11 +34,7 @@ const ActiveOffersPage = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUserId(decoded.id);
-    }
+    setUserId(userInfo.id)
     loadOffers();
   }, []);
 

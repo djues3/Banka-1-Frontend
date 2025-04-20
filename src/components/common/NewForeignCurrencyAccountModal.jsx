@@ -180,15 +180,17 @@ const NewForeignCurrencyAccountModal = ({ open, onClose, accountType, onSuccess 
                         status: "ACTIVE",
                         createCard: makeCard,
                         balance: parseFloat(startingBalance),
-                        companyData: accountType === 'business' ? {
-                            name: newCompany.name,
-                            address: newCompany.address,
-                            vatNumber: newCompany.pib,
-                            companyNumber: newCompany.companyRegistrationNumber,
-                            bas: newCompany.activityCode.toString(),
-                        } : ''
                     }
                 };
+                if (accountType === 'business') {
+                    customerPayload.accountInfo.companyData = {
+                        name: newCompany.name,
+                        address: newCompany.address,
+                        vatNumber: newCompany.pib,
+                        companyNumber: newCompany.companyRegistrationNumber,
+                        bas: newCompany.activityCode.toString(),
+                    }
+                }
 
                 const response = await createCustomer(customerPayload);
                 createdCustomerId = response?.data?.customer?.id || response?.customer?.id;

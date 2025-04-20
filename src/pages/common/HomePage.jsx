@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import {
     AppBar,
@@ -35,6 +34,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import CorporateFareIcon from '@mui/icons-material/CorporateFare';
 import PriceCheckIcon from '@mui/icons-material/PriceCheck';
+import {useAuth} from "../../context/AuthContext";
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 
 const HomePage = () => {
@@ -42,16 +42,16 @@ const HomePage = () => {
     const [cards, setCards] = useState([]);
     const [agentStats, setAgentStats] = useState({ profit: 0, limit: 0, usedLimit: 0 });
     const navigate = useNavigate();
+    const { userInfo } = useAuth();
+    console.log("HomePage");
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
+        if (userInfo) {
             try {
-                const decodedToken = jwtDecode(token);
-                const isAdmin = decodedToken.isAdmin;
-                const isEmployed = decodedToken.isEmployed;
-                const department = decodedToken.department || null;
-                const position = decodedToken.position || null;
+                const isAdmin = userInfo.isAdmin;
+                const isEmployed = userInfo.isEmployed;
+                const department = userInfo.department || null;
+                const position = userInfo.position || null;
 
                 const items = [];
                 const addCard = (label, route, icon) =>
@@ -67,7 +67,7 @@ const HomePage = () => {
                     addCard('Pending Loans', '/pending-loans-employee', AttachMoneyIcon);
                     addCard('Companies', '/companies-portal', CorporateFareIcon);
                     addCard('Bank Performance', '/bank-performance-portal',  LocalAtmIcon);
-                
+
                 }
 
                 // Supervisor
@@ -86,7 +86,7 @@ const HomePage = () => {
                     setRoleMessage('Welcome to the Agent Dashboard');
                     addCard('Portfolio', '/portfolio-page', LibraryBooksIcon);
                     addCard('Important Files', '/actuary-buying-portal', FolderIcon);
-                    
+
                     // Fetch agent stats
                     const fetchAgentStats = async () => {
                         try {

@@ -76,6 +76,8 @@ services:
   # Note: This isn't necessary
   notification-db:
     image: "postgres:17-alpine"
+    ports:
+      - "5436:5432"
     networks:
       - notification-net
     environment:
@@ -237,7 +239,7 @@ services:
       - "8000:8000"
     environment:
       # Create your own API key https://aistudio.google.com/app/apikey
-#      - GOOGLE_API=<YOUR_KEY_GOES_HERE>
+      - GOOGLE_API=AIzaSyCqAbLY3zu8g2ltSUw-YhBPYxU3hpq6864
       - LOG_LEVEL=debug
 
 networks:

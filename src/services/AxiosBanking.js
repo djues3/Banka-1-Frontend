@@ -8,25 +8,6 @@ const apiBanking = axios.create({
   },
 });
 
-apiBanking.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-
-        // For debugging - remove in production
-        console.log(
-            `${config.method.toUpperCase()} ${
-                config.url
-            } - Token: ${token.substring(0, 20)}...`
-        );
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-);
 
 export const getUserIdFromToken = () => {
   const token = localStorage.getItem("token");
@@ -75,8 +56,7 @@ export const fetchAccounts = async () => {
   }
 };
 
-export const fetchAccountsForUser = async () => {
-  const userId = getUserIdFromToken();
+export const fetchAccountsForUser = async (userId) => {
   try {
     console.log("Running GET /accounts/user/" + userId);
     const response = await apiBanking.get(`/accounts/user/${userId}`);
@@ -91,11 +71,7 @@ export const fetchAccountsForUser = async () => {
 
 export const fetchAccountsId = async (id) => {
   try {
-    const response = await apiBanking.get(`/accounts/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const response = await apiBanking.get(`/accounts/${id}`);
 
     return response.data.map((account) => ({
       id: account.id,
@@ -128,10 +104,10 @@ export const updateRecipient = async (recipientId, recipientData) => {
       accountNumber: recipientData.accountNumber,
       ownerAccountId: recipientData.ownerAccountId // OBAVEZNO ako backend to očekuje
     };
-
-    console.log("Sending update request to /receiver/" + recipientId, requestBody);
-
-    const response = await apiBanking.put(`/receiver/${recipientId}`, requestBody);
+    const response = await apiBanking.put(
+        `/receiver/${recipientId}`,
+        requestBody
+    );
     return response.data;
   } catch (error) {
     console.error(`Error updating recipient [${recipientId}]:`, error.response?.data || error.message);
@@ -234,11 +210,6 @@ export const updateCardStatus = async (cardId, status) => {
     const response = await apiBanking.post(
         `/cards/${cardId}`,
         { status },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
     );
 
     return response.data;
@@ -353,11 +324,7 @@ export const verifyOTP = async (otpData) => {
 
 export const fetchAccountsId1 = async (id) => {
   try {
-    const response = await apiBanking.get(`/accounts/user/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    const response = await apiBanking.get(`/accounts/user/${id}`);
 
     // Pristupanje pravom nizu
     const accounts = response.data.data.accounts;
@@ -743,13 +710,10 @@ export const fetchAllRecipientsForUser = async (customerId) => {
 };
 
 
-
-
-export const fetchAllData = async (setCards, setLoading, setError) => {
+export const fetchAllData = async (setCards, setLoading, setError, userId) => {
   setLoading(true);
   setError(null);
   try {
-    const userId = getUserIdFromToken();
     if (!userId) {
       setError("User ID not found.");
       setLoading(false);

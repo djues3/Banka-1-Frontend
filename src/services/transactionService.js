@@ -8,20 +8,6 @@ const apiBanking = axios.create({
   },
 });
 
-apiBanking.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log(
-        `API Request: ${config.method.toUpperCase()} ${config.url} - Token Set`
-      );
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
 const getUserIdFromToken = () => {
   const token = localStorage.getItem("token");
   if (!token) return null;

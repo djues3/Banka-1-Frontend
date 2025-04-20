@@ -9,6 +9,7 @@ import {
 import AccountButton from "../../components/common/AccountButton";
 import { jwtDecode } from "jwt-decode";
 import { fetchCustomerById } from "../../services/AxiosUser";
+import {useAuth} from "../../context/AuthContext";
 
 const AccountsPortal = () => {
     const [rows, setRows] = useState([]);
@@ -16,6 +17,7 @@ const AccountsPortal = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [userId, setUserId] = useState([]);
+    const {userInfo } = useAuth();
 
     const columns = [
         // { field: "id", headerName: "ID", width: 70 }, // ID uklonjen
@@ -114,17 +116,7 @@ const AccountsPortal = () => {
 
     /*Extracting user id */
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decodedToken = jwtDecode(token);
-                setUserId(decodedToken.id);
-                console.log(decodedToken.id);
-            } catch (error) {
-                console.error("Invalid token", error);
-                localStorage.removeItem("token");
-            }
-        }
+        setUserId(userInfo.id);
     }, []);
 
     //Kad kliknemo na red postavljamo selektovani racun na id reda na koji smo kliknuli
