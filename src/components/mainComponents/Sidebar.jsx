@@ -38,6 +38,7 @@ import {LibraryBooks, FolderTwoTone, CorporateFare, BarChart, ShoppingCart} from
 import HandshakeIcon from "@mui/icons-material/Handshake";
 import GavelIcon from "@mui/icons-material/Gavel";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import {useAuth} from "../../context/AuthContext";
 
 
@@ -378,10 +379,16 @@ export default function Sidebar() {
 
             {/* Admin-Only Route */}
             {isAdmin && (
+                <>
                 <ListItemButton onClick={() => handleNavigation("/employee-portal")}>
                   <ListItemIcon><PeopleIcon /></ListItemIcon>
                   <ListItemText primary="Employees" />
                 </ListItemButton>
+                  <ListItemButton onClick={() => handleNavigation("/bank-performance-portal")}>
+                    <ListItemIcon><LocalAtmIcon /></ListItemIcon>
+                    <ListItemText primary="Bank Performance" />
+                  </ListItemButton>
+                </>
             )}
 
           </List>

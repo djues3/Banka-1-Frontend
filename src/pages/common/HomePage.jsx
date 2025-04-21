@@ -35,6 +35,7 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import CorporateFareIcon from '@mui/icons-material/CorporateFare';
 import PriceCheckIcon from '@mui/icons-material/PriceCheck';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 
 const HomePage = () => {
     const [roleMessage, setRoleMessage] = useState('');
@@ -65,6 +66,8 @@ const HomePage = () => {
                     addCard('All Loans', '/all-loans-employee', ReceiptIcon);
                     addCard('Pending Loans', '/pending-loans-employee', AttachMoneyIcon);
                     addCard('Companies', '/companies-portal', CorporateFareIcon);
+                    addCard('Bank Performance', '/bank-performance-portal',  LocalAtmIcon);
+                
                 }
 
                 // Supervisor

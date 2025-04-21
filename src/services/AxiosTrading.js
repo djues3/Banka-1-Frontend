@@ -26,6 +26,17 @@ apiTrading.interceptors.request.use(
     }
 );
 
+export const getBankProfits = async () => {
+  try {
+    const response = await apiTrading.get("/bank/profits");
+    return response.data;
+  }catch (error){
+    console.error("Error fetching actuaries:", error);
+    throw error;
+  }
+};
+
+
 export const getActuaries = async () => {
   try {
     const response = await apiTrading.get("/actuaries/all");
@@ -394,6 +405,19 @@ export const rejectOffer = async (offer_id) => {
   }
 };
 
+export const fetchAvailableAmount = async (user_id, security_id) => {
+  try {
+    return await apiTrading.get(`/portfolio/available-to-sell`, {
+      params: {
+        user_id: user_id,
+        security_id: security_id
+      }
+    });
+  } catch (error) {
+    console.error("Greška prihvatanju ugovora:", error);
+    throw error;
+  }
+};
 
 
 export default apiTrading;
