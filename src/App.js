@@ -41,6 +41,7 @@ import ActiveOffersPage from "./pages/portals/ActiveOffersPage";
 import ContractsPage from "./pages/portals/ContractsPage";
 import { AuthProvider } from "./context/AuthContext";
 import RecipientOverviewPage from "./pages/portals/RecipientOverviewPage";
+import BankPerformancePortal from "./pages/portals/BankPerformancePortal";
 
 function App() {
   return (
@@ -100,6 +101,11 @@ function App() {
             <Route path="/employee-portal" element={
               <AuthGuard allowedPositions={["ADMIN"]}>
                 <EmployeePortal />
+              </AuthGuard>
+            } />
+            <Route path="/bank-performance-portal" element={
+              <AuthGuard allowedPositions={["ADMIN"]}>
+                <BankPerformancePortal />
               </AuthGuard>
             } />
 
