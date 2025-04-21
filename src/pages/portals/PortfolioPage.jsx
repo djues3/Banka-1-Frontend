@@ -201,7 +201,7 @@ const PortfolioPage = () => {
 
                       <TableCell>{row.price?.toFixed(2) ?? "0.00"}</TableCell>
                       <TableCell sx={{ color: row.profit >= 0 ? "green" : "red" }}>
-                        {(row.profit ?? 0).toFixed(2)} RSD
+                        {(row.profit ?? 0).toFixed(2)} USD
                       </TableCell>
                       <TableCell>{formatDate(row.last_modified)}</TableCell>
                       <TableCell>{row.public ?? 0}</TableCell>
