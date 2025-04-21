@@ -60,6 +60,7 @@ const BuyModal = ({ open, onClose, security }) => {
         }
     }, [open]);
 
+    /*
     //odredjivanje tipa ordera i cene
     useEffect(() => {
         let newPricePerUnit = security?.lastPrice || 0;
@@ -81,6 +82,26 @@ const BuyModal = ({ open, onClose, security }) => {
         setApproximatePrice(contractSize * newPricePerUnit * quantity);
     }, [limitValue, stopValue, security, quantity]);
 
+*/
+    useEffect(() => {
+        let determinedOrderType = "market";
+        let unitPrice = security?.lastPrice || 0;
+
+        if (limitValue && stopValue) {
+            determinedOrderType = "stop-limit";
+            unitPrice = parseFloat(limitValue);
+        } else if (limitValue) {
+            determinedOrderType = "limit";
+            unitPrice = parseFloat(limitValue);
+        } else if (stopValue) {
+            determinedOrderType = "stop";
+            unitPrice = parseFloat(stopValue);
+        }
+
+        setOrderType(determinedOrderType);
+        setPricePerUnit(unitPrice);
+        setApproximatePrice(contractSize * unitPrice * quantity);
+    }, [limitValue, stopValue, quantity, security, contractSize]);
 
 
     const handleQuantityChange = (event) => {

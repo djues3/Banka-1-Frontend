@@ -38,7 +38,7 @@ const ViewOrderPortal = () => {
     setLoading(true);
     try {
       const response = await apiTrading.get(
-        `/orders/paged?page=${currentPage}&size=${PAGE_SIZE}&filter_status=${filterStatus}`
+          `/orders/paged?page=${currentPage}&size=${PAGE_SIZE}&filter_status=${filterStatus}`
       );
       if (response.data.success || response.data.Success) {
         const data = response.data.data || response.data.Data;
@@ -123,6 +123,26 @@ const ViewOrderPortal = () => {
     }).format(value);
   };
 
+  const getDisplayPrice = (order) => {
+    const stop = order.stop_price_per_unit;
+    const limit = order.limit_price_per_unit;
+
+    if (stop != null && limit != null) {
+      // stop‑limit – spojimo ih u jedan string
+      return `Stop: ${formatCurrency(stop)}, Limit: ${formatCurrency(limit)}`;
+    }
+    else if (limit != null) {
+      // samo limit
+      return `Limit: ${formatCurrency(limit)}`;
+    }
+    else if (stop != null) {
+      // samo stop
+      return `Stop: ${formatCurrency(stop)}`;
+    }
+    // nijedan nije postavljen
+    return 'No stop or limit price chosen';
+  };
+
   const getStatusChip = (status) => {
     switch (status) {
       case 'pending':
@@ -139,154 +159,154 @@ const ViewOrderPortal = () => {
   };
 
   return (
-    <div>
-      <Sidebar />
-      <Box
-        sx={{
-          padding: '32px',
-          marginTop: '64px',
-          maxWidth: '1200px',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-        }}
-      >
-        <h1 style={{ marginBottom: '16px' }}>Orders</h1>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          View and manage all placed orders
-        </Typography>
-
+      <div>
+        <Sidebar />
         <Box
-          sx={{
-            display: 'flex',
-            gap: '10px',
-            marginBottom: '20px',
-            flexWrap: 'wrap',
-          }}
+            sx={{
+              padding: '32px',
+              marginTop: '64px',
+              maxWidth: '1200px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
         >
-          <FormControl sx={{ minWidth: 220 }} size="small">
-            <InputLabel id="status-filter-label">Filter by Status</InputLabel>
-            <Select
-              labelId="status-filter-label"
-              id="status-filter"
-              value={filterStatus}
-              label="Filter by Status"
-              onChange={(e) => {
-                const selectedStatus = e.target.value;
-                setFilterStatus(selectedStatus);
-                setCurrentPage(1);
+          <h1 style={{ marginBottom: '16px' }}>Orders</h1>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            View and manage all placed orders
+          </Typography>
+
+          <Box
+              sx={{
+                display: 'flex',
+                gap: '10px',
+                marginBottom: '20px',
+                flexWrap: 'wrap',
               }}
-              variant="outlined"
-            >
-              <MenuItem value="all">All Orders</MenuItem>
-              <MenuItem value="pending">Pending</MenuItem>
-              <MenuItem value="approved">Approved</MenuItem>
-              <MenuItem value="declined">Declined</MenuItem>
-              <MenuItem value="done">Done</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-        {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
-            <CircularProgress />
+          >
+            <FormControl sx={{ minWidth: 220 }} size="small">
+              <InputLabel id="status-filter-label">Filter by Status</InputLabel>
+              <Select
+                  labelId="status-filter-label"
+                  id="status-filter"
+                  value={filterStatus}
+                  label="Filter by Status"
+                  onChange={(e) => {
+                    const selectedStatus = e.target.value;
+                    setFilterStatus(selectedStatus);
+                    setCurrentPage(1);
+                  }}
+                  variant="outlined"
+              >
+                <MenuItem value="all">All Orders</MenuItem>
+                <MenuItem value="pending">Pending</MenuItem>
+                <MenuItem value="approved">Approved</MenuItem>
+                <MenuItem value="declined">Declined</MenuItem>
+                <MenuItem value="done">Done</MenuItem>
+              </Select>
+            </FormControl>
           </Box>
-        ) : (
-          <>
-            <TableContainer component={Paper} elevation={2}>
-              <Table sx={{ minWidth: 650 }} aria-label="orders table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>User</TableCell>
-                    <TableCell>Security</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Direction</TableCell>
-                    <TableCell>Quantity</TableCell>
-                    <TableCell>Contract Size</TableCell>
-                    <TableCell>Price Per Unit</TableCell>
-                    <TableCell>Remaining</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {orders.length > 0 ? (
-                    orders.map((order) => (
-                      <TableRow key={order.id}>
-                        <TableCell>{order.id}</TableCell>
-                        <TableCell>
-                          {users[order.user_id] || order.user_id}
-                        </TableCell>
-                        <TableCell>
-                          {securities[order.security_id] ||
-                            order.security_id}
-                        </TableCell>
-                        <TableCell>{order.order_type}</TableCell>
-                        <TableCell>
-                          <Chip
-                            label={order.direction.toUpperCase()}
-                            color={
-                              order.direction === 'buy' ? 'success' : 'error'
-                            }
-                          />
-                        </TableCell>
-                        <TableCell>{order.quantity}</TableCell>
-                        <TableCell>{order.contract_size}</TableCell>
-                        <TableCell>
-                          {formatCurrency(order.price_per_unit)}
-                        </TableCell>
-                        <TableCell>{order.remaining_parts}</TableCell>
-                        <TableCell>{getStatusChip(order.status)}</TableCell>
-                        <TableCell>
-                          {order.status === 'pending' && (
-                            <Box>
-                              <Button
-                                variant="contained"
-                                color="success"
-                                size="small"
-                                sx={{ mr: 1 }}
-                                onClick={() => handleApprove(order.id)}
-                              >
-                                Approve
-                              </Button>
-                              <Button
-                                variant="contained"
-                                color="error"
-                                size="small"
-                                onClick={() => handleDecline(order.id)}
-                              >
-                                Decline
-                              </Button>
-                            </Box>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={11} align="center">
-                        <Typography variant="body1">
-                          No orders found with the selected filter
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
 
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={(_, value) => setCurrentPage(value)}
-                color="primary"
-              />
-            </Box>
-          </>
-        )}
-      </Box>
-    </div>
+          {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', my: 5 }}>
+                <CircularProgress />
+              </Box>
+          ) : (
+              <>
+                <TableContainer component={Paper} elevation={2}>
+                  <Table sx={{ minWidth: 650 }} aria-label="orders table">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>ID</TableCell>
+                        <TableCell>User</TableCell>
+                        <TableCell>Security</TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Direction</TableCell>
+                        <TableCell>Quantity</TableCell>
+                        <TableCell>Contract Size</TableCell>
+                        <TableCell>Price Per Unit</TableCell>
+                        <TableCell>Remaining</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell>Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {orders.length > 0 ? (
+                          orders.map((order) => (
+                              <TableRow key={order.id}>
+                                <TableCell>{order.id}</TableCell>
+                                <TableCell>
+                                  {users[order.user_id] || order.user_id}
+                                </TableCell>
+                                <TableCell>
+                                  {securities[order.security_id] ||
+                                      order.security_id}
+                                </TableCell>
+                                <TableCell>{order.order_type}</TableCell>
+                                <TableCell>
+                                  <Chip
+                                      label={order.direction.toUpperCase()}
+                                      color={
+                                        order.direction === 'buy' ? 'success' : 'error'
+                                      }
+                                  />
+                                </TableCell>
+                                <TableCell>{order.quantity}</TableCell>
+                                <TableCell>{order.contract_size}</TableCell>
+                                <TableCell>
+                                  {getDisplayPrice(order)}
+                                </TableCell>
+                                <TableCell>{order.remaining_parts}</TableCell>
+                                <TableCell>{getStatusChip(order.status)}</TableCell>
+                                <TableCell>
+                                  {order.status === 'pending' && (
+                                      <Box>
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            size="small"
+                                            sx={{ mr: 1 }}
+                                            onClick={() => handleApprove(order.id)}
+                                        >
+                                          Approve
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="error"
+                                            size="small"
+                                            onClick={() => handleDecline(order.id)}
+                                        >
+                                          Decline
+                                        </Button>
+                                      </Box>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                          ))
+                      ) : (
+                          <TableRow>
+                            <TableCell colSpan={11} align="center">
+                              <Typography variant="body1">
+                                No orders found with the selected filter
+                              </Typography>
+                            </TableCell>
+                          </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                  <Pagination
+                      count={totalPages}
+                      page={currentPage}
+                      onChange={(_, value) => setCurrentPage(value)}
+                      color="primary"
+                  />
+                </Box>
+              </>
+          )}
+        </Box>
+      </div>
   );
 };
 
