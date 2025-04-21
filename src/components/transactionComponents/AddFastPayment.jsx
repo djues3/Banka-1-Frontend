@@ -77,7 +77,7 @@ const AddFastPayment = ({ open, onClose, onSelectRecipient }) => {
                 }}
               >
                 <ListItemText
-                  primary={recipient.fullName || "Unnamed"}
+                  primary={`${recipient.fullName || `${recipient.firstName || ""} ${recipient.lastName || ""}`.trim() || "Unnamed"}`}
                   secondary={`${recipient.accountNumber || "N/A"} | ${recipient.address || "No address"}`}
                 />
               </ListItem>

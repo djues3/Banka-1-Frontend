@@ -62,7 +62,7 @@ const FastPayments = () => {
       }
   
       const requestData = {
-        customerId,
+        customerId: customerId, 
         accountNumber: newRecipient.accountNumber,
         fullName: `${newRecipient.firstName} ${newRecipient.lastName}`.trim(),
         address: newRecipient.address || ""
