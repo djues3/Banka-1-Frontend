@@ -26,6 +26,17 @@ apiTrading.interceptors.request.use(
     }
 );
 
+export const getBankProfits = async () => {
+  try {
+    const response = await apiTrading.get("/bank/profits");
+    return response.data;
+  }catch (error){
+    console.error("Error fetching actuaries:", error);
+    throw error;
+  }
+};
+
+
 export const getActuaries = async () => {
   try {
     const response = await apiTrading.get("/actuaries/all");
