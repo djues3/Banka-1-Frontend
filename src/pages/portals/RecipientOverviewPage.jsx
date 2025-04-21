@@ -9,6 +9,7 @@ import {
   Divider,
   Button,
   IconButton,
+  Pagination,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import Sidebar from "../../components/mainComponents/Sidebar";
@@ -35,6 +36,9 @@ const RecipientOverviewPage = () => {
   const [editingRecipientId, setEditingRecipientId] = useState(null);
   const [error, setError] = useState("");
   const [ownerAccountId, setOwnerAccountId] = useState(null);
+
+  const [page, setPage] = useState(1);
+  const recipientsPerPage = 5;
 
   const navigate = useNavigate();
 
@@ -123,6 +127,10 @@ const RecipientOverviewPage = () => {
     }
   };
 
+  const indexOfLast = page * recipientsPerPage;
+  const indexOfFirst = indexOfLast - recipientsPerPage;
+  const paginatedRecipients = recipients.slice(indexOfFirst, indexOfLast);
+
   return (
     <Box sx={{ flexGrow: 1, p: 4, pt: 10 }}>
       <Sidebar />
@@ -164,7 +172,7 @@ const RecipientOverviewPage = () => {
             </Box>
           ) : (
             <List>
-              {recipients.map((recipient, index) => (
+              {paginatedRecipients.map((recipient, index) => (
                 <React.Fragment key={recipient.id}>
                   <ListItem
                     secondaryAction={
@@ -191,21 +199,42 @@ const RecipientOverviewPage = () => {
                     }
                   >
                     <ListItemText
-                      primary={`${recipient.firstName || ""} ${recipient.lastName || ""}`.trim()}
+                      primary={
+                        <Typography variant="subtitle1">
+                          {`${recipient.firstName || ""} ${recipient.lastName || ""}`.trim()}
+                        </Typography>
+                      }
                       secondary={
                         <>
-                          <div>Account Number: {recipient.accountNumber}</div>
-                          <div>Address: {recipient.address}</div>
+                          <Typography variant="body2">
+                            Account Number: {recipient.accountNumber}
+                          </Typography>
+                          <Typography variant="body2">
+                            Address: {recipient.address}
+                          </Typography>
                         </>
                       }
                     />
                   </ListItem>
-                  {index < recipients.length - 1 && <Divider />}
+                  {index < paginatedRecipients.length - 1 && <Divider />}
                 </React.Fragment>
               ))}
             </List>
           )}
         </Paper>
+
+        {recipients.length > recipientsPerPage && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+            <Pagination
+              count={Math.ceil(recipients.length / recipientsPerPage)}
+              page={page}
+              onChange={(e, value) => setPage(value)}
+              color="primary"
+              showFirstButton
+              showLastButton
+            />
+          </Box>
+        )}
 
         <FastPaymentPopup
           open={showRecipientModal}

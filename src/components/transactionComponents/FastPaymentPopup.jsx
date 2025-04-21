@@ -73,7 +73,7 @@ const FastPaymentPopup = ({
 
     const recipientToSave = {
       ...(recipient?.id ? { id: recipient.id } : {}),
-      customerId,
+      customerId: customerId, 
       fullName,
       address: form.address,
       accountNumber: form.accountNumber
