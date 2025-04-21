@@ -287,144 +287,84 @@ const SecuritiesTable = ({ role }) => {
         <div>
             <h2>Securities</h2>
 
-            {/* Filteri
-            <div style={{ display: "flex", gap: "10px", marginBottom: "15px", flexWrap: "wrap" }}>
-                <TextField label="Exchange" variant="outlined" value={exchangeFilter} onChange={(e) => handleChange(e, "exchangeFilter")} />
-                <TextField label="Ask min" variant="outlined" type="number" name="min" value={askRange.min} onChange={(e) => handleChange(e, "askRange")} />
-                <TextField label="Ask max" variant="outlined" type="number" name="max" value={askRange.max} onChange={(e) => handleChange(e, "askRange")} />
-                <TextField label="Bid min" variant="outlined" type="number" name="min" value={bidRange.min} onChange={(e) => handleChange(e, "bidRange")} />
-                <TextField label="Bid max" variant="outlined" type="number" name="max" value={bidRange.max} onChange={(e) => handleChange(e, "bidRange")} />
-                <TextField label="Price min" variant="outlined" type="number" name="min" value={priceRange.min} onChange={(e) => handleChange(e, "priceRange")} />
-                <TextField label="Price max" variant="outlined" type="number" name="max" value={priceRange.max} onChange={(e) => handleChange(e, "priceRange")} />
-                <TextField label="Volumen min" variant="outlined" type="number" name="min" value={volumeRange.min} onChange={(e) => handleChange(e, "volumeRange")} />
-                <TextField label="Volumen max" variant="outlined" type="number" name="max" value={volumeRange.max} onChange={(e) => handleChange(e, "volumeRange")} />
-                {/*     <TextField label="Settlement Date" type="date" InputLabelProps={{ shrink: true }} variant="outlined" value={settlementDate} onChange={(e) => handleChange(e, "settlementDate")} />
-            </div> */}
-            <div style={{display: "flex", flexDirection: "column", gap: "20px"}}>
-                {/* Filteri */}
-                <div style={{display: "flex", gap: "10px", marginBottom: "10px", flexWrap: "wrap"}}>
+            {/* FILTERS */}
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 2 }}>
 
-                    {/* Exchange Filter */}
-                    <TextField label="Exchange" variant="outlined" value={exchangeFilter}
-                               onChange={(e) => handleChange(e, "exchangeFilter")}/>
-                </div>
-
-                {/* Grouping Filters: Ask */}
-                <Box sx={{display: "flex", gap: "10px", marginBottom: "10px"}}>
-                    <TextField label="Ask min" variant="outlined" type="number" name="min" value={askRange.min}
-                               onChange={(e) => handleChange(e, "askRange")}/>
-                    <TextField label="Ask max" variant="outlined" type="number" name="max" value={askRange.max}
-                               onChange={(e) => handleChange(e, "askRange")}/>
-                    <span></span> <span></span> <span></span> <span></span>
-                    <TextField label="Bid min" variant="outlined" type="number" name="min" value={bidRange.min}
-                               onChange={(e) => handleChange(e, "bidRange")}/>
-                    <TextField label="Bid max" variant="outlined" type="number" name="max" value={bidRange.max}
-                               onChange={(e) => handleChange(e, "bidRange")}/>
-                </Box>
-
-                {/* Grouping Filters: Price */}
-                <Box sx={{display: "flex", gap: "10px", marginBottom: "10px"}}>
-                    <TextField label="Price min" variant="outlined" type="number" name="min" value={priceRange.min}
-                               onChange={(e) => handleChange(e, "priceRange")}/>
-                    <TextField label="Price max" variant="outlined" type="number" name="max" value={priceRange.max}
-                               onChange={(e) => handleChange(e, "priceRange")}/>
-                    <span></span> <span></span> <span></span> <span></span>
-                    <TextField label="Volume min" variant="outlined" type="number" name="min" value={volumeRange.min}
-                               onChange={(e) => handleChange(e, "volumeRange")}/>
-                    <TextField label="Volume max" variant="outlined" type="number" name="max" value={volumeRange.max}
-                               onChange={(e) => handleChange(e, "volumeRange")}/>
-                    <span></span> <span></span> <span></span> <span></span>
-                    {/* Treći red: Settlement Date filter (prikazuje se samo za Futures, Options ili All) */}
-                    {(selectedType.toLowerCase() === "future" ||
-                        selectedType.toLowerCase() === "option" ||
-                        selectedType.toLowerCase() === "all") && (
-                        <div style={{marginBottom: "10px"}}>
-                            <TextField
-                                label="Settlement Date"
-                                type="date"
-                                InputLabelProps={{shrink: true}}
-                                variant="outlined"
-                                value={settlementDate}
-                                onChange={(e) => handleChange(e, "settlementDate")}
-                            />
-                        </div>
+                {/* Row 1: Search, Exchange, Settlement Date */}
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                    <TextField
+                        label="Search ticker/name"
+                        variant="outlined"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    <TextField
+                        label="Exchange"
+                        variant="outlined"
+                        value={exchangeFilter}
+                        onChange={(e) => handleChange(e, "exchangeFilter")}
+                    />
+                    {(selectedType === "future" || selectedType === "option" || selectedType === "all") && (
+                        <TextField
+                            label="Settlement Date"
+                            type="date"
+                            variant="outlined"
+                            InputLabelProps={{ shrink: true }}
+                            value={settlementDate}
+                            onChange={(e) => handleChange(e, "settlementDate")}
+                        />
                     )}
+                    <IconButton onClick={loadSecurities}>
+                        <RefreshIcon />
+                    </IconButton>
                 </Box>
 
+                {/* Row 2: Ask & Bid */}
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                    <TextField label="Ask Min" type="number" name="min" value={askRange.min} onChange={(e) => handleChange(e, "askRange")} />
+                    <TextField label="Ask Max" type="number" name="max" value={askRange.max} onChange={(e) => handleChange(e, "askRange")} />
+                    <TextField label="Bid Min" type="number" name="min" value={bidRange.min} onChange={(e) => handleChange(e, "bidRange")} />
+                    <TextField label="Bid Max" type="number" name="max" value={bidRange.max} onChange={(e) => handleChange(e, "bidRange")} />
+                </Box>
 
-            </div>
+                {/* Row 3: Price & Volume */}
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                    <TextField label="Price Min" type="number" name="min" value={priceRange.min} onChange={(e) => handleChange(e, "priceRange")} />
+                    <TextField label="Price Max" type="number" name="max" value={priceRange.max} onChange={(e) => handleChange(e, "priceRange")} />
+                    <TextField label="Volume Min" type="number" name="min" value={volumeRange.min} onChange={(e) => handleChange(e, "volumeRange")} />
+                    <TextField label="Volume Max" type="number" name="max" value={volumeRange.max} onChange={(e) => handleChange(e, "volumeRange")} />
+                </Box>
+            </Box>
 
-
-            {/* Dugmad za filtriranje */}
-            <ButtonGroup sx={{mb: 2}}>
-                <Button
-                    variant={selectedType === "stock" ? "contained" : "outlined"}
-                    onClick={() => setSelectedType("stock")}
-                >Stocks
-                </Button>
-                <Button
-                    variant={selectedType === "future" ? "contained" : "outlined"}
-                    onClick={() => setSelectedType("future")}
-                >
-                    Futures
-                </Button>
+            {/* TYPE FILTER BUTTONS */}
+            <ButtonGroup sx={{ mb: 2 }}>
+                <Button variant={selectedType === "stock" ? "contained" : "outlined"} onClick={() => setSelectedType("stock")}>Stocks</Button>
+                <Button variant={selectedType === "future" ? "contained" : "outlined"} onClick={() => setSelectedType("future")}>Futures</Button>
                 {role === "actuary" && (
                     <>
-                        <Button
-                            variant={selectedType === "forex" ? "contained" : "outlined"}
-                            onClick={() => setSelectedType("forex")}
-                        >
-                            Forex
-                        </Button>
-                        {/*
-                        <Button
-                            variant={selectedType === "option" ? "contained" : "outlined"}
-                            onClick={() => setSelectedType("option")}
-                        >
-                            Options
-                        </Button>
-                        */}
+                        <Button variant={selectedType === "forex" ? "contained" : "outlined"} onClick={() => setSelectedType("forex")}>Forex</Button>
                     </>
                 )}
-                <Button
-                    variant={selectedType === "all" ? "contained" : "outlined"}
-                    onClick={() => setSelectedType("all")}
-                >
-                    All
-                </Button>
+                <Button variant={selectedType === "all" ? "contained" : "outlined"} onClick={() => setSelectedType("all")}>All</Button>
             </ButtonGroup>
 
+            {/* TABLE */}
+            <DataTable rows={filteredSecurities} columns={columns} checkboxSelection={false} />
 
-            {/* Pretraga i dugme za osvežavanje */}
-            <div style={{display: "flex", gap: "10px", marginBottom: "15px"}}>
-                <TextField label="Search ticker/name" variant="outlined" value={search}
-                           onChange={(e) => setSearch(e.target.value)}/>
-                <IconButton onClick={loadSecurities}>
-                    <RefreshIcon/>
-                </IconButton>
-            </div>
-
-            {/* DataGrid iz DataTable komponente */}
-
-            <DataTable rows={filteredSecurities} columns={columns} checkboxSelection={false}/>
-
-            {
-                isModalOpen && (
-                    <BuyModal
-                        security={selectedSecurity}
-                        open={true}
-                        onClose={handleCloseModal}  // Funkcija koja zatvara modal
-                    />
-                )
-            }
+            {/* MODALS */}
+            {isModalOpen && (
+                <BuyModal
+                    security={selectedSecurity}
+                    open={true}
+                    onClose={handleCloseModal}
+                />
+            )}
             <SecuritiesModal
                 isOpen={isDetailsModalOpen}
                 onClose={closeDetailsModal}
                 type={detailsType}
                 ticker={detailsTicker}
-            >
-            </SecuritiesModal>
-
+            />
         </div>
     );
 };

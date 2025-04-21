@@ -41,7 +41,7 @@ const PublicSecuritiesTable = () => {
                     id: i,
                     ...item.security,
                     public: item.public || 0,
-                    portfolioId: item.id 
+                    portfolioId: item.id
                 }));
                 setSecurities(mapped);
             } catch (error) {
@@ -168,20 +168,91 @@ const PublicSecuritiesTable = () => {
                 Public OTC Securities
             </Typography>
 
-            <Box sx={{ display: "flex", gap: "10px", flexWrap: "wrap", mb: 3 }}>
-                <TextField label="Search ticker/name" variant="outlined" value={search} onChange={(e) => setSearch(e.target.value)} />
-                <TextField label="Ask min" type="number" name="min" value={askRange.min} onChange={(e) => handleChange(e, "askRange")} />
-                <TextField label="Ask max" type="number" name="max" value={askRange.max} onChange={(e) => handleChange(e, "askRange")} />
-                <TextField label="Bid min" type="number" name="min" value={bidRange.min} onChange={(e) => handleChange(e, "bidRange")} />
-                <TextField label="Bid max" type="number" name="max" value={bidRange.max} onChange={(e) => handleChange(e, "bidRange")} />
-                <TextField label="Price min" type="number" name="min" value={priceRange.min} onChange={(e) => handleChange(e, "priceRange")} />
-                <TextField label="Price max" type="number" name="max" value={priceRange.max} onChange={(e) => handleChange(e, "priceRange")} />
-                <TextField label="Volume min" type="number" name="min" value={volumeRange.min} onChange={(e) => handleChange(e, "volumeRange")} />
-                <TextField label="Volume max" type="number" name="max" value={volumeRange.max} onChange={(e) => handleChange(e, "volumeRange")} />
-                <TextField label="Settlement Date" type="date" InputLabelProps={{ shrink: true }} value={settlementDate} onChange={(e) => handleChange(e, "settlementDate")} />
-                <IconButton onClick={() => window.location.reload()}>
-                    <RefreshIcon />
-                </IconButton>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 3 }}>
+                {/* Row 1: Search, Settlement Date, Refresh */}
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "center" }}>
+                    <TextField
+                        label="Search ticker/name"
+                        variant="outlined"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    <TextField
+                        label="Settlement Date"
+                        type="date"
+                        variant="outlined"
+                        InputLabelProps={{ shrink: true }}
+                        value={settlementDate}
+                        onChange={(e) => handleChange(e, "settlementDate")}
+                    />
+                    <IconButton onClick={() => window.location.reload()}>
+                        <RefreshIcon />
+                    </IconButton>
+                </Box>
+
+                {/* Row 2: Ask & Bid */}
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                    <TextField
+                        label="Ask min"
+                        type="number"
+                        name="min"
+                        value={askRange.min}
+                        onChange={(e) => handleChange(e, "askRange")}
+                    />
+                    <TextField
+                        label="Ask max"
+                        type="number"
+                        name="max"
+                        value={askRange.max}
+                        onChange={(e) => handleChange(e, "askRange")}
+                    />
+                    <TextField
+                        label="Bid min"
+                        type="number"
+                        name="min"
+                        value={bidRange.min}
+                        onChange={(e) => handleChange(e, "bidRange")}
+                    />
+                    <TextField
+                        label="Bid max"
+                        type="number"
+                        name="max"
+                        value={bidRange.max}
+                        onChange={(e) => handleChange(e, "bidRange")}
+                    />
+                </Box>
+
+                {/* Row 3: Price & Volume */}
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                    <TextField
+                        label="Price min"
+                        type="number"
+                        name="min"
+                        value={priceRange.min}
+                        onChange={(e) => handleChange(e, "priceRange")}
+                    />
+                    <TextField
+                        label="Price max"
+                        type="number"
+                        name="max"
+                        value={priceRange.max}
+                        onChange={(e) => handleChange(e, "priceRange")}
+                    />
+                    <TextField
+                        label="Volume min"
+                        type="number"
+                        name="min"
+                        value={volumeRange.min}
+                        onChange={(e) => handleChange(e, "volumeRange")}
+                    />
+                    <TextField
+                        label="Volume max"
+                        type="number"
+                        name="max"
+                        value={volumeRange.max}
+                        onChange={(e) => handleChange(e, "volumeRange")}
+                    />
+                </Box>
             </Box>
 
             {/*</ButtonGroup>*/}
