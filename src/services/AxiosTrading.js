@@ -394,6 +394,19 @@ export const rejectOffer = async (offer_id) => {
   }
 };
 
+export const fetchAvailableAmount = async (user_id, security_id) => {
+  try {
+    return await apiTrading.get(`/portfolio/available-to-sell`, {
+      params: {
+        user_id: user_id,
+        security_id: security_id
+      }
+    });
+  } catch (error) {
+    console.error("Greška prihvatanju ugovora:", error);
+    throw error;
+  }
+};
 
 
 export default apiTrading;
