@@ -32,11 +32,14 @@ const AllLoansEmployeePortal = () => {
             setLoading(true);
             const response = await fetchAllLoansForEmployees();
 
+
             const data = response.data;
             if (!data || !Array.isArray(data.loans)) {
                 setLoans([]);
                 return;
             }
+
+            console.log(data)
 
             const formattedLoans = data.loans.map((loan) => ({
                 id: loan.id || "N/A",
@@ -44,7 +47,7 @@ const AllLoansEmployeePortal = () => {
                 loanType: loan.loanType || "N/A",
                 interestType: loan.interestType || "N/A",
                 contractDate: loan.createdDate ? new Date(loan.createdDate).toLocaleDateString() : "N/A",
-                repaymentPeriod: loan.duration || "N/A",
+                repaymentPeriod: loan.numberOfInstallments || "N/A",
                 loanAmount: loan.loanAmount || 0,
                 remainingDebt: loan.remainingAmount || 0,
                 currency: loan.currencyType || "N/A",

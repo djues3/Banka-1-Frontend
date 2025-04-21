@@ -33,6 +33,11 @@ const LoansPortal = () => {
         },
     ];
 
+    const formatIsoDate = (iso) => {
+        const [year, month, day] = iso.split('-')
+        return `${day}/${month}/${year}`
+    }
+
     const handleOpenModal = (loanId) => {
         console.log("Opening modal for loan ID:", loanId); // Debug log
         setSelectedLoanId(loanId);
@@ -54,7 +59,7 @@ const LoansPortal = () => {
                         loanName: loan.loanType,
                         loanNumber: loan.id,
                         remainingAmount: loan.remainingAmount,
-                        nextInstallmentDate: new Date(loan.nextPaymentDate).toLocaleDateString() || "N/A",
+                        nextInstallmentDate: formatIsoDate(loan.nextPaymentDate),
                     }));
                     setRows(formattedLoans);
                 }

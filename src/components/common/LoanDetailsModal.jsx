@@ -49,6 +49,11 @@ const LoanDetailsModal = ({ open, onClose, loanId }) => {
         return `${day}/${month}/${year}`;
     };
 
+    const formatIsoDate = (iso) => {
+        const [year, month, day] = iso.split('-')
+        return `${day}/${month}/${year}`
+    }
+
     if (!open) return null;
     if (loading) return <Dialog open={open} onClose={onClose}><DialogTitle>Loading...</DialogTitle></Dialog>;
 
@@ -69,7 +74,7 @@ const LoanDetailsModal = ({ open, onClose, loanId }) => {
                         { label: "Contract Date", value: formatUnixDate(loanDetails.createdDate) },
                         { label: "Final Payment Date", value: formatUnixDate(loanDetails.allowedDate) },
                         { label: "Next Installment Amount", value: loanDetails.monthlyPayment },
-                        { label: "Next Installment Date", value: new Date(loanDetails.nextPaymentDate).toLocaleDateString() },
+                        { label: "Next Installment Date", value: formatIsoDate(loanDetails.nextPaymentDate) },
                         { label: "Currency", value: loanDetails.currencyType },
                         { label: "Loan Amount", value: loanDetails.loanAmount },
                     ].map((field, index) => (
