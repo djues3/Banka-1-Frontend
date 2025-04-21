@@ -9,14 +9,15 @@ import {
   Divider,
   Button,
   IconButton,
-  Pagination,
 } from "@mui/material";
 import { Edit, Delete } from "@mui/icons-material";
 import Sidebar from "../../components/mainComponents/Sidebar";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+
 import {
   fetchAllRecipientsForUser,
-  createRecipient,
+  createRecipientt,
   updateRecipientt,
   deleteRecipient,
   getUserIdFromToken,
@@ -36,9 +37,6 @@ const RecipientOverviewPage = () => {
   const [editingRecipientId, setEditingRecipientId] = useState(null);
   const [error, setError] = useState("");
   const [ownerAccountId, setOwnerAccountId] = useState(null);
-
-  const [page, setPage] = useState(1);
-  const recipientsPerPage = 5;
 
   const navigate = useNavigate();
 
@@ -60,32 +58,51 @@ const RecipientOverviewPage = () => {
     loadRecipients();
   }, []);
 
-  const handleSave = async () => {
-    if (
-      !recipientForm.firstName.trim() ||
-      !recipientForm.lastName.trim() ||
-      !recipientForm.accountNumber.trim()
-    ) {
-      setError("All fields are required.");
-      return;
-    }
-
+  const handleSave = async (newRecipient) => {
     try {
-      const fullName = `${recipientForm.firstName} ${recipientForm.lastName}`.trim();
-      const dataToSend = {
-        ...recipientForm,
+      let firstName = newRecipient.firstName;
+      let lastName = newRecipient.lastName;
+  
+      if (!firstName || !lastName) {
+        const nameParts = newRecipient.fullName?.trim().split(" ") || [];
+        firstName = nameParts[0] || "";
+        lastName = nameParts.slice(1).join(" ") || "";
+      }
+  
+      if (!firstName.trim() || !lastName.trim() || !newRecipient.accountNumber?.trim()) {
+        setError("All fields are required.");
+        return;
+      }
+  
+      const fullName = `${firstName} ${lastName}`.trim();
+  
+      const rawUserId = getUserIdFromToken();
+      const customerId = Number(rawUserId);
+      if (!customerId || isNaN(customerId)) {
+        throw new Error("Invalid customer ID");
+      }
+  
+      const requestData = {
+        accountNumber: newRecipient.accountNumber,
+        address: newRecipient.address || "",
         fullName,
+        customerId
       };
 
-      if (editingRecipientId) {
-        await updateRecipientt(editingRecipientId, dataToSend);
-      } else {
-        await createRecipient({
-          ...dataToSend,
-          ownerAccountId,
-        });
-      }
+      console.log("EDIT MODE:", !!newRecipient.id);
+      console.log("Data to send:", requestData);
+      console.log("Recipient ID:", newRecipient.id);
+  
+      if (newRecipient.id) {
+        await updateRecipientt(newRecipient.id, requestData);
+        toast.success("Recipient updated successfully!");
 
+      } else {
+        await createRecipientt(requestData);
+        toast.success("Recipient created successfully!");
+
+      }
+  
       setShowRecipientModal(false);
       setRecipientForm({
         firstName: "",
@@ -95,41 +112,51 @@ const RecipientOverviewPage = () => {
       });
       setEditingRecipientId(null);
       setError("");
-      loadRecipients();
+      await loadRecipients();
     } catch (err) {
       console.error("Error saving recipient:", err);
+      toast.error("Failed to save recipient.");
       setError("Failed to save recipient.");
     }
   };
+  
 
   const handleEdit = (recipient) => {
-    const nameParts = recipient.fullName?.trim().split(" ") || [];
-    const firstName = recipient.firstName || nameParts[0] || "";
-    const lastName = recipient.lastName || nameParts.slice(1).join(" ") || "";
-
+    const fullNameText = `${recipient.firstName || ""} ${recipient.lastName || ""}`.trim();
+  
+    const nameParts = fullNameText.split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
+  
+    console.log("DEBUG | EDIT - fullName:", fullNameText);
+    console.log("DEBUG | Parsed firstName:", firstName);
+    console.log("DEBUG | Parsed lastName:", lastName);
+  
     setRecipientForm({
-      firstName,
-      lastName,
+      id: recipient.id,
+      firstName: recipient.firstName,
+      lastName: recipient.lastName,
       address: recipient.address || "",
-      accountNumber: recipient.accountNumber || "",
+      accountNumber: recipient.accountNumber || ""
     });
-
+  
     setEditingRecipientId(recipient.id);
     setShowRecipientModal(true);
   };
+  
+  
+  
 
   const handleDelete = async (id) => {
     try {
       await deleteRecipient(id);
+      toast.success("Recipient deleted successfully!");
       loadRecipients();
     } catch (err) {
       console.error("Failed to delete recipient:", err);
+      toast.error("Failed to delete recipient.");
     }
   };
-
-  const indexOfLast = page * recipientsPerPage;
-  const indexOfFirst = indexOfLast - recipientsPerPage;
-  const paginatedRecipients = recipients.slice(indexOfFirst, indexOfLast);
 
   return (
     <Box sx={{ flexGrow: 1, p: 4, pt: 10 }}>
@@ -172,7 +199,7 @@ const RecipientOverviewPage = () => {
             </Box>
           ) : (
             <List>
-              {paginatedRecipients.map((recipient, index) => (
+              {recipients.map((recipient, index) => (
                 <React.Fragment key={recipient.id}>
                   <ListItem
                     secondaryAction={
@@ -199,42 +226,21 @@ const RecipientOverviewPage = () => {
                     }
                   >
                     <ListItemText
-                      primary={
-                        <Typography variant="subtitle1">
-                          {`${recipient.firstName || ""} ${recipient.lastName || ""}`.trim()}
-                        </Typography>
-                      }
+                      primary={`${recipient.firstName || ""} ${recipient.lastName || ""}`.trim()}
                       secondary={
                         <>
-                          <Typography variant="body2">
-                            Account Number: {recipient.accountNumber}
-                          </Typography>
-                          <Typography variant="body2">
-                            Address: {recipient.address}
-                          </Typography>
+                          <div>Account Number: {recipient.accountNumber}</div>
+                          <div>Address: {recipient.address}</div>
                         </>
                       }
                     />
                   </ListItem>
-                  {index < paginatedRecipients.length - 1 && <Divider />}
+                  {index < recipients.length - 1 && <Divider />}
                 </React.Fragment>
               ))}
             </List>
           )}
         </Paper>
-
-        {recipients.length > recipientsPerPage && (
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-            <Pagination
-              count={Math.ceil(recipients.length / recipientsPerPage)}
-              page={page}
-              onChange={(e, value) => setPage(value)}
-              color="primary"
-              showFirstButton
-              showLastButton
-            />
-          </Box>
-        )}
 
         <FastPaymentPopup
           open={showRecipientModal}

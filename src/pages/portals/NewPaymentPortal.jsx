@@ -43,6 +43,8 @@ const NewPaymentPortal = () => {
   const [fastPaymentOpen, setFastPaymentOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [savedReceiverId, setSavedReceiverId] = useState(null);
+
 
   const getFullName = (r) =>
     r?.fullName || `${r.firstName || ""} ${r.lastName || ""}`.trim();
@@ -51,7 +53,11 @@ const NewPaymentPortal = () => {
 
   const [newPayment, setNewPayment] = useState({
     payerAccount: "",
-    recipientName: getFullName(recipient),
+    recipientName: recipient?.id ? {
+      ...recipient,
+      firstName: recipient.firstName || recipient.fullName?.split(" ")[0] || "",
+      lastName: recipient.lastName || recipient.fullName?.split(" ").slice(1).join(" ") || ""
+    } : "",
     recipientAccount: recipient?.accountNumber || "",
     paymentCode: "289",
     paymentPurpose: "",
@@ -59,15 +65,21 @@ const NewPaymentPortal = () => {
     address: recipient?.address || "",
     referenceNumber: "",
   });
-
+  
+  
   const isFormValid = () =>
     selectedAccount &&
     newPayment.recipientAccount.trim() !== "" &&
     !isNaN(newPayment.amount) &&
-    newPayment.recipientName.trim() !== "" &&
+    (
+      typeof newPayment.recipientName === "string"
+        ? newPayment.recipientName.trim()
+        : `${newPayment.recipientName.firstName || ""} ${newPayment.recipientName.lastName || ""}`.trim()
+    ) !== "" &&
     newPayment.paymentPurpose.trim() !== "" &&
     newPayment.address.trim() !== "" &&
     newPayment.referenceNumber.trim() !== "";
+  
 
   const loadAccounts = async () => {
     try {
@@ -130,24 +142,34 @@ const NewPaymentPortal = () => {
 
   const handleCreatePayment = async (e) => {
     e.preventDefault();
-
+  
     if (!isFormValid()) {
-      toast.error("Molimo popunite sva obavezna polja.");
+      toast.error("All fields are required.");
       return;
     }
-
+  
+    const receiver =
+      typeof newPayment.recipientName === "object"
+        ? `${newPayment.recipientName.firstName || ""} ${newPayment.recipientName.lastName || ""}`.trim()
+        : newPayment.recipientName;
+  
+    const receiverId =
+      typeof newPayment.recipientName === "object"
+        ? newPayment.recipientName.id
+        : savedReceiverId;
+  
     const transferData = {
       fromAccountNumber: selectedAccount.accountNumber,
       recipientAccount: newPayment.recipientAccount,
       amount: parseFloat(newPayment.amount),
-      receiver: newPayment.recipientName,
+      receiver,
       adress: newPayment.address,
       payementCode: newPayment.paymentCode,
       payementReference: newPayment.referenceNumber,
       payementDescription: newPayment.paymentPurpose,
-      savedReceiver: recipient?.userId ?? null,
+      savedReceiverId: receiverId || null,
     };
-
+  
     try {
       const result = await createNewMoneyTransfer(transferData);
       setTransactionId(result.data.transferId);
@@ -160,12 +182,13 @@ const NewPaymentPortal = () => {
         setIsSuccess(false);
       }
     } catch (error) {
-      toast.error("Došlo je do greške. Pokušajte ponovo.");
+      toast.error("Error creating payment.");
       setIsSuccess(false);
     }
-
+  
     setShowModal(true);
   };
+  
 
   const resetForm = () => {
     setNewPayment({
@@ -182,6 +205,8 @@ const NewPaymentPortal = () => {
     setSelectedAccount(null);
     setRecipients([]);
     setDailyLimit(null);
+    setSavedReceiverId(null); 
+
 };
 
   const handleVerificationConfirm = async (verificationCode) => {
@@ -203,24 +228,37 @@ const NewPaymentPortal = () => {
 
     setShowModal(false);
   };
-
   const handleFastPaymentSelect = (selectedRecipient) => {
     const fullName =
       selectedRecipient.fullName ||
       `${selectedRecipient.firstName || ""} ${selectedRecipient.lastName || ""}`.trim();
-
-    setNewPayment({
-      ...newPayment,
-      recipientName: fullName,
-      recipientAccount: selectedRecipient.accountNumber,
-      address: selectedRecipient.address || "",
-    });
+  
+      setNewPayment({
+        ...newPayment,
+        recipientName: {
+          ...selectedRecipient,
+          firstName: selectedRecipient.firstName || selectedRecipient.fullName?.split(" ")[0] || "",
+          lastName: selectedRecipient.lastName || selectedRecipient.fullName?.split(" ").slice(1).join(" ") || ""
+        },
+        recipientAccount: selectedRecipient.accountNumber,
+        address: selectedRecipient.address || "",
+      });
+      
+  
     setAutocompleteInput(fullName);
+    setSavedReceiverId(selectedRecipient.id);
   };
+  
 
   useEffect(() => {
-    setIsSuccess(isFormValid());
-  }, [newPayment, selectedAccount]);
+    if (typeof newPayment.recipientName === "object") {
+      const name = `${newPayment.recipientName.firstName || ""} ${newPayment.recipientName.lastName || ""}`.trim();
+      setAutocompleteInput(name);
+    } else {
+      setAutocompleteInput(newPayment.recipientName || "");
+    }
+  }, [newPayment.recipientName]);
+  
 
   return (
     <div>
@@ -259,34 +297,39 @@ const NewPaymentPortal = () => {
                     typeof option === "string"
                       ? option
                       : `${option.firstName || ""} ${option.lastName || ""}`.trim()
-                  }
+                  }                  
                   isOptionEqualToValue={(option, value) =>
                     option?.accountNumber === value?.accountNumber
                   }
                   value={
                     typeof newPayment.recipientName === "string"
                       ? null
-                      : recipients.find(
-                          (rec) => rec.accountNumber === newPayment.recipientAccount
-                        ) || null
+                      : newPayment.recipientName
                   }
-                  inputValue={autocompleteInput}
-                  onInputChange={(e, newInput) => {
-                    setAutocompleteInput(newInput);
-                    setNewPayment({ ...newPayment, recipientName: newInput });
-                  }}
+                  
+                  
+                  inputValue={
+                    typeof newPayment.recipientName === "string"
+                      ? newPayment.recipientName
+                      : `${newPayment.recipientName.firstName || ""} ${newPayment.recipientName.lastName || ""}`.trim()
+                  }
+                  
+                  
                   onChange={(event, value) => {
                     if (value && typeof value === "object") {
                       const name = `${value.firstName || ""} ${value.lastName || ""}`.trim();
                       setNewPayment({
                         ...newPayment,
-                        recipientName: name,
+                        recipientName: value,
                         recipientAccount: value.accountNumber,
                         address: value.address || "",
                       });
                       setAutocompleteInput(name);
+                      setSavedReceiverId(value.id || null);
                     }
                   }}
+                  
+                  
                   renderInput={(params) => <TextField {...params} label="" />}
                   openOnFocus
                   clearOnBlur={false}

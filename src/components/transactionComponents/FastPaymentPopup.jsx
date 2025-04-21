@@ -29,10 +29,13 @@ const FastPaymentPopup = ({
   });
 
   useEffect(() => {
+    if (!open) return;
+
     if (recipient) {
-      const nameParts = recipient.fullName?.trim().split(" ") || [];
-      const firstName = recipient.firstName || nameParts[0] || "";
-      const lastName = recipient.lastName || nameParts.slice(1).join(" ") || "";
+      const firstName = recipient.firstName || "";
+      const lastName = recipient.lastName || "";
+
+      console.log("Popup recipient:", recipient);
 
       setForm({
         firstName,
@@ -52,18 +55,10 @@ const FastPaymentPopup = ({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const updatedForm = { ...form, [name]: value };
-    setForm(updatedForm);
-
-    if (setRecipient && recipient) {
-      setRecipient({
-        ...recipient,
-        firstName: updatedForm.firstName,
-        lastName: updatedForm.lastName,
-        address: updatedForm.address,
-        accountNumber: updatedForm.accountNumber
-      });
-    }
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value
+    }));
   };
 
   const handleSave = () => {
@@ -73,14 +68,11 @@ const FastPaymentPopup = ({
 
     const recipientToSave = {
       ...(recipient?.id ? { id: recipient.id } : {}),
-      customerId: customerId, 
+      customerId,
       fullName,
       address: form.address,
       accountNumber: form.accountNumber
     };
-
-    console.log("Recipient to save:", recipientToSave);
-    console.log("Type of customerId:", typeof recipientToSave.customerId);
 
     onSave(recipientToSave);
   };

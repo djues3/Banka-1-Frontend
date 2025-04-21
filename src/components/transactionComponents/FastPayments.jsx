@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 import {
   fetchRecipientsForFast,
   getUserIdFromToken,
-  createRecipientt
+  createRecipientt,
+  updateRecipientt
 } from "../../services/AxiosBanking";
 import FastPaymentPopup from "./FastPaymentPopup";
 
@@ -20,21 +21,24 @@ const FastPayments = () => {
   const [recipientList, setRecipientList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [editingRecipient, setEditingRecipient] = useState(null);
 
-  const rawUserId = getUserIdFromToken();
-  const customerId = Number(rawUserId);
+  const customerId = Number(getUserIdFromToken());
 
   const loadTopRecipients = async () => {
-    if (customerId && !isNaN(customerId)) {
-      try {
-        setLoading(true);
-        const data = await fetchRecipientsForFast(customerId);
-        setRecipientList(data);
-      } catch (err) {
-        console.error("Failed to load recipients.");
-      } finally {
-        setLoading(false);
-      }
+    try {
+      setLoading(true);
+      const data = await fetchRecipientsForFast(customerId);
+
+      const sortedTop3 = data
+        .sort((a, b) => (b.usageCount || 0) - (a.usageCount || 0))
+        .slice(0, 3);
+
+      setRecipientList(sortedTop3);
+    } catch (err) {
+      console.error("Failed to load recipients.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,78 +46,59 @@ const FastPayments = () => {
     loadTopRecipients();
   }, []);
 
-  const getInitials = (firstName, lastName) => {
-    if (!firstName || !lastName) return "?.?";
-    return `${firstName[0]}.${lastName[0]}.`.toUpperCase();
+  const getInitials = (recipient) => {
+    const first = recipient.firstName?.[0] || "?";
+    const last = recipient.lastName?.[0] || "?";
+    return `${first}.${last}.`.toUpperCase();
   };
 
-  const handleSave = async (newRecipient) => {
+  const handleSave = async (recipientToSave) => {
     try {
-      const userId = getUserIdFromToken();
-      const customerId = Number(userId);
-  
-      console.log("Raw user ID from token:", userId, "Type:", typeof userId);
-      console.log("Converted customerId (as number):", customerId, "Type:", typeof customerId);
-      console.log("New recipient input:", newRecipient);
-  
-      if (!customerId || isNaN(customerId)) {
-        console.error("Invalid customer ID:", customerId);
-        throw new Error("User ID is not a valid number.");
-      }
-  
-      const requestData = {
-        customerId: customerId, 
-        accountNumber: newRecipient.accountNumber,
-        fullName: `${newRecipient.firstName} ${newRecipient.lastName}`.trim(),
-        address: newRecipient.address || ""
+      const isEdit = !!recipientToSave.id;
+
+      const payload = {
+        fullName: `${recipientToSave.firstName || ""} ${recipientToSave.lastName || ""}`.trim(),
+        address: recipientToSave.address,
+        accountNumber: recipientToSave.accountNumber,
+        ownerAccountId: customerId 
       };
-  
-      console.log("Final data being sent to backend:", requestData);
-  
-      await createRecipientt(requestData);
+
+      if (isEdit) {
+        await updateRecipientt(recipientToSave.id, payload);
+      } else {
+        await createRecipientt({ ...payload, customerId });
+      }
+
       setOpenModal(false);
+      setEditingRecipient(null);
       await loadTopRecipients();
     } catch (error) {
       console.error("Failed to save recipient:", error);
     }
   };
-  
-  
+
   return (
-    <Box
-      sx={{
-        width: "max-content",
-        borderRadius: 4,
-        padding: 3,
-        paddingLeft: "50px",
-        bgcolor: "transparent",
-        backdropFilter: "none",
-        textAlign: "left",
-        mb: 4
-      }}
-    >
+    <Box sx={{ padding: 3, width: "max-content" }}>
       <Typography variant="h6" sx={{ mb: 2 }}>
-        Fast Payments
+        Saved recipients
       </Typography>
 
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2 }}>
-        <Box>
-          <IconButton
-            onClick={() => setOpenModal(true)}
-            sx={{
-              width: 50,
-              height: 50,
-              borderRadius: "50%",
-              backgroundColor: "transparent",
-              border: "2px dashed #1976d2",
-              color: "#1976d2",
-              fontSize: "20px",
-              fontWeight: "bold"
-            }}
-          >
-            +
-          </IconButton>
-        </Box>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <IconButton
+          onClick={() => {
+            setEditingRecipient(null);
+            setOpenModal(true);
+          }}
+          sx={{
+            width: 50,
+            height: 50,
+            borderRadius: "50%",
+            border: "2px dashed #1976d2",
+            color: "#1976d2"
+          }}
+        >
+          +
+        </IconButton>
 
         {loading ? (
           Array.from({ length: 3 }).map((_, i) => (
@@ -123,43 +108,60 @@ const FastPayments = () => {
             </Box>
           ))
         ) : (
-          recipientList.map((recipient, index) => (
-            <Box key={recipient.id || index} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-              <IconButton
-                onClick={() => navigate("/new-payment-portal", { state: { recipient } })}
-                sx={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: "50%",
-                  backgroundColor: "#7256d6",
-                  color: "#fff",
-                  fontWeight: "italic",
-                  fontSize: "16px",
-                  "&:hover": {
-                    backgroundColor: "#6244d5"
-                  }
-                }}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                {getInitials(recipient.firstName, recipient.lastName)}
-              </IconButton>
+          recipientList.map((recipient, index) => {
+            const fullName = `${recipient.firstName || ""} ${recipient.lastName || ""}`.trim();
 
-              <Fade in={hoveredIndex === index}>
-                <Typography>
-                  {`${recipient.firstName || ""} ${recipient.lastName || ""}`.trim() || "Unknown"}
-                </Typography>
-              </Fade>
-            </Box>
-          ))
+            return (
+              <Box
+                key={recipient.id}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                  justifyContent: "flex-start",
+                  width: "100%"
+                }}
+              >
+                <IconButton
+                  title={fullName}
+                  onClick={() =>
+                    navigate("/new-payment-portal", { state: { recipient } })
+                  }
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  sx={{
+                    width: 50,
+                    height: 50,
+                    borderRadius: "50%",
+                    backgroundColor: "#7256d6",
+                    color: "#fff",
+                    fontSize: "0.75rem" 
+                  }}
+                >
+                  {getInitials(recipient)}
+                </IconButton>
+
+                <Fade in={hoveredIndex === index}>
+                  <Typography
+                    sx={{ cursor: "default", fontSize: 14 }}
+                  >
+                    {fullName}
+                  </Typography>
+                </Fade>
+              </Box>
+            );
+          })
         )}
       </Box>
 
       <FastPaymentPopup
         open={openModal}
-        onClose={() => setOpenModal(false)}
+        onClose={() => {
+          setOpenModal(false);
+          setEditingRecipient(null);
+        }}
         onSave={handleSave}
-        customerId={customerId} 
+        recipient={editingRecipient}
       />
     </Box>
   );

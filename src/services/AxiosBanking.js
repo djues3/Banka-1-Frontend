@@ -143,7 +143,7 @@ export const updateRecipient = async (recipientId, recipientData) => {
 export const createRecipient = async (recipientData) => {
   try {
     const response = await apiBanking.post("/receiver", {
-      ownerAccountId: Number(recipientData.ownerAccountId),
+      customerId: Number(recipientData.ownerAccountId),
       accountNumber: recipientData.accountNumber,
       fullName: recipientData.fullName,
       address: recipientData.address || "",
@@ -429,7 +429,7 @@ export const fetchLoanDetails = async (loan_id) => {
 export const createRecipientt = async (recipientData) => {
   try {
     const requestBody = {
-      ownerAccountId: Number(recipientData.ownerAccountId),
+      customerId: Number(recipientData.customerId),  // promenjeno u customer
       accountNumber: recipientData.accountNumber,
       fullName: recipientData.fullName,
       address: recipientData.address || "",
@@ -438,45 +438,39 @@ export const createRecipientt = async (recipientData) => {
     console.log("Sending recipient data:", requestBody);
 
     const response = await apiBanking.post(`/receiver`, requestBody);
-
     console.log("Recipient added successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(
-        "Error creating recipient:",
-        error.response?.data || error.message
+      "Error creating recipient:",
+      error.response?.data || error.message
     );
     throw error;
   }
 };
+
 export const updateRecipientt = async (recipientId, recipientData) => {
   try {
-    console.log(
-        `Updating recipient ID: ${recipientId} with data:`,
-        recipientData
-    );
+    const requestBody = {
+      fullName: recipientData.fullName,
+      address: recipientData.address || "",
+      accountNumber: recipientData.accountNumber,
+      ownerAccountId: recipientData.ownerAccountId 
+    };
 
-    if (!recipientId || !recipientData || !recipientData.accountNumber) {
-      console.error("Missing recipient data:", recipientData);
-      throw new Error("Recipient data is missing required fields.");
-    }
+    console.log(`Updating recipient ${recipientId}:`, requestBody);
 
     const response = await apiBanking.put(
-        `/receiver/${recipientId}`,
-        recipientData
+      `/receiver/${recipientId}`,
+      requestBody
     );
-
-    console.log("Recipient update response:", response.data);
-
     return response.data;
   } catch (error) {
-    console.error(
-        `Error updating recipient [${recipientId}]:`,
-        error.response?.data || error.message
-    );
+    console.error(`Error updating recipient [${recipientId}]:`, error.response?.data || error.message);
     throw error;
   }
 };
+
 
 export const fetchAllLoansForEmployees = async () => {
   try {

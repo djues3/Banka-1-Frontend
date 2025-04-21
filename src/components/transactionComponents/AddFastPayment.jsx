@@ -67,21 +67,34 @@ const AddFastPayment = ({ open, onClose, onSelectRecipient }) => {
           </Box>
         ) : (
           <List>
-            {recipients.map((recipient, index) => (
-              <ListItem
-                key={recipient.id || index}
-                button
-                onClick={() => {
-                  onSelectRecipient(recipient);
-                  onClose();
-                }}
-              >
-                <ListItemText
-                  primary={`${recipient.fullName || `${recipient.firstName || ""} ${recipient.lastName || ""}`.trim() || "Unnamed"}`}
-                  secondary={`${recipient.accountNumber || "N/A"} | ${recipient.address || "No address"}`}
-                />
-              </ListItem>
-            ))}
+            {recipients.map((recipient, index) => {
+              const fullName = recipient.fullName || "";
+              const parts = fullName.trim().split(" ");
+              const firstName = parts[0] || "";
+              const lastName = parts.slice(1).join(" ") || "";
+
+              return (
+                <ListItem
+                  key={recipient.id || index}
+                  button
+                  onClick={() => {
+                    onSelectRecipient({
+                      ...recipient,
+                      firstName: recipient.firstName || fullName.split(" ")[0] || "",
+                      lastName: recipient.lastName || fullName.split(" ").slice(1).join(" ") || ""
+                    });
+                    
+                    onClose();
+                  }}
+                >
+                 <ListItemText
+                    primary={`${recipient.firstName || ""} ${recipient.lastName || ""}`.trim() || "Unnamed"}
+                    secondary={`${recipient.accountNumber || "N/A"} | ${recipient.address || "No address"}`}
+                  />
+
+                </ListItem>
+              );
+            })}
           </List>
         )}
       </Box>
