@@ -13,7 +13,7 @@ const MakePublicModal = ({ open, onClose, onConfirm, maxAmount }) => {
   const [count, setCount] = useState(0);
 
   const handleConfirm = () => {
-    if (count > 0 && count <= maxAmount) {
+    if (count <= maxAmount) {
       onConfirm(count);
     }
   };
