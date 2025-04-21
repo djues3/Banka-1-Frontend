@@ -410,7 +410,14 @@ const NewPaymentPortal = () => {
                 </form>
 
                 <ToastContainer position="bottom-right" />
-                <OtpModal open={showModal} onClose={handleCancel} onConfirm={handleVerificationConfirm} />
+                <OtpModal
+                    open={showModal}
+                    onClose={(event, reason) => {
+                        if (reason && reason === "backdropClick") return;
+                        handleCancel();
+                    }}
+                    onConfirm={handleVerificationConfirm}
+                />
                 <PaymentResultModal open={openModal} onClose={() => setOpenModal(false)} success={isSuccess} paymentMessage={paymentMessage} onConfirm={handleConfirm} />
                 <AddFastPayment open={fastPaymentOpen} onClose={() => setFastPaymentOpen(false)} onSelectRecipient={handleFastPaymentSelect} />
                 </div>
