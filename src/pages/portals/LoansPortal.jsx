@@ -54,7 +54,7 @@ const LoansPortal = () => {
                         loanName: loan.loanType,
                         loanNumber: loan.id,
                         remainingAmount: loan.remainingAmount,
-                        nextInstallmentDate: loan.nextPaymentDate || "N/A",
+                        nextInstallmentDate: new Date(loan.nextPaymentDate).toLocaleDateString() || "N/A",
                     }));
                     setRows(formattedLoans);
                 }

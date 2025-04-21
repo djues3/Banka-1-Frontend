@@ -6,7 +6,7 @@ const TransactionItem = ({ transaction, onDoubleClick }) => {
     const theme = useTheme();
     const isDarkMode = theme.palette.mode === "dark";
 
-    const receiverName = transaction.receiverName || "Unknown";
+    const receiverName = transaction.receiver || "Unknown";
     const amount = transaction.amount
         ? `${transaction.amount} `
         : "0.00";
