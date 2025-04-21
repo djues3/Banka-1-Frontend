@@ -11,11 +11,12 @@ const TaxInfoModal = ({ open, onClose, taxData }) => {
     const [unpaidTax, setUnpaidTax] = useState(null);
 
     useEffect(() => {
-        if (open) {
-            setPaidTax(taxData.paid_this_year);
-            setUnpaidTax(taxData.unpaid_this_month)
+        if (open && taxData) {
+            setPaidTax(taxData.paid_this_year ?? 0);
+            setUnpaidTax(taxData.unpaid_this_month ?? 0);
         }
-    }, [open]);
+    }, [open, taxData]);
+
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>

@@ -48,10 +48,10 @@ const PortfolioPage = () => {
       try {
         const data = await getUserSecurities(userId);
         console.log("data od securites: ", data);
-        // const tax = await getTaxForUser(userId);
+        const tax = await getTaxForUser(userId);
         console.log(data)
         setPortfolioData(data);
-        // setTaxData(tax.data);
+        setTaxData(tax.data);
       } catch (error) {
         console.error("Error fetching user securities:", error);
       }
@@ -93,7 +93,7 @@ const PortfolioPage = () => {
 
   const handleSellClick = (security) => {
     setIsSellModalOpen(true);
-    // setAvailableSecurities(security.amount)
+    //setAvailableSecurities(security.amount)
     setselectedSellSecurity(security)
   };
 
@@ -287,11 +287,11 @@ const PortfolioPage = () => {
           onClose={() => setProfitModalOpen(false)}
           portfolioData={portfolioData}
         />
-        {/* <TaxInfoModal 
+        { <TaxInfoModal
           open={taxModalOpen} 
           onClose={() => setTaxModalOpen(false)} 
           taxData={taxData}
-        /> */}
+        /> }
       </Box>
     </Box>
 
