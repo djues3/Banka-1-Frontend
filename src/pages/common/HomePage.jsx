@@ -9,9 +9,11 @@ import {
     CssBaseline,
     Grid,
     Card,
-    CardActionArea
+    CardActionArea,
+    Paper
 } from '@mui/material';
 import LogoutButton from '../../components/common/LogoutButton';
+import { getAgents, getUserSecurities } from '../../services/AxiosTrading';
 
 // ICONS
 import PeopleIcon from '@mui/icons-material/People';
@@ -38,6 +40,7 @@ import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 const HomePage = () => {
     const [roleMessage, setRoleMessage] = useState('');
     const [cards, setCards] = useState([]);
+    const [agentStats, setAgentStats] = useState({ profit: 0, limit: 0, usedLimit: 0 });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -83,6 +86,39 @@ const HomePage = () => {
                     setRoleMessage('Welcome to the Agent Dashboard');
                     addCard('Portfolio', '/portfolio-page', LibraryBooksIcon);
                     addCard('Important Files', '/actuary-buying-portal', FolderIcon);
+                    
+                    // Fetch agent stats
+                    const fetchAgentStats = async () => {
+                        try {
+                            // Get all agents and find the current one
+                            const agentsResponse = await getAgents();
+                            console.log("Agents response:", agentsResponse); // Debug log
+                            if (agentsResponse && agentsResponse.data) {
+                                const currentAgent = agentsResponse.data.find(agent => agent.userId === decodedToken.id);
+                                console.log("Current agent:", currentAgent); // Debug log
+                                if (currentAgent) {
+                                    setAgentStats(prev => ({
+                                        ...prev,
+                                        limit: currentAgent.limit || 0,
+                                        usedLimit: currentAgent.usedLimit || 0
+                                    }));
+                                }
+                            }
+
+                            // Get agent's portfolio and calculate profit
+                            const portfolioResponse = await getUserSecurities(decodedToken.id);
+                            if (portfolioResponse && Array.isArray(portfolioResponse)) {
+                                const totalProfit = portfolioResponse.reduce((acc, security) => acc + security.profit, 0);
+                                setAgentStats(prev => ({
+                                    ...prev,
+                                    profit: totalProfit
+                                }));
+                            }
+                        } catch (error) {
+                            console.error('Error fetching agent stats:', error);
+                        }
+                    };
+                    fetchAgentStats();
                 }
 
                 // Regular Employee
@@ -138,6 +174,69 @@ const HomePage = () => {
                 <Typography variant="body1" align="center" gutterBottom>
                     Please select a section below.
                 </Typography>
+
+                {/* Agent Stats Display */}
+                {roleMessage === 'Welcome to the Agent Dashboard' && (
+                    <Grid container spacing={2} sx={{ mb: 3 }}>
+                        <Grid item xs={12} sm={6}>
+                            <Paper
+                                elevation={3}
+                                sx={{
+                                    p: 2,
+                                    textAlign: 'center',
+                                    backgroundColor: 'background.paper',
+                                    borderRadius: 2,
+                                    transition: 'transform 0.2s ease-in-out',
+                                    '&:hover': {
+                                        transform: 'scale(1.02)',
+                                        boxShadow: 6
+                                    }
+                                }}
+                            >
+                                <Typography variant="subtitle1" color="text.secondary">
+                                    Current Profit
+                                </Typography>
+                                <Typography
+                                    variant="h5"
+                                    sx={{
+                                        color: agentStats.profit >= 0 ? 'success.main' : 'error.main',
+                                        fontWeight: 'bold',
+                                        mt: 1
+                                    }}
+                                >
+                                    {agentStats.profit.toFixed(2)} USD
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Paper
+                                elevation={3}
+                                sx={{
+                                    p: 2,
+                                    textAlign: 'center',
+                                    backgroundColor: 'background.paper',
+                                    borderRadius: 2,
+                                    transition: 'transform 0.2s ease-in-out',
+                                    '&:hover': {
+                                        transform: 'scale(1.02)',
+                                        boxShadow: 6
+                                    }
+                                }}
+                            >
+                                <Typography variant="subtitle1" color="text.secondary">
+                                    Trading Limit
+                                </Typography>
+                                <Typography
+                                    variant="h5"
+                                    color="primary"
+                                    sx={{ fontWeight: 'bold', mt: 1 }}
+                                >
+                                    {agentStats.usedLimit.toLocaleString('sr-RS')} / {agentStats.limit.toLocaleString('sr-RS')} USD
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                )}
 
                 <Grid container spacing={3} sx={{ mt: 3 }}>
                     {cards.map((card, index) => {

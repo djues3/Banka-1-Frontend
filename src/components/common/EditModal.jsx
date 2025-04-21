@@ -101,17 +101,18 @@ const EditModal = ({ open, onClose, data, formFields, onSave, title }) => {
                   label={field.label}
                 />
               ) : (
-                  <TextField
-                      fullWidth
-                      label={field.label}
-                      name={field.name}
-                      type={field.name === 'phoneNumber' ? 'text' : field.type || 'text'}
-                      value={formData[field.name] || ''}
-                      onChange={field.name === 'phoneNumber' ? handlePhoneInput : handleChange}
-                      error={!!errors[field.name]}
-                      helperText={errors[field.name]}
-                      InputProps={field.readOnly ? { readOnly: true } : {}}
-                  />
+                <TextField
+                  fullWidth
+                  label={field.label}
+                  name={field.name}
+                  type={field.name === 'phoneNumber' ? 'text' : field.type || 'text'}
+                  value={formData[field.name] || ''}
+                  onChange={field.name === 'phoneNumber' ? handlePhoneInput : handleChange}
+                  error={!!errors[field.name]}
+                  helperText={errors[field.name]}
+                  InputProps={field.readOnly ? { readOnly: true } : {}}
+                  InputLabelProps={field.type === 'date' ? { shrink: true } : {}}
+                />
               )}
             </Grid>
           ))}
