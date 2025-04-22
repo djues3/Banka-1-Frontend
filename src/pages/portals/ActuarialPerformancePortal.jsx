@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/mainComponents/Sidebar";
 import SearchDataTable from "../../components/tables/SearchDataTable";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getActuarialProfits } from "../../services/AxiosTrading";
 
@@ -11,7 +11,6 @@ const ActuarialPerformancePortal = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-
         loadActuarialProfits();
     }, []);
 
@@ -19,8 +18,15 @@ const ActuarialPerformancePortal = () => {
         try {
             setLoading(true);
             const response = await getActuarialProfits();
-            setActuaries(response.data);
+
+            const mappedActuaries = response.data.map((item, index) => ({
+                id: index + 1,
+                ...item
+            }));
+
+            setActuaries(mappedActuaries);
         } catch (err) {
+            console.error(err);
             setError("Failed to load actuaries profit data");
         } finally {
             setLoading(false);
@@ -30,7 +36,13 @@ const ActuarialPerformancePortal = () => {
     const columns = [
         { field: 'fullName', headerName: 'Full Name', width: 250 },
         { field: 'profit', headerName: 'Profit (RSD)', width: 180 },
-        { field: 'department', headerName: 'Department', width: 150 }
+        {
+            field: 'role',
+            headerName: 'Department',
+            width: 150,
+            renderCell: (params) => (
+                params.value ? params.value.toUpperCase() : ''
+            )        }
     ];
 
     return (
