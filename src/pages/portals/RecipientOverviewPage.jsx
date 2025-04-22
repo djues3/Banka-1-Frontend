@@ -76,8 +76,7 @@ const RecipientOverviewPage = () => {
   
       const fullName = `${firstName} ${lastName}`.trim();
   
-      const rawUserId = getUserIdFromToken();
-      const customerId = Number(rawUserId);
+      const customerId = Number(userId);
       if (!customerId || isNaN(customerId)) {
         throw new Error("Invalid customer ID");
       }

@@ -43,6 +43,7 @@ const HomePage = () => {
     const [agentStats, setAgentStats] = useState({ profit: 0, limit: 0, usedLimit: 0 });
     const navigate = useNavigate();
     const { userInfo } = useAuth();
+    const userId = userInfo.id;
     console.log("HomePage");
 
     useEffect(() => {
@@ -94,7 +95,7 @@ const HomePage = () => {
                             const agentsResponse = await getAgents();
                             console.log("Agents response:", agentsResponse); // Debug log
                             if (agentsResponse && agentsResponse.data) {
-                                const currentAgent = agentsResponse.data.find(agent => agent.userId === decodedToken.id);
+                                const currentAgent = agentsResponse.data.find(agent => agent.userId === userId);
                                 console.log("Current agent:", currentAgent); // Debug log
                                 if (currentAgent) {
                                     setAgentStats(prev => ({
@@ -106,7 +107,7 @@ const HomePage = () => {
                             }
 
                             // Get agent's portfolio and calculate profit
-                            const portfolioResponse = await getUserSecurities(decodedToken.id);
+                            const portfolioResponse = await getUserSecurities(userId);
                             if (portfolioResponse && Array.isArray(portfolioResponse)) {
                                 const totalProfit = portfolioResponse.reduce((acc, security) => acc + security.profit, 0);
                                 setAgentStats(prev => ({

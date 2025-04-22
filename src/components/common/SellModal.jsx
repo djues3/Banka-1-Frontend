@@ -12,8 +12,8 @@ import { fetchAvailableAmount } from "../../services/AxiosTrading";
 import {useAuth} from "../../context/AuthContext";
 
 function SellModal({ isOpen, onClose, onSave, selectedSecurity }) {
-  const usdAccounts = response.filter(acc => acc.status === 'ACTIVE' && acc.currencyType === 'USD');
-  setAccounts(usdAccounts);
+  const {userInfo} = useAuth();
+  const userId = userInfo.id;
 
   const [amount, setAmount] = useState(0);
   const [confirmOpen, setConfirmOpen] = useState(false);
