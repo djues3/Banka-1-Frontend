@@ -4,7 +4,6 @@ import Switch from '@mui/material/Switch';
 import {useAuth} from "../../context/AuthContext";
 
 const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark' }) => {
-
     const {userInfo} = useAuth();
     let isClient = false;
     if(userInfo.position === "NONE"){
@@ -22,7 +21,7 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
         <div className={`${styles.creditCard} ${styles[theme]} ${card.blocked ? styles.blocked : ''} ${!card.active ? styles.deactivated : ''}`}>
             <div className={styles.cardTop}>
                 <div className={styles.chip} />
-                <div className={styles.brand}>VISA</div>
+                <div className={styles.brand}>{card.cardBrand ? card.cardBrand : "Unknown"}</div>
             </div>
 
             <div className={styles.cardNumber}>

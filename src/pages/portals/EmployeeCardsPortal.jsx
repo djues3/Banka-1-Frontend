@@ -80,6 +80,7 @@ const EmployeeCardsPortal = () => {
       const formattedRows = rowData.map(row => ({
         id: row.id,
         cardNumber: maskCardNumber(row.cardNumber),
+        cardBrand: row.cardBrand,
         firstName: selectedAccount.firstName,
         lastName: selectedAccount.lastName,
         active: row.active,

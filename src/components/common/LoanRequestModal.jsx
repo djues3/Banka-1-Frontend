@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { fetchAccountsForUser, submitLoanRequest } from "../../services/AxiosBanking";
 import {toast, ToastContainer} from "react-toastify";
+import {useAuth} from "../../context/AuthContext";
 
 const LoanRequestModal = ({ open, onClose }) => {
   const [loanType, setLoanType] = useState("");
@@ -27,11 +28,12 @@ const LoanRequestModal = ({ open, onClose }) => {
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState("");
   const [loading, setLoading] = useState(false);
+  const {userInfo} = useAuth();
 
   useEffect(() => {
     const fetchUserAccounts = async () => {
       try {
-        const userAccounts = await fetchAccountsForUser();
+        const userAccounts = await fetchAccountsForUser(userInfo.id);
         setAccounts(userAccounts);
       } catch (error) {
         console.error("Error fetching user accounts:", error);

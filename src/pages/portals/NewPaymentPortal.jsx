@@ -22,15 +22,13 @@ import { jwtDecode } from "jwt-decode";
 import OtpModal from "../../components/transferComponents/OtpModal";
 import FlashOnIcon from "@mui/icons-material/FlashOn";
 import AddFastPayment from "../../components/transactionComponents/AddFastPayment";
+import {useAuth} from "../../context/AuthContext";
 
 const NewPaymentPortal = () => {
   const location = useLocation();
   const recipient = location.state?.recipient || {};
   const payerAccountId = recipient?.ownerAccountId || null;
 
-  const token = localStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const userId = decodedToken.id;
 
   const [accounts, setAccounts] = useState([]);
   const [selectedAccount, setSelectedAccount] = useState(null);
@@ -43,6 +41,8 @@ const NewPaymentPortal = () => {
   const [fastPaymentOpen, setFastPaymentOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const {userInfo} = useAuth();
+  const userId = userInfo.id
   const [savedReceiverId, setSavedReceiverId] = useState(null);
 
 
@@ -65,8 +65,8 @@ const NewPaymentPortal = () => {
     address: recipient?.address || "",
     referenceNumber: "",
   });
-  
-  
+
+
   const isFormValid = () =>
     selectedAccount &&
     newPayment.recipientAccount.trim() !== "" &&
@@ -79,7 +79,7 @@ const NewPaymentPortal = () => {
     newPayment.paymentPurpose.trim() !== "" &&
     newPayment.address.trim() !== "" &&
     newPayment.referenceNumber.trim() !== "";
-  
+
 
   const loadAccounts = async () => {
     try {
@@ -142,22 +142,22 @@ const NewPaymentPortal = () => {
 
   const handleCreatePayment = async (e) => {
     e.preventDefault();
-  
+
     if (!isFormValid()) {
       toast.error("All fields are required.");
       return;
     }
-  
+
     const receiver =
       typeof newPayment.recipientName === "object"
         ? `${newPayment.recipientName.firstName || ""} ${newPayment.recipientName.lastName || ""}`.trim()
         : newPayment.recipientName;
-  
+
     const receiverId =
       typeof newPayment.recipientName === "object"
         ? newPayment.recipientName.id
         : savedReceiverId;
-  
+
     const transferData = {
       fromAccountNumber: selectedAccount.accountNumber,
       recipientAccount: newPayment.recipientAccount,
@@ -169,7 +169,7 @@ const NewPaymentPortal = () => {
       payementDescription: newPayment.paymentPurpose,
       savedReceiverId: receiverId || null,
     };
-  
+
     try {
       const result = await createNewMoneyTransfer(transferData);
       setTransactionId(result.data.transferId);
@@ -185,10 +185,10 @@ const NewPaymentPortal = () => {
       toast.error("Error creating payment.");
       setIsSuccess(false);
     }
-  
+
     setShowModal(true);
   };
-  
+
 
   const resetForm = () => {
     setNewPayment({
@@ -205,7 +205,7 @@ const NewPaymentPortal = () => {
     setSelectedAccount(null);
     setRecipients([]);
     setDailyLimit(null);
-    setSavedReceiverId(null); 
+    setSavedReceiverId(null);
 
 };
 
@@ -232,7 +232,7 @@ const NewPaymentPortal = () => {
     const fullName =
       selectedRecipient.fullName ||
       `${selectedRecipient.firstName || ""} ${selectedRecipient.lastName || ""}`.trim();
-  
+
       setNewPayment({
         ...newPayment,
         recipientName: {
@@ -243,12 +243,12 @@ const NewPaymentPortal = () => {
         recipientAccount: selectedRecipient.accountNumber,
         address: selectedRecipient.address || "",
       });
-      
-  
+
+
     setAutocompleteInput(fullName);
     setSavedReceiverId(selectedRecipient.id);
   };
-  
+
 
   useEffect(() => {
     if (typeof newPayment.recipientName === "object") {
@@ -258,7 +258,7 @@ const NewPaymentPortal = () => {
       setAutocompleteInput(newPayment.recipientName || "");
     }
   }, [newPayment.recipientName]);
-  
+
 
   return (
     <div>
@@ -297,7 +297,7 @@ const NewPaymentPortal = () => {
                     typeof option === "string"
                       ? option
                       : `${option.firstName || ""} ${option.lastName || ""}`.trim()
-                  }                  
+                  }
                   isOptionEqualToValue={(option, value) =>
                     option?.accountNumber === value?.accountNumber
                   }
@@ -306,15 +306,15 @@ const NewPaymentPortal = () => {
                       ? null
                       : newPayment.recipientName
                   }
-                  
-                  
+
+
                   inputValue={
                     typeof newPayment.recipientName === "string"
                       ? newPayment.recipientName
                       : `${newPayment.recipientName.firstName || ""} ${newPayment.recipientName.lastName || ""}`.trim()
                   }
-                  
-                  
+
+
                   onChange={(event, value) => {
                     if (value && typeof value === "object") {
                       const name = `${value.firstName || ""} ${value.lastName || ""}`.trim();
@@ -328,8 +328,8 @@ const NewPaymentPortal = () => {
                       setSavedReceiverId(value.id || null);
                     }
                   }}
-                  
-                  
+
+
                   renderInput={(params) => <TextField {...params} label="" />}
                   openOnFocus
                   clearOnBlur={false}
