@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, TextField, MenuItem } from "@mui/material";
+import { Button, TextField, MenuItem, Snackbar, Alert, CircularProgress } from "@mui/material";
 import { fetchTaxData, runTax } from "../../services/AxiosTrading";
 import { fetchCustomerById, fetchEmployeeById } from "../../services/AxiosUser";
 import DataTable from "../tables/DataTable";
@@ -10,6 +10,12 @@ const TaxTrackingTable = () => {
     const [firstNameFilter, setFirstNameFilter] = useState("");
     const [lastNameFilter, setLastNameFilter] = useState("");
     const [typeFilter, setTypeFilter] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: "",
+        severity: "success"
+    });
 
     useEffect(() => {
         loadTaxData();
@@ -66,12 +72,30 @@ const TaxTrackingTable = () => {
     ];
 
     const handleRunTax = async () => {
+        setIsLoading(true);
         try {
             await runTax();
-            console.log("Tax calculation initiated successfully");
+            setSnackbar({
+                open: true,
+                message: "Tax calculation started successfully",
+                severity: "success"
+            });
+            // Refresh the data after successful tax calculation
+            await loadTaxData();
         } catch (error) {
+            setSnackbar({
+                open: true,
+                message: "Failed to start tax calculation",
+                severity: "error"
+            });
             console.error("Failed to start tax calculation:", error);
+        } finally {
+            setIsLoading(false);
         }
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({ ...prev, open: false }));
     };
 
     return (
@@ -104,12 +128,29 @@ const TaxTrackingTable = () => {
                     <MenuItem value="Client">Client</MenuItem>
                     <MenuItem value="Actuary">Actuary</MenuItem>
                 </TextField>
-                <Button variant="contained" color="primary" onClick={handleRunTax}>
-                    Run Tax
+                <Button 
+                    variant="contained" 
+                    color="primary" 
+                    onClick={handleRunTax}
+                    disabled={isLoading}
+                    startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+                >
+                    {isLoading ? "Running..." : "Run Tax"}
                 </Button>
             </div>
 
             <DataTable rows={filteredRecords} columns={columns} checkboxSelection={false} />
+
+            <Snackbar 
+                open={snackbar.open} 
+                autoHideDuration={6000} 
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            >
+                <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </div>
     );
 };

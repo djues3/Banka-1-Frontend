@@ -417,4 +417,14 @@ export const fetchAvailableAmount = async (user_id, security_id) => {
   }
 };
 
+export const getBankTotalProfit = async () => {
+  try {
+    const response = await apiTrading.get(`/profit/bank/total`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching bank total profit:', error);
+    throw error;
+  }
+};
+
 export default apiTrading;
