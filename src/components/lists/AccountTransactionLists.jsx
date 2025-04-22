@@ -61,15 +61,17 @@ const AccountTransactionsList = ({ accountId }) => {
         console.log("Tranzakcije = ", data)
 
         const formattedTransactions = data.map((transaction) => {
-          const isIncoming = transaction.transfer.toAccountId.id === accountId;
+          console.log("accountId: ", accountId)
+          console.log("WantedId: ", transaction.transfer.toAccountId.id)
+          const isIncoming = transaction.toAccountId.id === accountId;
 
           return {
             id: transaction.id,
             date: new Date(transaction.transfer.createdAt).toLocaleDateString(),
             // date: formatLogDate(transaction.date), // Optional
-            amount: transaction.amount.toFixed(2) + " " + transaction.transfer.fromCurrency.code,
+            amount: transaction.amount.toFixed(2) + " " + transaction.currency.code,
             description: transaction.description,
-            finalAmount: transaction.finalAmount.toFixed(2) + " " + transaction.transfer.toCurrency.code,
+            finalAmount: transaction.finalAmount.toFixed(2) + " " + transaction.currency.code,
             fee: transaction.fee.toFixed(2) + " " + transaction.transfer.toCurrency.code,
             direction: isIncoming ? "incoming" : "outgoing",
           };
