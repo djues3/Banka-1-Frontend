@@ -8,34 +8,33 @@ const apiTrading = axios.create({
 });
 
 apiTrading.interceptors.request.use(
-    (config) => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
 
-        console.log(
-            `${config.method.toUpperCase()} ${
-                config.url
-            } - Token: ${token.substring(0, 20)}...`
-        );
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
+      console.log(
+        `${config.method.toUpperCase()} ${
+          config.url
+        } - Token: ${token.substring(0, 20)}...`
+      );
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 export const getBankProfits = async () => {
   try {
-    const response = await apiTrading.get("/bank/profits");
+    const response = await apiTrading.get("/profit/bank");
     return response.data;
-  }catch (error){
+  } catch (error) {
     console.error("Error fetching actuaries:", error);
     throw error;
   }
 };
-
 
 export const getActuaries = async () => {
   try {
@@ -66,7 +65,6 @@ export const getAgents = async () => {
     throw error;
   }
 };
-
 
 export const getActuaryById = async (id) => {
   try {
@@ -262,7 +260,6 @@ export const fetchForexHistory = async (ticker) => {
   }
 };
 
-
 export const fetchStockPriceByMonth = async (ticker) => {
   try {
     const response = await apiTrading.get(`/stocks/${ticker}/history`);
@@ -325,10 +322,9 @@ export const runTax = async () => {
 
 export const updatePublicCount = async (portfolio_id, publicCount) => {
   try {
-    const response = await apiTrading.put("/securities/public-count", 
-    {
+    const response = await apiTrading.put("/securities/public-count", {
       portfolio_id: portfolio_id,
-      public: publicCount
+      public: publicCount,
     });
     return response;
   } catch (error) {
@@ -347,7 +343,6 @@ export const createOffer = async (payload) => {
   }
 };
 
-
 export const getActiveOffers = async () => {
   try {
     const response = await apiTrading.get(`/otctrade/offer/active`);
@@ -360,7 +355,10 @@ export const getActiveOffers = async () => {
 
 export const counterOffer = async (offer_id, payload) => {
   try {
-    const response = await apiTrading.put(`/otctrade/offer/${offer_id}/counter`, payload);
+    const response = await apiTrading.put(
+      `/otctrade/offer/${offer_id}/counter`,
+      payload
+    );
     return response;
   } catch (error) {
     console.error("Greška prilikom slanja counter ponude:", error);
@@ -410,14 +408,13 @@ export const fetchAvailableAmount = async (user_id, security_id) => {
     return await apiTrading.get(`/portfolio/available-to-sell`, {
       params: {
         user_id: user_id,
-        security_id: security_id
-      }
+        security_id: security_id,
+      },
     });
   } catch (error) {
     console.error("Greška prihvatanju ugovora:", error);
     throw error;
   }
 };
-
 
 export default apiTrading;

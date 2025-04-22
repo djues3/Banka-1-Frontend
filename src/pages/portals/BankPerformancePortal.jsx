@@ -18,7 +18,11 @@ const BankPerformancePortal = () => {
         try {
             setLoading(true);
             const response = await getBankProfits();
-            setProfits(response.data);
+            const rowsWithId  = response.data.map((item, index) => ({
+                id: index + 1,
+                ...item
+            }));
+            setProfits(rowsWithId);
         } catch (err) {
             setError("Failed to load bank profit data");
         } finally {
