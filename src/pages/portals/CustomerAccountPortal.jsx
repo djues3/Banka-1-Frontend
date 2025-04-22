@@ -54,7 +54,7 @@ const CustomerAccountPortal = () =>{
             </Box>
         );
     }
-
+    console.log("AccountID: ", selectedAccountId)
 
     return (
         <Container disableGutters maxWidth={true}>

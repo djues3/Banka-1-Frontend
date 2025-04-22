@@ -9,7 +9,7 @@ import {
     Typography
 } from "@mui/material";
 import { createOffer } from "../../services/AxiosTrading";
-import {toast} from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const MakeOfferModal = ({ open, onClose, security }) => {
     const portfolioId = security?.portfolioId;
@@ -44,13 +44,12 @@ const MakeOfferModal = ({ open, onClose, security }) => {
 
         try {
             const response = await createOffer(payload);
-            toast.success("Offer successfull")
+            toast.success("Offer successful")
             console.log("Uspešno poslata ponuda:", response.data);
             onClose();
         } catch (error) {
             console.error("Greška pri slanju ponude:", error);
             toast.error("Error while making offer")
-            // alert("Greška pri slanju ponude.");
         }
     };
 
@@ -98,7 +97,9 @@ const MakeOfferModal = ({ open, onClose, security }) => {
                     Make
                 </Button>
             </DialogActions>
+            <ToastContainer position="bottom-right" />
         </Dialog>
+
     );
 };
 

@@ -30,6 +30,7 @@ const RecentTransactions = ({ accountId }) => {
             }
             try {
                 const data = await fetchAccountsTransactions(accountId);
+                console.log("data", data)
                 if (data && Array.isArray(data)) {
                     const enriched = data.map((tx) => {
                         const isIncoming = tx.receiverId === accountId;

@@ -119,7 +119,8 @@ const AccountsPortal = () => {
     const handleAccountClick = (row) => {
         setSelectedAccountId(row.id);
     };
-
+    
+    console.log("selectedAccountID", selectedAccountId)
     return (
         <div className="flex">
             <Sidebar />

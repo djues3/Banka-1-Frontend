@@ -155,7 +155,17 @@ const CardDetailsModal = ({ open, onClose, card }) => {
 };
 
 
-function formatDate(timestamp){
-  return new Date(timestamp * 1000).toLocaleDateString();
-}
+const formatDate = (timestamp) => {
+    if (!timestamp) return 'N/A';
+
+    const date = new Date(timestamp);
+    if (isNaN(date.getTime())) return 'Invalid date';
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+};
+
 export default CardDetailsModal;
