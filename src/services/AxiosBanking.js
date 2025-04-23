@@ -711,7 +711,7 @@ export const previewExchangeTransfer = async (fromCurrency, toCurrency, amount) 
 
 export const previewForeignExchangeTransfer = async (fromCurrency, toCurrency, amount) => {
   try {
-    const response = await apiBanking.post('/exchange-transfer/preview-foreign', {
+    const response = await apiBanking.post('/exchange-transfer/preview', {
       fromCurrency,
       toCurrency,
       amount
