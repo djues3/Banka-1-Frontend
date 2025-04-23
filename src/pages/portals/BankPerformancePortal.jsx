@@ -33,9 +33,9 @@ const BankPerformancePortal = () => {
     const columns = [
         { field: 'year', headerName: 'Year', width: 120 },
         { field: 'month', headerName: 'Month', width: 120 },
-        { field: 'actuary_profit', headerName: 'Actuary Profit (RSD)', width: 180 },
-        { field: 'fees', headerName: 'Fees (RSD)', width: 120 },
-        { field: 'total', headerName: 'Total (RSD)', width: 180 }
+        { field: 'actuary_profit', headerName: 'Actuary Profit (USD)', width: 180 },
+        { field: 'fees', headerName: 'Fees', width: 120 },
+        { field: 'total', headerName: 'Total (USD)', width: 180 }
     ];
 
     return (
