@@ -3,15 +3,20 @@ import Sidebar from "../../components/mainComponents/Sidebar";
 import SearchDataTable from "../../components/tables/SearchDataTable";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { getActuarialProfits } from "../../services/AxiosTrading";
+import { getActuarialProfits, getBankTotalProfit } from "../../services/AxiosTrading";
+
+import { Grid, Card, CardContent, Typography } from "@mui/material";
 
 const ActuarialPerformancePortal = () => {
     const [actuaries, setActuaries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [bankProfit, setBankProfit] = useState(null);
+    const [isRouteActive, setIsRouteActive] = useState(true);
 
     useEffect(() => {
         loadActuarialProfits();
+        loadBankProfit();
     }, []);
 
     const loadActuarialProfits = async () => {
@@ -33,6 +38,17 @@ const ActuarialPerformancePortal = () => {
         }
     };
 
+    const loadBankProfit = async () => {
+        try {
+            const response = await getBankTotalProfit();
+            setBankProfit(response.total);
+            setIsRouteActive(true);
+        } catch (err) {
+            console.error(err);
+            setIsRouteActive(false);
+        }
+    };
+
     const columns = [
         { field: 'fullName', headerName: 'Full Name', width: 250 },
         { field: 'profit', headerName: 'Profit (RSD)', width: 180 },
@@ -42,7 +58,8 @@ const ActuarialPerformancePortal = () => {
             width: 150,
             renderCell: (params) => (
                 params.value ? params.value.toUpperCase() : ''
-            )        }
+            )
+        }
     ];
 
     return (
@@ -55,12 +72,44 @@ const ActuarialPerformancePortal = () => {
                 ) : error ? (
                     <p style={{ color: 'red' }}>{error}</p>
                 ) : (
-                    <SearchDataTable
-                        rows={actuaries}
-                        columns={columns}
-                        checkboxSelection={false}
-                        onRowClick={() => {}}
-                    />
+                    <>
+                        <SearchDataTable
+                            rows={actuaries}
+                            columns={columns}
+                            checkboxSelection={false}
+                            onRowClick={() => {}}
+                        />
+
+                        <Typography variant="h6" align="center" sx={{ mt: 5, mb: 2 }}>
+                            Bank Performance Summary
+                        </Typography>
+
+                        <Grid container spacing={2} justifyContent="center">
+                            <Grid item xs={12} sm={6} md={4}>
+                                <Card
+                                    variant="outlined"
+                                    sx={{
+                                        height: 110,
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        textAlign: 'center',
+                                    }}
+                                >
+                                    <CardContent>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Total Bank Profit (RSD)
+                                        </Typography>
+                                        <Typography variant="body1" fontWeight={600} sx={{ mt: 0.5 }}>
+                                            {isRouteActive && bankProfit !== null
+                                                ? bankProfit.toLocaleString('sr-RS') + ' RSD'
+                                                : 'Coming Soon'}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </>
                 )}
                 <ToastContainer position="bottom-right" />
             </div>
@@ -69,3 +118,4 @@ const ActuarialPerformancePortal = () => {
 };
 
 export default ActuarialPerformancePortal;
+
