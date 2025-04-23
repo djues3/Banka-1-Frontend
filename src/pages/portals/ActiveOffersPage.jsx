@@ -21,6 +21,13 @@ const ActiveOffersPage = () => {
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
 
+  const stripPrefix = (id) => {
+    if (typeof id === "string" && (id.startsWith("111") || id.startsWith("444"))) {
+      return id.substring(3);
+    }
+    return String(id);
+  };
+
   const loadOffers = async () => {
     try {
       const res = await getActiveOffers();
@@ -78,8 +85,17 @@ const ActiveOffersPage = () => {
     return "error";
   };
 
-  const sellerOffers = offers.filter((o) => o.SellerID === userId);
-  const buyerOffers = offers.filter((o) => o.BuyerID === userId);
+  const sellerOffers = offers.filter((o) => {
+    const sellerId = o.localSellerId ?? stripPrefix(o.remoteSellerId);
+    return String(sellerId) === String(userId);
+  });
+
+  const buyerOffers = offers.filter((o) => {
+    const buyerId = o.localBuyerId ?? stripPrefix(o.remoteBuyerId);
+    return String(buyerId) === String(userId);
+  });
+
+
 
   const renderOffers = (title, offerList, role) => (
       <Box sx={{ mb: 6 }}>
@@ -94,18 +110,23 @@ const ActiveOffersPage = () => {
             <Grid container spacing={3}>
               {offerList.map((offer) => {
                 const security = offer.portfolio?.security || {};
-                const isLastModifiedByUser = offer.ModifiedBy === userId;
+                const cleanedUserId = String(userId);
+                const cleanedModifiedBy = stripPrefix(offer.ModifiedBy);
+                const isLastModifiedByUser = cleanedModifiedBy === cleanedUserId;
                 const canInteract = !isLastModifiedByUser;
                 const priceColor = getPriceColor(offer.PricePerUnit, security.lastPrice);
                 const isUnread = !isLastModifiedByUser;
 
+                const displayTicker = security?.ticker || offer.ticker;
+                const displayName = security?.name || offer.ticker;
+
                 return (
-                    <Grid item xs={12} sm={6} md={4} key={offer.ID}>
+                    <Grid item xs={12} sm={6} md={4} key={offer.id}>
                       <Card variant="outlined" sx={{ height: "100%" }}>
                         <CardContent>
                           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                             <Typography variant="h6">
-                              {security.ticker} - {security.name}
+                              {displayTicker} - {displayName}
                             </Typography>
                             {isUnread && <Chip label="New" color="info" size="small" />}
                           </Box>
@@ -139,7 +160,7 @@ const ActiveOffersPage = () => {
                                 variant="contained"
                                 color="success"
                                 disabled={!canInteract}
-                                onClick={() => handleAcceptOffer(offer.ID)}
+                                onClick={() => handleAcceptOffer(offer.id)}
                             >
                               Accept Offer
                             </Button>
@@ -147,7 +168,7 @@ const ActiveOffersPage = () => {
                                 variant="outlined"
                                 color="error"
                                 disabled={!canInteract}
-                                onClick={() => handleRejectOffer(offer.ID)}
+                                onClick={() => handleRejectOffer(offer.id)}
                             >
                               Cancel Offer
                             </Button>
