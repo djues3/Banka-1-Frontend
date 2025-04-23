@@ -13,7 +13,7 @@ import {
     Paper
 } from '@mui/material';
 import LogoutButton from '../../components/common/LogoutButton';
-import { getAgents, getUserSecurities } from '../../services/AxiosTrading';
+import { getAgents, getUserSecurities, getBankProfits } from '../../services/AxiosTrading';
 
 // ICONS
 import PeopleIcon from '@mui/icons-material/People';
@@ -41,6 +41,7 @@ const HomePage = () => {
     const [roleMessage, setRoleMessage] = useState('');
     const [cards, setCards] = useState([]);
     const [agentStats, setAgentStats] = useState({ profit: 0, limit: 0, usedLimit: 0 });
+    const [totalBankSum, setTotalBankSum] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -67,7 +68,21 @@ const HomePage = () => {
                     addCard('Pending Loans', '/pending-loans-employee', AttachMoneyIcon);
                     addCard('Companies', '/companies-portal', CorporateFareIcon);
                     addCard('Bank Performance', '/bank-performance-portal',  LocalAtmIcon);
-                
+                    const getTotalBankProfit = async () => {
+                        try {
+                          const response = await getBankProfits();;
+                          if (!response.success) {
+                            throw new Error(response.error || "Failed to fetch bank profits.");
+                          }
+                      
+                          const totalSum = response.data.reduce((acc, entry) => acc + entry.total, 0);
+                           setTotalBankSum(totalSum);
+                        } catch (err) {
+                          console.error("Error getting total bank profit:", err);
+                          return 0;
+                        }
+                    };
+                    getTotalBankProfit();
                 }
 
                 // Supervisor
@@ -175,6 +190,40 @@ const HomePage = () => {
                     Please select a section below.
                 </Typography>
 
+                {roleMessage === 'Welcome to the Admin Dashboard' && (
+                    <Grid container spacing={2} sx={{ mb: 3 }}>
+                        <Grid item xs={12}>
+                            <Paper
+                                elevation={3}
+                                sx={{
+                                    p: 2,
+                                    textAlign: 'center',
+                                    backgroundColor: 'background.paper',
+                                    borderRadius: 2,
+                                    transition: 'transform 0.2s ease-in-out',
+                                    '&:hover': {
+                                        transform: 'scale(1.02)',
+                                        boxShadow: 6
+                                    }
+                                }}
+                            >
+                                <Typography variant="subtitle1" color="text.secondary">
+                                    Current Bank Profit
+                                </Typography>
+                                <Typography
+                                    variant="h5"
+                                    sx={{
+                                        color: agentStats.profit >= 0 ? 'success.main' : 'error.main',
+                                        fontWeight: 'bold',
+                                        mt: 1
+                                    }}
+                                >
+                                    {totalBankSum.toFixed(2)} USD
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                )}
                 {/* Agent Stats Display */}
                 {roleMessage === 'Welcome to the Agent Dashboard' && (
                     <Grid container spacing={2} sx={{ mb: 3 }}>
