@@ -3,7 +3,7 @@ import Sidebar from "../../components/mainComponents/Sidebar";
 import SearchDataTable from "../../components/tables/SearchDataTable";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { getActuarialProfits} from "../../services/AxiosTrading";
+import { getActuarialProfits, getBankTotalProfit} from "../../services/AxiosTrading";
 
 import { Grid, Card, CardContent, Typography } from "@mui/material";
 
@@ -16,7 +16,7 @@ const ActuarialPerformancePortal = () => {
 
     useEffect(() => {
         loadActuarialProfits();
-        // loadBankProfit();
+        loadBankProfit();
     }, []);
 
     const loadActuarialProfits = async () => {
@@ -38,16 +38,16 @@ const ActuarialPerformancePortal = () => {
         }
     };
 
-    // const loadBankProfit = async () => {
-    //     try {
-    //         const response = await getBankTotalProfit();
-    //         setBankProfit(response.total);
-    //         setIsRouteActive(true);
-    //     } catch (err) {
-    //         console.error(err);
-    //         setIsRouteActive(false);
-    //     }
-    // };
+    const loadBankProfit = async () => {
+        try {
+            const response = await getBankTotalProfit();
+            setBankProfit(response.data.total);
+            setIsRouteActive(true);
+        } catch (err) {
+            console.error(err);
+            setIsRouteActive(false);
+        }
+    };
 
     const columns = [
         { field: 'fullName', headerName: 'Full Name', width: 250 },
@@ -80,7 +80,7 @@ const ActuarialPerformancePortal = () => {
                             onRowClick={() => {}}
                         />
 
-                        {/* <Typography variant="h6" align="center" sx={{ mt: 5, mb: 2 }}>
+                        <Typography variant="h6" align="center" sx={{ mt: 5, mb: 2 }}>
                             Bank Performance Summary
                         </Typography>
 
@@ -108,7 +108,7 @@ const ActuarialPerformancePortal = () => {
                                     </CardContent>
                                 </Card>
                             </Grid>
-                        </Grid> */}
+                        </Grid>
                     </>
                 )}
                 <ToastContainer position="bottom-right" />
