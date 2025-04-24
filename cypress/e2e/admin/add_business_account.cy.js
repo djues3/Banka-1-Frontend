@@ -2,8 +2,10 @@ import { login, logout, CreateForeignBusinessAccount } from '../../support/admin
 
 describe('Business Foreign Currency Account Creation', () => {
     beforeEach(() => {
-        cy.clearCookies();
-        cy.clearLocalStorage();
+        // Start clean
+        cy.clearAllCookies();
+        cy.clearAllLocalStorage();
+        cy.clearAllSessionStorage();
     });
 
     it('should create a business foreign currency account successfully', () => {

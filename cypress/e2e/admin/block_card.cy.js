@@ -3,8 +3,9 @@ import { login, logout,blockCard } from '../../support/admin/commands';
 describe('Block Employee flow', () => {
     beforeEach(() => {
         // Start clean
-        cy.clearCookies();
-        cy.clearLocalStorage();
+        cy.clearAllCookies();
+        cy.clearAllLocalStorage();
+        cy.clearAllSessionStorage();
     });
 
     it('should log in and log out successfully', () => {

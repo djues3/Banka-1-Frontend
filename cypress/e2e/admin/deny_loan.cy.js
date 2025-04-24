@@ -2,9 +2,10 @@ import { login, logout, denyLoan} from '../../support/admin/commands';
 
 describe('Create account flow', () => {
     beforeEach(() => {
-      // Start clean
-      cy.clearCookies();
-      cy.clearLocalStorage();
+        // Start clean
+        cy.clearAllCookies();
+        cy.clearAllLocalStorage();
+        cy.clearAllSessionStorage();
     });
   
     it('should log in and log out successfully', () => {
