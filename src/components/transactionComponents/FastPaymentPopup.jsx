@@ -67,17 +67,20 @@ const FastPaymentPopup = ({
   const handleSave = () => {
     const fullName = `${form.firstName} ${form.lastName}`.trim();
     const customerId = Number(userId);
-
     const recipientToSave = {
       ...(recipient?.id ? { id: recipient.id } : {}),
       customerId,
       fullName,
+      firstName: form.firstName,
+      lastName: form.lastName,
       address: form.address,
       accountNumber: form.accountNumber
     };
-
+  
+    console.log("Final recipientToSave:", recipientToSave);
     onSave(recipientToSave);
   };
+  
 
   return (
     <Modal open={open} onClose={onClose}>

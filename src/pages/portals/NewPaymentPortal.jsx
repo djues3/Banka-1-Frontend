@@ -313,8 +313,15 @@ const NewPaymentPortal = () => {
                       ? newPayment.recipientName
                       : `${newPayment.recipientName.firstName || ""} ${newPayment.recipientName.lastName || ""}`.trim()
                   }
-
-
+                  
+                  onInputChange={
+                    event => {
+                      const value = event.target.value;
+                      setAutocompleteInput(value);
+                      setNewPayment({ ...newPayment, recipientName: value });
+                    }
+                  }
+                  
                   onChange={(event, value) => {
                     if (value && typeof value === "object") {
                       const name = `${value.firstName || ""} ${value.lastName || ""}`.trim();

@@ -37,12 +37,23 @@ const PublicSecuritiesTable = () => {
                 const res = await fetchPublicSecurities();
                 console.log(res.data);
                 const data = res?.data || [];
-                const mapped = data.map((item, i) => ({
-                    id: i,
-                    ...item.security,
-                    public: item.public || 0,
-                    portfolioId: item.id
-                }));
+                const mapped = data.map((item, i) => {
+                    const sec = item.security || {};
+                    return {
+                        id: i,
+                        ...sec,
+                        ticker: sec.ticker || item.ticker,
+                        name: sec.name || item.name,
+                        type: sec.type || item.type,
+                        lastPrice: sec.lastPrice || item.price || 0,
+                        ask: sec.ask,
+                        bid: sec.bid,
+                        public: item.quantity || 0,
+                        portfolioId: item.portfolioId || null,
+                        ownerId: item.ownerId,
+                        quantity: item.quantity
+                    };
+                });
                 setSecurities(mapped);
             } catch (error) {
                 console.error("Greška pri učitavanju OTC hartija:", error);
@@ -109,7 +120,8 @@ const PublicSecuritiesTable = () => {
     };
 
     const openMakeOfferModal = (security) => {
-        setSelectedSecurity(security);
+        const { ownerId, quantity, portfolioId, ticker } = security;
+        setSelectedSecurity({ ownerId, quantity, portfolioId, ticker });
         setIsMakeOfferModalOpen(true);
     };
 
