@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import {  Link as RouterLink } from 'react-router-dom';
-import { loginUser } from '../../services/AxiosUser';
-import { useTheme } from '@mui/material/styles';
-import { IconButton } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import React, {useEffect, useState} from 'react';
+import {Link as RouterLink} from 'react-router-dom';
+import {useTheme} from '@mui/material/styles';
+import {IconButton} from '@mui/material';
+import {Visibility, VisibilityOff} from '@mui/icons-material';
 import styles from '../../styles/Login.module.css';
-import { motion } from 'framer-motion';
-import { useAuth } from '../../context/AuthContext';
+import {motion} from 'framer-motion';
+import {toast, ToastContainer} from "react-toastify";
 
 const pageVariants = {
     initial: { opacity: 0, y: 30 },
@@ -20,20 +19,16 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const theme = useTheme();
     const isDarkMode = theme.palette.mode === 'dark';
-    const { login } = useAuth();
+    const envLoginUrl = process.env.REACT_APP_LOGIN_URL;
+    const loginUrl = envLoginUrl || '/api/idp/login';
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        try {
-            const response = await loginUser(email, password);
-            const token = response.data.token;
-
-            login(token);
-        } catch (error) {
-            console.log(error);
-            alert('Invalid email or password');
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error !== null ) {
+            toast.error("Invalid email or password");
         }
-    };
+    }, []);
 
     return (
         <motion.div
@@ -55,7 +50,7 @@ const Login = () => {
             <div className={`${styles.right} ${isDarkMode ? styles.dark : ''}`}>
                 <div className={`${styles.card} ${isDarkMode ? styles.dark : ''}`}>
                     <h2 className={styles.title}>Login</h2>
-                    <form onSubmit={handleSubmit}>
+                    <form method="POST" action={loginUrl}>
                         <label htmlFor="email" className={`${styles.label} ${isDarkMode ? styles.dark : ''}`}>
                             Username
                         </label>
@@ -107,6 +102,7 @@ const Login = () => {
                     </form>
                 </div>
             </div>
+            <ToastContainer position="bottom-right" />
         </motion.div>
     );
 };

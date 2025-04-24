@@ -16,11 +16,11 @@ import DataTable from "../../components/tables/DataTable";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import {toast} from "react-toastify";
+import {useAuth} from "../../context/AuthContext";
 
 function ReceiversPortal() {
-    const token = localStorage.getItem("token");
-    const decodedToken = jwtDecode(token);
-    const userId = decodedToken.id;
+    const {userInfo} = useAuth();
+    const userId = userInfo.id;
 
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);

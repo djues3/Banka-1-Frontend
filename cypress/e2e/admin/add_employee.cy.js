@@ -2,9 +2,10 @@ import { login, logout, addEmployee } from '../../support/admin/commands';
 
 describe('Add Employee flow', () => {
     beforeEach(() => {
-      // Start clean
-      cy.clearCookies();
-      cy.clearLocalStorage();
+        // Start clean
+        cy.clearAllCookies();
+        cy.clearAllLocalStorage();
+        cy.clearAllSessionStorage();
     });
   
     it('should log in and log out successfully', () => {

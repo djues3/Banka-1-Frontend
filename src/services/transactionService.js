@@ -1,5 +1,4 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
 const apiBanking = axios.create({
   baseURL: `${process.env.REACT_APP_BANKING_API_URL}`,
@@ -8,35 +7,9 @@ const apiBanking = axios.create({
   },
 });
 
-apiBanking.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-      console.log(
-        `API Request: ${config.method.toUpperCase()} ${config.url} - Token Set`
-      );
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
 
-const getUserIdFromToken = () => {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
+export const fetchAccountsForUser = async (userId) => {
   try {
-    const decoded = jwtDecode(token);
-    return decoded.id;
-  } catch (error) {
-    console.error("Invalid token", error);
-    return null;
-  }
-};
-
-export const fetchAccountsForUser = async () => {
-  try {
-    const userId = getUserIdFromToken();
     if (!userId) {
       console.warn("User ID is missing from token");
       return [];

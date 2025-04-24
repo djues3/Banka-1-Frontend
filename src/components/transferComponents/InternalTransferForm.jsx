@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Box, Typography, TextField, Button, MenuItem } from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {Box, Button, MenuItem, Modal, TextField, Typography} from '@mui/material';
 import {
-    createInternalTransfer,
     createExchangeTransfer,
-    verifyOTP,
+    createInternalTransfer,
     fetchAccountsForUser,
-    previewExchangeTransfer
+    previewExchangeTransfer,
+    verifyOTP
 } from "../../services/AxiosBanking";
-import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
-import { useTheme } from "@mui/material/styles";
+import {useNavigate} from "react-router-dom";
+import {toast, ToastContainer} from "react-toastify";
+import {useTheme} from "@mui/material/styles";
+import {useAuth} from "../../context/AuthContext";
 
 const InternalTransferForm = () => {
     const theme = useTheme();
@@ -28,11 +29,12 @@ const InternalTransferForm = () => {
     const [toExchangeRate, setToExchangeRate] = useState(1);
     const [provision, setProvision] = useState(0);
     const [finalAmount, setFinalAmount] = useState(0);
+    const {userInfo} = useAuth();
 
     useEffect(() => {
         const getAccounts = async () => {
             try {
-                const response = await fetchAccountsForUser();
+                const response = await fetchAccountsForUser(userInfo.id);
                 const activeAccounts = response.filter(acc => acc.status === 'ACTIVE');
                 setAccounts(activeAccounts);
             } catch (error) {

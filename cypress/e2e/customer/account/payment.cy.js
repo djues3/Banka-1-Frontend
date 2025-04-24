@@ -2,14 +2,15 @@ import { login, logout,  pay} from '../../../support/customer/commands';
 
 describe('Limit Change Flow', () => {
     beforeEach(() => {
-      
-      cy.clearCookies();
-      cy.clearLocalStorage();
+        // Start clean
+        cy.clearAllCookies();
+        cy.clearAllLocalStorage();
+        cy.clearAllSessionStorage();
     });
   
     it('should log in and log out successfully', () => {
       // Use your custom login command
-      cy.login('marko.markovic@banka.com', 'M@rko12345');
+      cy.login('jpavlovic6521rn@raf.rs', 'Jov@njovan1');
   
       // Verify dashboard content is visible
       cy.verifyLoggedIn();

@@ -1,12 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {Box, Button, FormControl, InputLabel, MenuItem, Modal, Select, Typography} from "@mui/material";
 import {useCards} from "../../context/CardContext";
-import {fetchAccountsId1, getUserIdFromToken} from "../../services/AxiosBanking";
-import SecuritiesModal from "./SecuritiesModal";
+import {fetchAccountsId1} from "../../services/AxiosBanking";
 import AuthorizedPersonModal from "./AuthorizedPersonModal";
-import { toast } from "react-toastify";
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {useAuth} from "../../context/AuthContext";
 
 const CreateCardModal = ({open, onClose,onSave, accountId}) => {
     const {addCard} = useCards();
@@ -19,14 +17,14 @@ const CreateCardModal = ({open, onClose,onSave, accountId}) => {
     const [showSecuritiesModal, setShowSecuritiesModal] = useState(false);
     const [authorizedPerson, setAuthorizedPerson] = useState(null);
     const [company, setCompany] = useState(null);
-
+    const {userInfo } = useAuth();
+    const userId = userInfo.id;
 
     // Fetch available accounts when modal opens
     useEffect(() => {
         const loadAccounts = async () => {
             setLoading(true);
             try {
-                const userId = getUserIdFromToken();
 
                 if (userId) {
                     const accounts = await fetchAccountsId1(userId)

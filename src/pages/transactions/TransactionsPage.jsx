@@ -10,6 +10,7 @@ import TransactionList from "../../components/transactionTable/TransactionList";
 import { fetchAccountsForUser, fetchAccountsTransactions } from "../../services/transactionService";
 import { Tune, Refresh } from "@mui/icons-material";
 import styles from "../../styles/Transactions.module.css";
+import {useAuth} from "../../context/AuthContext";
 
 const TransactionsPage = () => {
     const theme = useTheme();
@@ -27,11 +28,11 @@ const TransactionsPage = () => {
     const [selectedAccount, setSelectedAccount] = useState("");
     const [page, setPage] = useState(1);
     const pageSize = 5;
-
+    const {userInfo} = useAuth();
     useEffect(() => {
         const loadAccounts = async () => {
             try {
-                const userAccounts = await fetchAccountsForUser();
+                const userAccounts = await fetchAccountsForUser(userInfo.id);
                 setAccounts(userAccounts);
                 if (userAccounts.length > 0) {
                     setSelectedAccount(userAccounts[0].id);

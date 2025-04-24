@@ -2,9 +2,10 @@ import { login, logout, accountDetails } from '../../../support/customer/command
 
 describe('Limit Change Flow', () => {
     beforeEach(() => {
-      
-      cy.clearCookies();
-      cy.clearLocalStorage();
+        // Start clean
+        cy.clearAllCookies();
+        cy.clearAllLocalStorage();
+        cy.clearAllSessionStorage();
     });
   
     it('should log in and log out successfully', () => {

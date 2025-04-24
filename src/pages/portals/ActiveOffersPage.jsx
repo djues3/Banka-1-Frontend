@@ -14,12 +14,14 @@ import {getActiveOffers, acceptOffer, rejectOffer} from "../../services/AxiosTra
 import CounterOfferModal from "../../components/common/CounterOfferModal";
 import { jwtDecode } from "jwt-decode";
 import Sidebar from "../../components/mainComponents/Sidebar";
+import {useAuth} from "../../context/AuthContext";
 
 const ActiveOffersPage = () => {
   const [offers, setOffers] = useState([]);
-  const [userId, setUserId] = useState(null);
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
+  const {userInfo} = useAuth()
+  const userId = userInfo.id
 
   const stripPrefix = (id) => {
     if (typeof id === "string" && (id.startsWith("111") || id.startsWith("444"))) {
@@ -38,11 +40,6 @@ const ActiveOffersPage = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUserId(decoded.id);
-    }
     loadOffers();
   }, []);
 
@@ -86,6 +83,7 @@ const ActiveOffersPage = () => {
   };
 
   const sellerOffers = offers.filter((o) => {
+    console.log(userId)
     const sellerId = o.localSellerId ?? stripPrefix(o.remoteSellerId);
     return String(sellerId) === String(userId);
   });

@@ -20,6 +20,7 @@ import {
 } from "../../services/AxiosBanking";
 import { AnimatePresence, motion } from "framer-motion";
 import {toast, ToastContainer} from "react-toastify";
+import {useAuth} from "../../context/AuthContext";
 
 const CardsPage = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -28,9 +29,10 @@ const CardsPage = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const {userInfo} = useAuth();
 
     useEffect(() => {
-        fetchAllData(setCards, setLoading, setError);
+        fetchAllData(setCards, setLoading, setError, userInfo.id);
     }, []);
 
     // const fetchAllData = async () => {
@@ -103,7 +105,7 @@ const CardsPage = () => {
                 console.error("Error blocking card:", error);
             }
         }
-        await fetchAllData(setCards, setLoading, setError);
+        await fetchAllData(setCards, setLoading, setError, userInfo.id);
 
 
     };
@@ -260,7 +262,7 @@ const CardsPage = () => {
                 onClose={() => setModalOpen(false)}
                 onSave={async (wasCreated) => {
                     if (wasCreated) {
-                        await fetchAllData(setCards, setLoading, setError);
+                        await fetchAllData(setCards, setLoading, setError, userInfo.id);
                     }
                 }}
             />
@@ -269,7 +271,7 @@ const CardsPage = () => {
                 open={detailsModalOpen}
                 onClose={() => {
                     setDetailsModalOpen(false);
-                    fetchAllData(setCards, setLoading, setError);
+                    fetchAllData(setCards, setLoading, setError, userInfo.id);
                 }}
                 card={cards[currentIndex]}
             />

@@ -4,7 +4,7 @@ describe('Landing Page', () => {
       Cypress.config('defaultCommandTimeout', 10000);
       
       // Visit with retry logic
-      cy.visit('localhost:4200/', {
+      cy.visit('localhost', {
         timeout: 30000, // Increase visit timeout
         failOnStatusCode: false, // Don't fail on non-200 responses
         retryOnNetworkFailure: true

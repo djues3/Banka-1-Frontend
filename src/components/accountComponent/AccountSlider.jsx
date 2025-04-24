@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, Button, Box, Typography, IconButton } from "@mui/material";
+import {useState} from "react";
+import {Box, Button, Card, CardContent, IconButton, Typography} from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import {fetchAccountsId, getUserIdFromToken} from "../../services/AxiosBanking";
 import AccountDetailsModal from "../common/AccountDetailsModal";
 import {useNavigate} from "react-router-dom";
 
