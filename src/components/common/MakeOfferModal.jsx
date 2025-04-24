@@ -23,6 +23,7 @@ const MakeOfferModal = ({ open, onClose, security }) => {
             setPricePerUnit("");
             setSettlementDate("");
         }
+        console.log(security);
     }, [open]);
 
     const handleMakeOffer = async () => {
@@ -34,13 +35,25 @@ const MakeOfferModal = ({ open, onClose, security }) => {
 
         console.log(security)
 
-        const payload = {
-            portfolio_id: portfolioId,
+
+        const commonPayload = {
+            ownerId: security.ownerId,
             quantity: parseInt(quantity),
-            price_per_unit: parseFloat(pricePerUnit),
-            premium: 100.0,
-            settlement_date: settlementDate
+            pricePerUnit: parseFloat(pricePerUnit),
+            premium: security.portfolioId ? 99.99 : 50.0,
+            settlementDate: settlementDate
         };
+
+        const payload = security.portfolioId
+            ? {
+                ...commonPayload,
+                portfolioId: security.portfolioId
+            }
+            : {
+                ...commonPayload,
+                ticker: security.ticker
+            };
+
 
         try {
             const response = await createOffer(payload);

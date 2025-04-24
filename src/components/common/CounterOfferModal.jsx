@@ -20,10 +20,10 @@ const CounterOfferModal = ({ open, onClose, offer }) => {
 
   useEffect(() => {
     if (offer) {
-      setQuantity(offer.Quantity);
-      setPricePerUnit(offer.PricePerUnit);
-      setPremium(offer.Premium);
-      setSettlementDate(offer.SettlementAt?.split("T")[0] || "");
+      setQuantity(offer.quantity);
+      setPricePerUnit(offer.pricePerUnit);
+      setPremium(offer.premium);
+      setSettlementDate(offer.settlementAt?.split("T")[0] || "");
       setError("");
     }
   }, [offer]);
@@ -48,7 +48,7 @@ const CounterOfferModal = ({ open, onClose, offer }) => {
     };
 
     try {
-      await counterOffer(offer.ID, payload);
+      await counterOffer(offer.id, payload);
       onClose(true);
     } catch (err) {
       console.error("Neuspešna counter ponuda:", err);
