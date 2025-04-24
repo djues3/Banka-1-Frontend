@@ -22,10 +22,30 @@ const ContractsPage = () => {
   const [filter, setFilter] = useState("valid");
   const [userId, setUserId] = useState(null);
 
+  const mapContractData = (contract) => {
+    return {
+      ID: contract.id,
+      StrikePrice: contract.strikePrice,
+      Premium: contract.premium,
+      Quantity: contract.quantity,
+      SettlementAt: contract.settlementDate,
+      IsExercised: contract.isExercised,
+      BuyerID: contract.buyerId || contract.remoteBuyerId,
+      SellerID: contract.sellerId || contract.remoteSellerId,
+      portfolio: {
+        security: {
+          ticker: contract.ticker,
+          name: contract.securityName || contract.ticker
+        }
+      }
+    };
+  };
+
   const fetchContracts = async () => {
     try {
       const res = await getContracts();
-      setContracts(res.data || []);
+      const mappedContracts = (res.data || []).map(mapContractData);
+      setContracts(mappedContracts);
     } catch (error) {
       console.error("Greška pri učitavanju ugovora:", error);
     }
