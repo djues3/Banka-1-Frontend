@@ -18,11 +18,10 @@ import {useAuth} from "../../context/AuthContext";
 
 const ActiveOffersPage = () => {
   const [offers, setOffers] = useState([]);
-  const [userId, setUserId] = useState(null);
   const [selectedOffer, setSelectedOffer] = useState(null);
   const [isCounterModalOpen, setIsCounterModalOpen] = useState(false);
-  const userInfo = useAuth()
-
+  const {userInfo} = useAuth()
+  const userId = userInfo.id
 
   const stripPrefix = (id) => {
     if (typeof id === "string" && (id.startsWith("111") || id.startsWith("444"))) {
@@ -41,7 +40,6 @@ const ActiveOffersPage = () => {
   };
 
   useEffect(() => {
-    setUserId(userInfo.id)
     loadOffers();
   }, []);
 
@@ -85,6 +83,7 @@ const ActiveOffersPage = () => {
   };
 
   const sellerOffers = offers.filter((o) => {
+    console.log(userId)
     const sellerId = o.localSellerId ?? stripPrefix(o.remoteSellerId);
     return String(sellerId) === String(userId);
   });

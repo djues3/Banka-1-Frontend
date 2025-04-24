@@ -76,19 +76,23 @@ const EmployeeCardsPortal = () => {
       setLoading(true);
       const data = await fetchCardsByAccountId(selectedAccount.id);
       const rowData = data.data.cards;
-
-      const formattedRows = rowData.map(row => ({
-        id: row.id,
-        cardNumber: maskCardNumber(row.cardNumber),
-        cardBrand: row.cardBrand,
-        firstName: selectedAccount.firstName,
-        lastName: selectedAccount.lastName,
-        active: row.active,
-        cardLimit: row.cardLimit,
-        blocked: row.blocked,
-        companyID: selectedAccount.companyID ?? null,
-        originalData: row
-      }));
+      const formattedRows = rowData.map(row => {
+        const firstName = row.authorizedPerson ? row.authorizedPerson.firstName : selectedAccount.firstName;
+        const lastName = row.authorizedPerson ? row.authorizedPerson.lastName : selectedAccount.lastName;
+        return {
+          id: row.id,
+          cardNumber: maskCardNumber(row.cardNumber),
+          cardBrand: row.cardBrand,
+          firstName: firstName,
+          lastName: lastName,
+          active: row.active,
+          cardLimit: row.cardLimit,
+          blocked: row.blocked,
+          companyID: selectedAccount.companyID ?? null,
+          originalData: row
+        }
+        }
+      );
 
       setCards(formattedRows);
 

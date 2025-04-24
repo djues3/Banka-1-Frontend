@@ -50,7 +50,7 @@ const PendingLoansEmployeePortal = () => {
                 createdDate: new Date(loan.createdDate).toLocaleDateString(),
                 allowedDate: new Date(loan.allowedDate).toLocaleDateString(),
                 monthlyPayment: loan.monthlyPayment.toFixed(2),
-                nextPaymentDate: new Date(loan.nextPaymentDate).toLocaleDateString(),
+                nextPaymentDate: loan.nextPaymentDate,
                 remainingAmount: loan.remainingAmount.toFixed(2),
                 loanReason: loan.loanReason || "N/A",
                 accountNumber: loan.account?.accountNumber ?? "N/A",

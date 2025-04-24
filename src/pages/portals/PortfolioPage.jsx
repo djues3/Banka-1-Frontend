@@ -174,7 +174,6 @@ const PortfolioPage = () => {
                 {selectedTab === 0 && (
                   <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
                 )}
-                <TableCell sx={{ fontWeight: "bold" }}>Purchase Price</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Profit</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Last Modified</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Public</TableCell>
@@ -199,7 +198,6 @@ const PortfolioPage = () => {
                         <TableCell>{row.amount ?? 0}</TableCell>
                       )}
 
-                      <TableCell>{row.price?.toFixed(2) ?? "0.00"}</TableCell>
                       <TableCell sx={{ color: row.profit >= 0 ? "green" : "red" }}>
                         {(row.profit ?? 0).toFixed(2)} USD
                       </TableCell>

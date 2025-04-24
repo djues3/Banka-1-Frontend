@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }) => {
                 setUserInfo(info);
                 setError(null);
                 setAuthLoaded(true);
-                console.log(info)
                 return response.data;
             } else {
                 setIsLoggedIn(false);

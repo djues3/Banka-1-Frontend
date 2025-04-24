@@ -64,17 +64,30 @@ const AccountTransactionsList = ({ accountId }) => {
           console.log("accountId: ", accountId)
           console.log("WantedId: ", transaction.transfer.toAccountId.id)
           const isIncoming = transaction.toAccountId.id === accountId;
+          if (transaction.senderName === "Banka Banka" || transaction.receiverName === "Banka Banka") {
+            return {
+              id: transaction.id,
+              date: new Date(transaction.transfer.createdAt).toLocaleDateString(),
+              // date: formatLogDate(transaction.date), // Optional
+              amount: transaction.amount.toFixed(2) + " " + transaction.currency.code,
+              description: transaction.description,
+              finalAmount: transaction.finalAmount.toFixed(2) + " " + transaction.currency.code,
+              fee: transaction.fee.toFixed(2) + " " + transaction.transfer.toCurrency.code,
+              direction: isIncoming ? "incoming" : "outgoing",
+            };
+          } else {
+            return {
+              id: transaction.id,
+              date: new Date(transaction.transfer.createdAt).toLocaleDateString(),
+              // date: formatLogDate(transaction.date), // Optional
+              amount: transaction.amount.toFixed(2) + " " + transaction.currency.code,
+              description: transaction.description,
+              finalAmount: transaction.finalAmount.toFixed(2) + " " + transaction.transfer.toCurrency.code,
+              fee: transaction.fee.toFixed(2) + " " + transaction.transfer.toCurrency.code,
+              direction: isIncoming ? "incoming" : "outgoing",
+            }
+          }
 
-          return {
-            id: transaction.id,
-            date: new Date(transaction.transfer.createdAt).toLocaleDateString(),
-            // date: formatLogDate(transaction.date), // Optional
-            amount: transaction.amount.toFixed(2) + " " + transaction.currency.code,
-            description: transaction.description,
-            finalAmount: transaction.finalAmount.toFixed(2) + " " + transaction.currency.code,
-            fee: transaction.fee.toFixed(2) + " " + transaction.transfer.toCurrency.code,
-            direction: isIncoming ? "incoming" : "outgoing",
-          };
         });
 
         setTransactions(formattedTransactions);
