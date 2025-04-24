@@ -71,7 +71,7 @@ const ContractsPage = () => {
       await executeOffers(id);
       toast.success("Successfully executed order.");
       await fetchContracts();
-      // window.location.reload();
+      //window.location.reload();
     } catch (error) {
       toast.error("The order failed to execute, the account doesn't have sufficient funds.");
       console.error("Greška pri izvršavanju ugovora:", error);

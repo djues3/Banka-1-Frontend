@@ -111,10 +111,10 @@ const ActiveOffersPage = () => {
               {offerList.map((offer) => {
                 const security = offer.portfolio?.security || {};
                 const cleanedUserId = String(userId);
-                const cleanedModifiedBy = stripPrefix(offer.ModifiedBy);
+                const cleanedModifiedBy = stripPrefix(offer.modifiedBy);
                 const isLastModifiedByUser = cleanedModifiedBy === cleanedUserId;
                 const canInteract = !isLastModifiedByUser;
-                const priceColor = getPriceColor(offer.PricePerUnit, security.lastPrice);
+                const priceColor = getPriceColor(offer.pricePerUnit, security.lastPrice);
                 const isUnread = !isLastModifiedByUser;
 
                 const displayTicker = security?.ticker || offer.ticker;
@@ -131,20 +131,20 @@ const ActiveOffersPage = () => {
                             {isUnread && <Chip label="New" color="info" size="small" />}
                           </Box>
                           <Divider sx={{ my: 1 }} />
-                          <Typography><strong>Quantity:</strong> {offer.Quantity}</Typography>
+                          <Typography><strong>Quantity:</strong> {offer.quantity}</Typography>
                           <Typography>
                             <strong>Price per unit:</strong>{" "}
                             <Chip
-                                label={`$${offer.PricePerUnit}`}
+                                label={`$${offer.pricePerUnit}`}
                                 color={priceColor}
                                 variant="outlined"
                                 size="small"
                             />
                           </Typography>
-                          <Typography><strong>Premium:</strong> ${offer.Premium}</Typography>
+                          <Typography><strong>Premium:</strong> ${offer.premium}</Typography>
                           <Typography>
                             <strong>Settlement date:</strong>{" "}
-                            {new Date(offer.SettlementAt).toLocaleDateString()}
+                            {new Date(offer.settlementAt).toLocaleDateString()}
                           </Typography>
 
                           <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>

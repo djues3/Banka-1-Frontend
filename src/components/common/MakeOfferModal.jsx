@@ -23,6 +23,7 @@ const MakeOfferModal = ({ open, onClose, security }) => {
             setPricePerUnit("");
             setSettlementDate("");
         }
+        console.log(security);
     }, [open]);
 
     const handleMakeOffer = async () => {
