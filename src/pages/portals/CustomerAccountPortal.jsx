@@ -24,7 +24,8 @@ const CustomerAccountPortal = () =>{
             if (userId) {
                 try {
                     // Učitavanje računa
-                    const fetchedAccounts = await fetchAccountsId1(userId);
+                    let fetchedAccounts = await fetchAccountsId1(userId);
+                    fetchedAccounts = fetchedAccounts.filter(a => a.accountNumber !== "111000100000000330")
                     setAccounts(fetchedAccounts || []);
                     if (fetchedAccounts && fetchedAccounts.length > 0) {
                         setSelectedAccountId(fetchedAccounts[0].id);

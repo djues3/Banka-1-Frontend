@@ -239,7 +239,14 @@ services:
       # Create your own API key https://aistudio.google.com/app/apikey
 #      - GOOGLE_API=<YOUR_KEY_GOES_HERE>
       - LOG_LEVEL=debug
-
+  redis:
+    image: 'redis:latest'
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+    networks:
+      - proxy-net
 networks:
   broker-net: null
   notification-net: null

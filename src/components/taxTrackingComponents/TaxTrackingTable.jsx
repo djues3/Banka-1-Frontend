@@ -62,7 +62,7 @@ const TaxTrackingTable = () => {
         { field: "firstName", headerName: "First Name", flex: 1 },
         { field: "lastName", headerName: "Last Name", flex: 1 },
         { field: "type", headerName: "User Type", flex: 1 },
-        { field: "taxAmount", headerName: "Tax Amount (RSD)", flex: 1, type: "number" },
+        { field: "taxAmount", headerName: "Tax Amount (USD)", flex: 1, type: "number" },
         {
             field: "isPaid",
             headerName: "Paid",
