@@ -67,18 +67,22 @@ postsubmits:
               
               # Builduje frontend
               
-              docker build --build-arg REACT_APP_BANKING_API_URL=/api/banking \
-              --build-arg REACT_APP_USER_API_URL=/api/user \
-              --build-arg REACT_APP_TRADING_API_URL=/api/trading  \
-              --build-arg REACT_APP_SUPPORT_API_URL=/api/support \
+              docker build --build-arg REACT_APP_BANKING_API_URL=https://bank1.djues3.com/api/banking \
+              --build-arg REACT_APP_USER_API_URL=https://bank1.djues3.com/api/user \
+              --build-arg REACT_APP_TRADING_API_URL=https://bank1.djues3.com/api/trading  \
+              --build-arg REACT_APP_SUPPORT_API_URL=https://bank1.djues3.com/api/support \
               -t harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest .
               
               docker tag harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:${commit_hash}
               
               
-              docker tag harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}-k8s:latest
-              docker tag harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:${commit_hash} harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}-k8s:${commit_hash}
+              docker build --build-arg REACT_APP_BANKING_API_URL=https://banka-1.si.raf.edu.rs/api/banking \
+              --build-arg REACT_APP_USER_API_URL=https://banka-1.si.raf.edu.rs/api/user \
+              --build-arg REACT_APP_TRADING_API_URL=https://banka-1.si.raf.edu.rs/api/trading \
+              --build-arg REACT_APP_SUPPORT_API_URL=https://banka-1.si.raf.edu.rs/api/support \
+              -t harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}-k8s:latest .
               
+              docker tag harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}-k8s:latest harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}-k8s:${commit_hash}
               # Pushuje oba image na našu Harbor instancu.
               docker push harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:latest
               docker push harbor.k8s.elab.rs/${TEAM_NAME}/${serviceName}:${commit_hash}

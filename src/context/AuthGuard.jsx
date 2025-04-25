@@ -5,13 +5,15 @@ import Loader from "../components/common/Loader";
 
 const AuthGuard = ({ allowedPositions, children }) => {
     const { isLoggedIn, userInfo, authLoaded } = useAuth();
+    const token = localStorage.getItem("token");
 
 
     if (!authLoaded) {
         return <Loader />;
     }
 
-    if (!isLoggedIn || !userInfo) {
+
+    if (!isLoggedIn || !token || !userInfo) {
         return <Navigate to="/" replace />;
     }
 
@@ -20,9 +22,17 @@ const AuthGuard = ({ allowedPositions, children }) => {
         const rawDepartment = userInfo.department || null;
         const userDepartment = (rawDepartment === "AGENT" || rawDepartment === "SUPERVISOR") ? rawDepartment : null; // "SUPERVISOR", "AGENT"
         const userPosition = userInfo.position || null; // "WORKER", "MANAGER", "DIRECTOR", "HR", "ADMIN", "NONE"
+
         // Determine if the user is employee based on department or position
         const isEmployed = userDepartment !== null || (userPosition && userPosition !== "NONE");
         const isCustomer = !isEmployed; // If not employed, must be a customer
+
+        console.log(
+            "User Department:", userDepartment,
+            "User Position:", userPosition,
+            "User Employed:", isEmployed,
+            "User Admin:", isAdmin
+        );
 
         // Public pages
         if (!allowedPositions || allowedPositions.length === 0) {

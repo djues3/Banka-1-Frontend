@@ -30,18 +30,10 @@
  * @param {string} password - User's password
  */
 Cypress.Commands.add('login', (email = 'admin@admin.com', password = 'admin123') => {
-  cy.visit('/')
-  // cy.visit('/login')
-
-  cy.wait(1500)
-  cy.get('.css-8atqhb > .MuiButtonBase-root').should('be.visible').click();
-
-  cy.origin("https://idp.localhost", {args: {email, password }}, ({email, password}) => {
-    cy.wait(1500)
-    cy.get('#email').should('be.visible').clear().type(email);
-    cy.get('#password').should('be.visible').clear().type(password);
-    cy.get('button[type="submit"]').should('be.visible').click();
-  })
+  cy.visit('/login')
+  cy.get('input[name="email"]').should('be.visible').clear().type(email);
+  cy.get('input[name="password"]').should('be.visible').clear().type(password);
+  cy.get('button[type="submit"]').should('be.visible').click();
 
   // Wait for redirection to dashboard or home after login
   cy.url().should('not.include', '/login');
@@ -51,15 +43,13 @@ Cypress.Commands.add('login', (email = 'admin@admin.com', password = 'admin123')
  * Logout command to sign out the current user
  */
 Cypress.Commands.add('logout', () => {
-
-  cy.intercept('GET', '**/logout*').as('logoutRequest');
-  cy.intercept('GET', '**/oidc/logout*').as('oidcLogoutRequest');
-
   // Then click logout option
   cy.contains('Logout').should('be.visible').click();
   cy.contains('Continue').should('be.visible').click();
+
+  // Verify we're redirected to login page
   cy.url().should('include', '/');
-})
+});
 
 /**
  * Verify that the user is logged in by checking elements on the dashboard
@@ -159,19 +149,20 @@ Cypress.Commands.add('CreateAccount', () => {
 
 Cypress.Commands.add('denyLoan', () => {
   cy.get(':nth-child(5) > .MuiPaper-root > .MuiButtonBase-root').click();
-  cy.get(':nth-child(5) > .MuiPaper-root > .MuiCardActions-root > [style="background-color: rgb(211, 47, 47); color: rgb(255, 255, 255); padding: 8px 16px; border: medium; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: background-color 0.3s;"]').click();
+  cy.get(':nth-child(5) > .MuiPaper-root > .MuiCardActions-root > [style="background-color: rgb(211, 47, 47); color: rgb(255, 255, 255); padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: background-color 0.3s;"]').click();
 
 });
 
 Cypress.Commands.add('approveLoan', () => {
   cy.get(':nth-child(5) > .MuiPaper-root > .MuiButtonBase-root').click();
-  cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > [style="background-color: rgb(76, 175, 80); color: rgb(255, 255, 255); padding: 8px 16px; border: medium; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: background-color 0.3s;"]')
+  cy.get(':nth-child(1) > .MuiPaper-root > .MuiCardActions-root > [style="background-color: rgb(76, 175, 80); color: rgb(255, 255, 255); padding: 8px 16px; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: background-color 0.3s;"]').click();
+
 });
 
 Cypress.Commands.add('blockCard', () => {
   cy.get(':nth-child(3) > .MuiPaper-root > .MuiButtonBase-root').click();
   cy.get('.MuiDataGrid-row--firstVisible > [data-field="accountNumber"]').dblclick();
-  cy.get('.CreditCardDisplay_cardButtons__obHTn > :nth-child(1) > .MuiSwitch-root > .MuiButtonBase-root > .PrivateSwitchBase-input').click()
+  cy.get('.CreditCardDisplay_cardButtons__tmf8U > :nth-child(1) > .MuiSwitch-root > .MuiButtonBase-root > .PrivateSwitchBase-input').click()
 });
 
 
@@ -238,7 +229,7 @@ Cypress.Commands.add('CreateForeignBusinessAccount', () => {
   cy.contains('Save').click();
 
   cy.get('.css-1cr99xm-MuiFormControl-root > .MuiInputBase-root > .MuiSelect-select').click();
-  cy.get('[data-value="104"]').click();
+  cy.get('[data-value="4"]').click();
   cy.get('.MuiButton-text').click();
 
   cy.get('.MuiDialogActions-root > .MuiButton-contained').contains("Confirm").click();

@@ -67,7 +67,7 @@ const Landing = () => {
         });
 
         scrollTargetRef.current?.scrollIntoView({ behavior: 'smooth' });
-        setTimeout(() => {window.location.href = "/oauth2/authorization/idp"}, 1200);
+        setTimeout(() => navigate('/login'), 1200);
     };
 
     return (

@@ -47,6 +47,7 @@ const SecuritiesTable = ({ role }) => {
 
             // Računamo `change` i `initialMarginCost` za svaku hartiju
             const mergedSecurities = allSecurities.map((sec, index) => {
+                console.log(`Processing security: ${sec.ticker}`);
 
                 // Računanje `change`
                 const change = sec.previousClose

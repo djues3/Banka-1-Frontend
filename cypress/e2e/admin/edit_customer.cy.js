@@ -2,10 +2,9 @@ import { login, logout, changeCustomerDetails } from '../../support/admin/comman
 
 describe('Edit Customer Details', () => {
     beforeEach(() => {
-        // Start clean
-        cy.clearAllCookies();
-        cy.clearAllLocalStorage();
-        cy.clearAllSessionStorage();
+      // Start clean
+      cy.clearCookies();
+      cy.clearLocalStorage();
     });
   
     it('should log in and log out successfully', () => {

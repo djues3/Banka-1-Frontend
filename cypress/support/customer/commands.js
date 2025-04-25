@@ -3,21 +3,14 @@
  * @param {string} email - Customer's email
  * @param {string} password - Customer's password
  */
-Cypress.Commands.add('login', (email = 'jpavlovic6521rn@raf.rs', password = 'Jov@njovan1') => {
-    cy.visit('/')
-    // cy.visit('/login')
+Cypress.Commands.add('login', (email = 'marko.markovic@banka.com', password = 'M@rko12345') => {
+  cy.visit('/login');
+  cy.get('input[name="email"]').clear().type(email);
+  cy.get('input[name="password"]').clear().type(password);
+  cy.get('button[type="submit"]').click();
+  
 
-    cy.wait(1500)
-    cy.get('.css-8atqhb > .MuiButtonBase-root').should('be.visible').click();
-
-    cy.origin("https://idp.localhost", {args: {email, password }}, ({email, password}) => {
-        cy.get('#email').should('be.visible').clear().type(email);
-        cy.get('#password').should('be.visible').clear().type(password);
-        cy.get('button[type="submit"]').should('be.visible').click();
-    })
-
-    // Wait for redirection to dashboard or home after login
-    cy.url().should('not.include', '/login');
+  cy.url().should('not.include', '/login');
 });
 
 /**
@@ -38,7 +31,7 @@ Cypress.Commands.add('logout', () => {
  */
 Cypress.Commands.add('verifyLoggedIn', () => {
   // Check for elements that should only be visible when logged in
-  cy.contains('Welcome to Banka1 – your trusted digital bank.').should('be.visible');
+  cy.contains('Fast Payment').should('be.visible');
 });
 
 /**
@@ -88,17 +81,13 @@ Cypress.Commands.add('pay', () => {
 
   cy.get('#accountSelect').select(1);
 
+  cy.get('.MuiAutocomplete-root > .MuiFormControl-root > .MuiInputBase-root').type('Jovan');
 
-  cy.get('[style="display: flex; align-items: center; gap: 8px;"] > .MuiButtonBase-root').click()
-
-  cy.get('.MuiBox-root > .MuiList-root > :nth-child(1)').click()
-
-
-  // cy.get('.recipient-account > input').type('111000100000000110');
+  cy.get('.recipient-account > input').type('111000100000000110');
 
   cy.get('.payment-purpose > input').type('Test payment');
 
-  cy.get('.amount > input').type('1000');
+  cy.get('.amount-wrapper > input').type('1000');
 
   cy.get('.adress > input').type('Test address');
 
@@ -112,8 +101,7 @@ Cypress.Commands.add('pay', () => {
 
   cy.get('[style="display: flex; justify-content: flex-end; padding: 16px;"] > button').click();
 
-  cy.get('[style="flex: 1 1 0%; padding: 8px 16px; border-radius: 8px; background-color: rgb(244, 67, 54); color: rgb(255, 255, 255); border: medium; cursor: pointer; font-weight: 600;"]').click()
-
+  cy.get('[style="flex: 1 1 0%; padding: 8px 16px; border-radius: 8px; background-color: rgb(244, 67, 54); color: rgb(255, 255, 255); border: none; cursor: pointer; font-weight: 600;"]').click();
 
 })
 
@@ -149,19 +137,18 @@ Cypress.Commands.add('sec', () => {
 
   cy.get(':nth-child(7) > .MuiButtonBase-root').click();
 
-  cy.contains('GOOGL')
+  cy.get('.MuiDataGrid-row--firstVisible > [data-field="actions"] > .MuiButtonBase-root').click();
 
-  // cy.get('.MuiDataGrid-row--firstVisible > [data-field="Details"] > .MuiButtonBase-root').click()
-  // cy.get('.css-1gsycar > :nth-child(4) > .MuiFormControl-root').type('43434');
-  //
-  // cy.get(':nth-child(5) > .MuiFormControl-root').type('4343');
-  //
-  // cy.get('.css-1gsycar > .css-wb57ya-MuiFormControl-root-MuiTextField-root').click();
-  //
-  // cy.contains('111000100011000101').click();
-  //
-  // cy.get('.css-1d1jiby > .MuiButton-contained').click();
-  // cy.get('.css-1gsycar > .MuiBox-root > .MuiButton-contained').click();
+  cy.get('.css-1gsycar > :nth-child(4) > .MuiFormControl-root').type('43434');
+
+  cy.get(':nth-child(5) > .MuiFormControl-root').type('4343');
+
+  cy.get('.css-1gsycar > .css-wb57ya-MuiFormControl-root-MuiTextField-root').click();
+
+  cy.contains('111000100011000101').click();
+
+  cy.get('.css-1d1jiby > .MuiButton-contained').click();
+  cy.get('.css-1gsycar > .MuiBox-root > .MuiButton-contained').click();
 })
 
 Cypress.Commands.add('applyLoan', () => {

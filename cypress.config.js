@@ -1,7 +1,6 @@
 module.exports = {
-  projectId: '8ew3yz',
   e2e: {
-    baseUrl: "https://localhost",
+    baseUrl: "http://localhost:4200",
     specPattern: "cypress/e2e/**/*.cy.js",
     supportFile: false,  // Enabling support file
     
@@ -21,7 +20,9 @@ module.exports = {
     chromeWebSecurity: false,          // Disable for HTTPS/cross-origin issues
     viewportWidth: 1280,
     viewportHeight: 800,
-    testIsolation: true,
+    
+    // Wait for app to stabilize
+    experimentalSessionAndOrigin: true,
     video: true                        // Save videos for debugging failed tests
   },
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/mainComponents/Sidebar";
+import { getUserIdFromToken } from "../../services/AxiosBanking";
 import {
   createOrder,
   getTaxForUser,
@@ -21,7 +22,6 @@ import { useTheme } from "@mui/material/styles";
 import styles from "../../styles/Transactions.module.css";
 import SellModal from "../../components/common/SellModal";
 import {toast, ToastContainer} from "react-toastify";
-import {useAuth} from "../../context/AuthContext";
 
 const PortfolioPage = () => {
   const theme = useTheme();
@@ -39,8 +39,8 @@ const PortfolioPage = () => {
   const [isSellModalOpen, setIsSellModalOpen] = useState(false);
   const [availableSecurities, setAvailableSecurities] = useState(0);
   const [selectedSellSecurity, setselectedSellSecurity] = useState("");
-  const {userInfo } = useAuth();
-  const userId = userInfo.id;
+
+  const userId = getUserIdFromToken();
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -174,6 +174,7 @@ const PortfolioPage = () => {
                 {selectedTab === 0 && (
                   <TableCell sx={{ fontWeight: "bold" }}>Amount</TableCell>
                 )}
+                <TableCell sx={{ fontWeight: "bold" }}>Purchase Price</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Profit</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Last Modified</TableCell>
                 <TableCell sx={{ fontWeight: "bold" }}>Public</TableCell>
@@ -198,6 +199,7 @@ const PortfolioPage = () => {
                         <TableCell>{row.amount ?? 0}</TableCell>
                       )}
 
+                      <TableCell>{row.price?.toFixed(2) ?? "0.00"}</TableCell>
                       <TableCell sx={{ color: row.profit >= 0 ? "green" : "red" }}>
                         {(row.profit ?? 0).toFixed(2)} USD
                       </TableCell>
