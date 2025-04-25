@@ -3,7 +3,6 @@ import { Modal, Box, Typography, Button, TextField, Checkbox, FormControlLabel, 
 import { createOrder } from "../../services/AxiosTrading";
 import { fetchAccountsForUser, getUserIdFromToken } from "../../services/AxiosBanking";
 import { toast, ToastContainer } from "react-toastify";
-import {useAuth} from "../../context/AuthContext";
 
 const BuyModal = ({ open, onClose, security }) => {
   const [quantity, setQuantity] = useState(1);
@@ -18,24 +17,25 @@ const BuyModal = ({ open, onClose, security }) => {
   const [approximatePrice, setApproximatePrice] = useState(0);
   const [accounts, setAccounts] = useState([]);
   const [outflowAccount, setOutflowAccount] = useState('');
-  const {userInfo} = useAuth();
-  const userId = userInfo.id;
 
+  useEffect(() => {
+    if (open) {
+      console.log("Selected Security Object:", security);
+    }
+  }, [open, security]);
 
-    //racuni klijenta
-    useEffect(() => {
-        const getAccounts = async () => {
-            try {
-                const response = await fetchAccountsForUser(userId);
-                const usdAccounts = response.filter(acc => acc.status === 'ACTIVE' && acc.currencyType === 'USD');
-                setAccounts(usdAccounts);
-                console.log(accounts);
-            } catch (error) {
-                console.error("Error fetching accounts:", error);
-            }
-        };
-        getAccounts();
-    }, []);
+  useEffect(() => {
+    const getAccounts = async () => {
+      try {
+        const response = await fetchAccountsForUser();
+        const usdAccounts = response.filter(acc => acc.status === 'ACTIVE' && acc.currencyType === 'USD');
+        setAccounts(usdAccounts);
+      } catch (error) {
+        console.error("Error fetching accounts:", error);
+      }
+    };
+    getAccounts();
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -93,7 +93,7 @@ const BuyModal = ({ open, onClose, security }) => {
       quantity: parseInt(quantity, 10),
       security_id: security?.id,
       stop_price_per_unit: stopValue ? parseFloat(stopValue) : null,
-      user_id: userId
+      user_id: getUserIdFromToken()
     };
 
     console.log("Order Data:", orderData);

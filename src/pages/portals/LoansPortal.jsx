@@ -59,7 +59,7 @@ const LoansPortal = () => {
                         loanName: loan.loanType,
                         loanNumber: loan.id,
                         remainingAmount: loan.remainingAmount,
-                        nextInstallmentDate: loan.nextPaymentDate,
+                        nextInstallmentDate: formatIsoDate(loan.nextPaymentDate),
                     }));
                     setRows(formattedLoans);
                 }

@@ -12,7 +12,8 @@ const LogoutButton = () => {
 
   const handleLogout = async () => {
     try {
-        window.location.href = `/api/logout`
+      await logoutUser();
+      logout('/');
     } catch (error) {
       console.error("Error during logout:", error);
       localStorage.removeItem('token');

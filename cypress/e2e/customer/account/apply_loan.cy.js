@@ -2,10 +2,9 @@ import { login, logout, applyLoan } from '../../../support/customer/commands';
 
 describe('Account Details Flow', () => {
     beforeEach(() => {
-        // Start clean
-        cy.clearAllCookies();
-        cy.clearAllLocalStorage();
-        cy.clearAllSessionStorage();
+      
+      cy.clearCookies();
+      cy.clearLocalStorage();
     });
   
     it('should log in and log out successfully', () => {

@@ -7,6 +7,21 @@ const apiSupport = axios.create({
   },
 });
 
+// Add token to all requests
+// This interceptor works for all requests made by the apiSupport instance
+apiSupport.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Send a message to the chatbot and get a response
 // KEEP IN MIND:
 // Messages work as a OneShot, meaning that the bot will not remember previous messages 

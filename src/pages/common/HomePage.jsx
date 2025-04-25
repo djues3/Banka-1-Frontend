@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import {
     AppBar,
@@ -34,7 +35,6 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import CorporateFareIcon from '@mui/icons-material/CorporateFare';
 import PriceCheckIcon from '@mui/icons-material/PriceCheck';
-import {useAuth} from "../../context/AuthContext";
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 
 const HomePage = () => {
@@ -43,17 +43,16 @@ const HomePage = () => {
     const [agentStats, setAgentStats] = useState({ profit: 0, limit: 0, usedLimit: 0 });
     const [totalBankSum, setTotalBankSum] = useState(0);
     const navigate = useNavigate();
-    const { userInfo } = useAuth();
-    const userId = userInfo.id;
-    console.log("HomePage");
 
     useEffect(() => {
-        if (userInfo) {
+        const token = localStorage.getItem('token');
+        if (token) {
             try {
-                const isAdmin = userInfo.isAdmin;
-                const isEmployed = userInfo.isEmployed;
-                const department = userInfo.department || null;
-                const position = userInfo.position || null;
+                const decodedToken = jwtDecode(token);
+                const isAdmin = decodedToken.isAdmin;
+                const isEmployed = decodedToken.isEmployed;
+                const department = decodedToken.department || null;
+                const position = decodedToken.position || null;
 
                 const items = [];
                 const addCard = (label, route, icon) =>
@@ -69,7 +68,6 @@ const HomePage = () => {
                     addCard('Pending Loans', '/pending-loans-employee', AttachMoneyIcon);
                     addCard('Companies', '/companies-portal', CorporateFareIcon);
                     addCard('Bank Performance', '/bank-performance-portal',  LocalAtmIcon);
-                  
                     const getTotalBankProfit = async () => {
                         try {
                           const response = await getBankProfits();;
@@ -103,7 +101,7 @@ const HomePage = () => {
                     setRoleMessage('Welcome to the Agent Dashboard');
                     addCard('Portfolio', '/portfolio-page', LibraryBooksIcon);
                     addCard('Important Files', '/actuary-buying-portal', FolderIcon);
-
+                    
                     // Fetch agent stats
                     const fetchAgentStats = async () => {
                         try {
@@ -111,7 +109,7 @@ const HomePage = () => {
                             const agentsResponse = await getAgents();
                             console.log("Agents response:", agentsResponse); // Debug log
                             if (agentsResponse && agentsResponse.data) {
-                                const currentAgent = agentsResponse.data.find(agent => agent.userId === userId);
+                                const currentAgent = agentsResponse.data.find(agent => agent.userId === decodedToken.id);
                                 console.log("Current agent:", currentAgent); // Debug log
                                 if (currentAgent) {
                                     setAgentStats(prev => ({
@@ -123,7 +121,7 @@ const HomePage = () => {
                             }
 
                             // Get agent's portfolio and calculate profit
-                            const portfolioResponse = await getUserSecurities(userId);
+                            const portfolioResponse = await getUserSecurities(decodedToken.id);
                             if (portfolioResponse && Array.isArray(portfolioResponse)) {
                                 const totalProfit = portfolioResponse.reduce((acc, security) => acc + security.profit, 0);
                                 setAgentStats(prev => ({

@@ -15,14 +15,12 @@ import {
 import { getContracts, executeOffers } from "../../services/AxiosTrading";
 import { jwtDecode } from "jwt-decode";
 import Sidebar from "../../components/mainComponents/Sidebar";
-import {useAuth} from "../../context/AuthContext";
 import {toast, ToastContainer} from "react-toastify";
 
 const ContractsPage = () => {
   const [contracts, setContracts] = useState([]);
   const [filter, setFilter] = useState("valid");
   const [userId, setUserId] = useState(null);
-  const { userInfo } = useAuth();
 
   const mapContractData = (contract) => {
     return {
@@ -54,7 +52,11 @@ const ContractsPage = () => {
   };
 
   useEffect(() => {
-    setUserId(userInfo.id)
+    const token = localStorage.getItem("token");
+    if (token) {
+      const decoded = jwtDecode(token);
+      setUserId(decoded.id);
+    }
     fetchContracts();
   }, []);
 

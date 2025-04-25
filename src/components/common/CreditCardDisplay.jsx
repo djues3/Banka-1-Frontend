@@ -1,12 +1,13 @@
 import React from 'react';
 import styles from '../../styles/CreditCardDisplay.module.css';
 import Switch from '@mui/material/Switch';
-import {useAuth} from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark' }) => {
-    const {userInfo} = useAuth();
+    const token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
     let isClient = false;
-    if(userInfo.position === "NONE"){
+    if(decodedToken.position === "NONE"){
         isClient = true;
     }
 
@@ -21,7 +22,7 @@ const CreditCardDisplay = ({ card, onBlockToggle, onActiveToggle, theme = 'dark'
         <div className={`${styles.creditCard} ${styles[theme]} ${card.blocked ? styles.blocked : ''} ${!card.active ? styles.deactivated : ''}`}>
             <div className={styles.cardTop}>
                 <div className={styles.chip} />
-                <div className={styles.brand}>{card.cardBrand ? card.cardBrand : "Unknown"}</div>
+                <div className={styles.brand}>VISA</div>
             </div>
 
             <div className={styles.cardNumber}>

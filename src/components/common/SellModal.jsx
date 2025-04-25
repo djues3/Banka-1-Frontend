@@ -5,15 +5,16 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
-import {toast} from "react-toastify";
-import {MenuItem, Typography} from "@mui/material";
-import {fetchAccountsForUser} from "../../services/AxiosBanking";
+import { toast } from "react-toastify";
+import { MenuItem, Typography } from "@mui/material";
+import { jwtDecode } from "jwt-decode";
+import { fetchAccountsForUser } from "../../services/AxiosBanking";
 import { fetchAvailableAmount } from "../../services/AxiosTrading";
-import {useAuth} from "../../context/AuthContext";
 
 function SellModal({ isOpen, onClose, onSave, selectedSecurity }) {
-  const {userInfo} = useAuth();
-  const userId = userInfo.id;
+  const token = localStorage.getItem("token");
+  const decodedToken = jwtDecode(token);
+  const userId = decodedToken.id;
 
   const [amount, setAmount] = useState(0);
   const [confirmOpen, setConfirmOpen] = useState(false);

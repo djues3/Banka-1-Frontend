@@ -9,11 +9,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import {
   fetchRecipientsForFast,
+  getUserIdFromToken,
   createRecipientt,
   updateRecipientt
 } from "../../services/AxiosBanking";
 import FastPaymentPopup from "./FastPaymentPopup";
-import {useAuth} from "../../context/AuthContext";
 
 const FastPayments = () => {
   const navigate = useNavigate();
@@ -23,10 +23,7 @@ const FastPayments = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const [editingRecipient, setEditingRecipient] = useState(null);
 
-  const {userInfo } = useAuth();
-  const userId = userInfo.id;
-  // This is unnecessary, but to keep the changes to a minimum
-  const customerId = Number(userId);
+  const customerId = Number(getUserIdFromToken());
 
   const loadTopRecipients = async () => {
     try {
@@ -63,7 +60,7 @@ const FastPayments = () => {
         fullName: `${recipientToSave.firstName || ""} ${recipientToSave.lastName || ""}`.trim(),
         address: recipientToSave.address,
         accountNumber: recipientToSave.accountNumber,
-        ownerAccountId: customerId
+        ownerAccountId: customerId 
       };
 
       if (isEdit) {
@@ -138,7 +135,7 @@ const FastPayments = () => {
                     borderRadius: "50%",
                     backgroundColor: "#7256d6",
                     color: "#fff",
-                    fontSize: "0.75rem"
+                    fontSize: "0.75rem" 
                   }}
                 >
                   {getInitials(recipient)}

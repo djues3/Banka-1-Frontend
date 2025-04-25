@@ -1,13 +1,14 @@
+import AccountSlider from "../../components/accountComponent/AccountSlider";
 import React, {useEffect, useState} from "react";
-import {Box, Container} from "@mui/material";
-import {fetchAccountsId1} from "../../services/AxiosBanking";
+import {Box, Card, CardContent, Container, Typography} from "@mui/material";
+import {fetchAccountsId1, getUserIdFromToken} from "../../services/AxiosBanking";
 import CircularProgress from "@mui/material/CircularProgress";
 import FastPayments from "../../components/transactionComponents/FastPayments";
 import RecentTransactions from "../../components/transactionComponents/RecentTransations";
 import Sidebar from "../../components/mainComponents/Sidebar";
 import CardSection from "../../components/CustomerHomePageComponent/AccountCardSection";
+import AccountCard from "../../components/CustomerHomePageComponent/AccountSliderCardComponent";
 import {fetchCustomerById} from "../../services/AxiosUser";
-import {useAuth} from "../../context/AuthContext";
 
 
 const CustomerAccountPortal = () =>{
@@ -16,11 +17,10 @@ const CustomerAccountPortal = () =>{
     const [loading, setLoading] = useState(true);
     const [accounts, setAccounts] = useState([]);
     const [user, setUser] = useState(null);
-    const {userInfo} = useAuth();
-    const userId = userInfo.id;
 
     useEffect(() => {
         const loadAccountsAndUser = async () => {
+            const userId = getUserIdFromToken();
             if (userId) {
                 try {
                     // Učitavanje računa
@@ -43,7 +43,7 @@ const CustomerAccountPortal = () =>{
             }
         };
 
-        loadAccountsAndUser().then();
+        loadAccountsAndUser();
     }, []);
 
     //dok se ucitava circular progress se vidi

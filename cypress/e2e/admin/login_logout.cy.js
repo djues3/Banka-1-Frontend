@@ -2,10 +2,9 @@ import { login, logout } from '../../support/admin/commands';
 
 describe('Login and Logout Flow', () => {
     beforeEach(() => {
-        // Start clean
-        cy.clearAllCookies();
-        cy.clearAllLocalStorage();
-        cy.clearAllSessionStorage();
+      // Start clean
+      cy.clearCookies();
+      cy.clearLocalStorage();
     });
   
     it('should log in and log out successfully', () => {

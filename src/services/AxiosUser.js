@@ -1,4 +1,5 @@
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 const apiUser = axios.create({
   baseURL: `${process.env.REACT_APP_USER_API_URL}`,
@@ -7,34 +8,40 @@ const apiUser = axios.create({
   },
 });
 
-const apiIdp = axios.create({
-  baseURL: `${process.env.REACT_APP_IDP_API_URL}`,
-  headers: {
-    "Content-Type": "application/json",
+
+// Add auth token to requests
+apiUser.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+
+      // For debugging - remove in production
+      console.log(
+        `${config.method.toUpperCase()} ${
+          config.url
+        } - Token: ${token.substring(0, 20)}...`
+      );
+    }
+    return config;
   },
-})
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 
 
 // API functions
-export const fetchUserInfo = async () => {
-    const api = axios.create({
-      baseURL: ``,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true,
-    })
-
-    try {
-        const response = await api.get("/api/whoami");
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching user info:", error);
-        throw error;
-    }
-}
-
+export const loginUser = async (email, password) => {
+  try {
+    const response = await apiUser.post("/api/auth/login", { email, password });
+    return response.data;
+  } catch (error) {
+    console.error("Error logging in:", error);
+    throw error;
+  }
+};
 
 // export const fetchCustomers = async () => {
 //   try {
@@ -162,7 +169,7 @@ export const createEmployee = async (employeeData) => {
 };
 
 export const createCustomer = async (customerData) => {
-  try {
+  try{
     const response = await apiUser.post("/api/customer", customerData);
     return response.data;
   } catch (error) {
@@ -171,3 +178,34 @@ export const createCustomer = async (customerData) => {
   }
 };
 
+//token za korisnika
+const getUserIdFromToken = () => {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  try {
+    const decoded = jwtDecode(token);
+    return decoded.id;
+  } catch (error) {
+    console.error("Invalid token", error);
+    return null;
+  }
+};
+
+// primer DTO-a
+/**]\[
+ {
+ "id": 1,
+ "name": "Osoba1",
+ "number": "XXX-XXXXXXXXXXXXX-XX",
+ "balance": "XXXXXXXX,XX RSD"
+ },
+ {
+ "id": 2,
+ "name": "Osoba2",
+ "number": "YYY-YYYYYYYYYYYYY-YY",
+ "balance": "YYYYYYYY,YY RSD"
+ }
+ ]
+ */
+
+export default apiUser;
