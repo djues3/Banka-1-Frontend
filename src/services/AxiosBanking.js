@@ -80,7 +80,9 @@ export const fetchAccountsForUser = async () => {
   try {
     console.log("Running GET /accounts/user/" + userId);
     const response = await apiBanking.get(`/accounts/user/${userId}`);
-    const accounts = response.data.data.accounts;
+    let accounts = response.data.data.accounts;
+    accounts = accounts.filter(a => a.accountNumber !== "111000100000000330")
+
     console.log(accounts);
     return accounts;
   } catch (error) {

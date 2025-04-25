@@ -57,7 +57,8 @@ const AccountsPortal = () => {
     useEffect(() => {
         const loadAccounts = async () => {
             try {
-                const filteredAccounts = await fetchAccountsForUser();
+                let filteredAccounts = await fetchAccountsForUser();
+                filteredAccounts = filteredAccounts.filter(a => a.accountNumber !== "111000100000000330")
                 console.log("filtered accounts = ", filteredAccounts);
                 let ownerName = "";
                 if (Array.isArray(filteredAccounts) && filteredAccounts.length > 0) {
